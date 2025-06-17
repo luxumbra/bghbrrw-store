@@ -1,0 +1,11 @@
+{
+  "name": "badgerstore-monorepo",
+  "private": true,
+  "devDependencies": {
+    "concurrently": "^8.0.1"
+  },
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter @badgerstore/backend dev\" \"pnpm --filter @badgerstore/frontend dev\"",
+    "build": "pnpm --recursive run build"
+  }
+}
