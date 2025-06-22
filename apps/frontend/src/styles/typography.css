@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  body {
+    @apply bg-primary-bg font-body text-copy-color;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-heading uppercase text-copy-color;
+  }
+
+  h1 + h2 {
+    @apply mt-4 font-body font-normal text-primary;
+  }
+
+  a {
+    @apply text-accent hover:text-secondary transition-colors duration-200 ease-in;
+  }
+
+  p {
+    @apply mb-4;
+  }
+}

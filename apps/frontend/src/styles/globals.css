@@ -1,6 +1,10 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@imprt "./theme.css";
+@import "./typography.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 
 @layer utilities {
   /* Chrome, Safari and Opera */
@@ -19,7 +23,7 @@
 
   input:focus ~ label,
   input:not(:placeholder-shown) ~ label {
-    @apply -translate-y-2 text-xsmall-regular;
+    @apply -translate-y-2 text-xs text-gray-600;
   }
 
   input:focus ~ label {
@@ -49,7 +53,7 @@
   }
 }
 
-@layer components {
+@layer utilities {
   .content-container {
     @apply max-w-[1440px] w-full mx-auto px-6;
   }
@@ -83,7 +87,7 @@
   }
 
   .text-large-semi {
-    @apply text-base leading-6 font-semibold;
+    @apply text-lg leading-6 font-semibold;
   }
 
   .text-xl-regular {
@@ -108,5 +112,13 @@
 
   .text-3xl-semi {
     @apply text-[32px] leading-[44px] font-semibold;
+  }
+
+  .text-ui-fg-interactive {
+    @apply text-primary;
+  }
+
+  .txt-medium-plus {
+    @apply text-base font-normal font-body;
   }
 }

@@ -25,9 +25,14 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
         >
           {product.title}
         </Heading>
-
         <Text
-          className="text-medium text-ui-fg-subtle whitespace-pre-line"
+          className="text-large text-primary"
+          data-testid="product-subtitle"
+        >
+          {product.subtitle}
+        </Text>
+        <Text
+          className="whitespace-pre-line text-medium text-ui-fg-subtle"
           data-testid="product-description"
         >
           {product.description}

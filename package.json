@@ -2,7 +2,8 @@
   "name": "badgerstore-monorepo",
   "private": true,
   "devDependencies": {
-    "concurrently": "^8.0.1"
+    "concurrently": "^8.0.1",
+    "ts-node": "^10.9.2"
   },
   "scripts": {
     "dev": "concurrently \"pnpm --filter @badgerstore/backend dev\" \"pnpm --filter @badgerstore/frontend dev\"",

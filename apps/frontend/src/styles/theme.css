@@ -1,0 +1,15 @@
+@tailwind base;
+
+@layer base {
+:root {
+  --color-primary: #B87333;
+  --color-secondary: #556B2F;
+  --color-accent: #4B5320;
+  --color-primary-bg: #18181B;
+  --color-secondary-bg: #3B3B3B;
+  --color-copy-color: #A8B0A3;
+  --font-heading: var(--font-eb-garamond), serif;
+  --font-body: var(--font-quattrocento-sans), sans-serif;
+  --fg-interactive: var(--color-primary);
+}
+}
