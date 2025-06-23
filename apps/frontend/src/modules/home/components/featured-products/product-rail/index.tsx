@@ -22,7 +22,7 @@ export default async function ProductRail({
     },
   })
 
-  if (!pricedProducts) {
+  if (!pricedProducts || pricedProducts.length === 0) {
     return null
   }
 

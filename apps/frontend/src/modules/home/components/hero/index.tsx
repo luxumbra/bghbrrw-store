@@ -2,7 +2,7 @@ import { Button, Heading } from "@medusajs/ui"
 import Image from "next/image"
 import Link from "next/link"
 
-import HeroImage from "@public/images/tlh-010.jpg"
+import HeroImage from "~public/images/tlh-010.jpg"
 
 const Hero = () => {
   return (
@@ -33,10 +33,10 @@ const Hero = () => {
         <Image
           src={HeroImage}
           alt="Hero Image"
-          className="z-0 object-cover w-full h-full"
+          className="relative z-0 object-cover w-screen h-[75vh]"
           placeholder="blur"
-          loading="eager"
           fill
+          priority
         />
       </div>
     </div>
