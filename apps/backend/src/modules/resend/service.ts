@@ -8,8 +8,11 @@ import {
   ProviderSendNotificationResultsDTO,
 } from "@medusajs/framework/types";
 import { CreateEmailOptions, Resend } from "resend";
-import { orderPlacedEmail } from "./emails/order-placed";
-import { shipmentCreatedEmail } from "./emails/order-shipped";
+import {
+  orderPlacedEmail,
+  orderShippedEmail,
+  resetPasswordEmail,
+} from "./emails";
 
 type ResendOptions = {
   api_key: string;
@@ -30,12 +33,14 @@ type InjectedDependencies = {
 enum Templates {
   ORDER_PLACED = "order-placed",
   ORDER_SHIPPED = "order-shipped",
+  RESET_PASSWORD = "reset-password",
 }
 
 const templates: { [key in Templates]?: (props: unknown) => React.ReactNode } =
   {
     [Templates.ORDER_PLACED]: orderPlacedEmail,
-    [Templates.ORDER_SHIPPED]: shipmentCreatedEmail,
+    [Templates.ORDER_SHIPPED]: orderShippedEmail,
+    [Templates.RESET_PASSWORD]: resetPasswordEmail,
   };
 
 class ResendNotificationProviderService extends AbstractNotificationProviderService {
@@ -100,6 +105,8 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
         return "Order Confirmation";
       case Templates.ORDER_SHIPPED:
         return "Order Shipped";
+      case Templates.RESET_PASSWORD:
+        return "Reset Password";
       default:
         return "New Email";
     }
@@ -108,6 +115,11 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
   async send(
     notification: ProviderSendNotificationDTO
   ): Promise<ProviderSendNotificationResultsDTO> {
+    console.log("📧 Resend service: Attempting to send email");
+    console.log("📧 Template:", notification.template);
+    console.log("📧 To:", notification.to);
+    console.log("📧 Channel:", notification.channel);
+
     const template = this.getTemplate(notification.template as Templates);
 
     if (!template) {
@@ -148,15 +160,20 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
 
     if (error || !data) {
       if (error) {
+        console.error("❌ Resend error:", error);
         this.logger.error("Failed to send email", error);
       } else {
+        console.error("❌ Resend error: unknown error");
         this.logger.error("Failed to send email: unknown error");
       }
 
       return {};
     }
 
-    return { id: data.id };
+    console.log("✅ Email sent successfully with ID:", data.id);
+    return {
+      id: data.id,
+    };
   }
 }
 

@@ -21,9 +21,10 @@ import {
 } from "@medusajs/framework/types";
 
 type OrderShippedEmailProps = {
-  fulfillment: FulfillmentDTO;
+  fulfillment: FulfillmentDTO & {
+    orders: OrderDTO[];
+  };
   order: OrderDTO;
-  customer: CustomerDTO;
   email_banner?: {
     body: string;
     title: string;
@@ -33,29 +34,28 @@ type OrderShippedEmailProps = {
 
 function OrderShippedEmailComponent({
   fulfillment,
-  customer,
   order,
   email_banner,
 }: OrderShippedEmailProps) {
   const shouldDisplayBanner = email_banner && "title" in email_banner;
 
-  const formatter = new Intl.NumberFormat([], {
-    style: "currency",
-    currencyDisplay: "narrowSymbol",
-    currency: order.currency_code,
-  });
+  // const formatter = new Intl.NumberFormat([], {
+  //   style: "currency",
+  //   currencyDisplay: "narrowSymbol",
+  //   currency: order.currency_code,
+  // });
 
-  const formatPrice = (price: BigNumberValue) => {
-    if (typeof price === "number") {
-      return formatter.format(price);
-    }
+  // const formatPrice = (price: BigNumberValue) => {
+  //   if (typeof price === "number") {
+  //     return formatter.format(price);
+  //   }
 
-    if (typeof price === "string") {
-      return formatter.format(parseFloat(price));
-    }
+  //   if (typeof price === "string") {
+  //     return formatter.format(parseFloat(price));
+  //   }
 
-    return price?.toString() || "";
-  };
+  //   return price?.toString() || "";
+  // };
 
   return (
     <Tailwind>
@@ -75,24 +75,41 @@ function OrderShippedEmailComponent({
           {/* Thank You Message */}
           <Container className="p-6">
             <Heading className="text-2xl font-bold text-center text-[#B87333]">
-              🎉 Your order is on its way,{" "}
-              {customer.first_name || order.shipping_address?.first_name} 🎉
+              🎉 Your order is on its way, {order.billing_address?.first_name}{" "}
+              🎉
             </Heading>
             <Section>
-              <Row>
-                <Column className="">
-                  <Text className="mt-2 text-center text-[#A8B0A3] uppercase text-xl rounded-lg p-4">
-                    Tracking:{" "}
-                    <Link
-                      href={fulfillment.labels[0].tracking_url}
-                      className="text-blue-500 underline"
-                      target="_blank"
-                    >
-                      {fulfillment.labels[0].tracking_number || "N/A"}
-                    </Link>
-                  </Text>
-                </Column>
-              </Row>
+              <Text className="mt-4 text-center text-[#A8B0A3]">
+                Thank you for shopping with us! Your order #{order.display_id}{" "}
+                has been shipped.
+              </Text>
+              {fulfillment &&
+              fulfillment.labels &&
+              fulfillment.labels.length > 0 ? (
+                <Row key={`${fulfillment.id}-tracking`}>
+                  <Column className="">
+                    <Text className="mt-2 text-center text-[#A8B0A3] uppercase text-xl rounded-lg p-4">
+                      Tracking:{" "}
+                      <Link
+                        href={fulfillment.labels[0].tracking_url}
+                        className="text-blue-500 underline"
+                        target="_blank"
+                      >
+                        {fulfillment.labels[0].tracking_number || "N/A"}
+                      </Link>
+                    </Text>
+                  </Column>
+                </Row>
+              ) : (
+                <Row key={`${fulfillment.id}-no-tracking`}>
+                  <Column className="">
+                    <Text className="mt-2 text-center text-[#A8B0A3] text-lg rounded-lg p-4">
+                      Your order has been shipped! Tracking information will be
+                      available soon.
+                    </Text>
+                  </Column>
+                </Row>
+              )}
             </Section>
           </Container>
 
@@ -133,34 +150,42 @@ function OrderShippedEmailComponent({
             <Row>
               <Column className="w-1/2">
                 <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
-                  {order.shipping_address?.first_name}{" "}
-                  {order.shipping_address?.last_name}
+                  {fulfillment.delivery_address?.first_name ||
+                    order.shipping_address?.first_name}{" "}
+                  {fulfillment.delivery_address?.last_name ||
+                    order.shipping_address?.last_name}
                 </Text>
                 <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
-                  {order.shipping_address?.address_1},{" "}
-                  {order.shipping_address?.city},{" "}
-                  {order.shipping_address?.postal_code}
+                  {fulfillment.delivery_address?.address_1 ||
+                    order.shipping_address?.address_1}
+                  ,{" "}
+                  {fulfillment.delivery_address?.city ||
+                    order.shipping_address?.city}
+                  ,{" "}
+                  {fulfillment.delivery_address?.postal_code ||
+                    order.shipping_address?.postal_code}
                 </Text>
                 <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
-                  {order.shipping_address?.country_code}
+                  {fulfillment.delivery_address?.country_code ||
+                    order.shipping_address?.country_code}
                 </Text>
               </Column>
             </Row>
           </Container>
 
           {/* Order Items */}
-          <Container className="px-6">
+          {/* <Container className="px-6">
             <Heading className="mb-4 text-xl font-semibold text-[#A8B0A3]">
               Your Items
             </Heading>
             <Row>
               <Column>
                 <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
-                  Order ID: #{order.display_id}
+                  Order ID: #{fulfillment.orders[0].display_id}
                 </Text>
               </Column>
             </Row>
-            {order.items?.map((item) => (
+            {/* {fulfillment.items?.map((item) => (
               <Section key={item.id} className="py-4 border-b border-gray-200">
                 <Row>
                   <Column className="w-1/3">
@@ -182,10 +207,10 @@ function OrderShippedEmailComponent({
                   </Column>
                 </Row>
               </Section>
-            ))}
+            ))} */}
 
-            {/* Order Summary */}
-            <Section className="mt-8">
+          {/* Order Summary */}
+          {/* <Section className="mt-8">
               <Heading className="mb-4 text-xl font-semibold text-[#A8B0A3]">
                 Order Summary
               </Heading>
@@ -226,7 +251,7 @@ function OrderShippedEmailComponent({
                 </Column>
               </Row>
             </Section>
-          </Container>
+          </Container> */}
 
           {/* Footer */}
           <Section className="p-6 mt-10 bg-[#18181b]">
@@ -235,7 +260,7 @@ function OrderShippedEmailComponent({
               support team at hello@boughandburrow.uk.
             </Text>
             <Text className="text-sm text-center text-[#A8B0A3]">
-              Order Token: {order.id}
+              {/* Order Token: {order.id} */}
             </Text>
             <Text className="mt-4 text-xs text-center text-gray-400">
               © {new Date().getFullYear()} Bough &amp; Burrow. All rights
