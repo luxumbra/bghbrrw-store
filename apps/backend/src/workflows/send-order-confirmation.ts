@@ -26,7 +26,6 @@ export const sendOrderConfirmationWorkflow = createWorkflow(
         "billing_address.*",
         "shipping_methods.*",
         "customer.*",
-        "total",
         "subtotal",
         "discount_total",
         "shipping_total",
@@ -42,7 +41,7 @@ export const sendOrderConfirmationWorkflow = createWorkflow(
 
     const notification = sendNotificationStep([
       {
-        to: orders[0].email,
+        to: orders[0].email || "issues@boughandburrow.uk",
         channel: "email",
         template: "order-placed",
         data: {
@@ -50,6 +49,11 @@ export const sendOrderConfirmationWorkflow = createWorkflow(
         },
       },
     ]);
+
+    console.log(
+      "📧 Order confirmation - Order data:",
+      JSON.stringify(orders[0], null, 2)
+    );
 
     return new WorkflowResponse(notification);
   }

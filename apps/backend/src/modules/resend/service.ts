@@ -12,6 +12,8 @@ import {
   orderPlacedEmail,
   orderShippedEmail,
   resetPasswordEmail,
+  adminOrderPlacedEmail,
+  adminOrderShippedEmail,
 } from "./emails";
 
 type ResendOptions = {
@@ -34,6 +36,8 @@ enum Templates {
   ORDER_PLACED = "order-placed",
   ORDER_SHIPPED = "order-shipped",
   RESET_PASSWORD = "reset-password",
+  ADMIN_ORDER_PLACED = "admin-order-placed",
+  ADMIN_ORDER_SHIPPED = "admin-order-shipped",
 }
 
 const templates: { [key in Templates]?: (props: unknown) => React.ReactNode } =
@@ -41,6 +45,8 @@ const templates: { [key in Templates]?: (props: unknown) => React.ReactNode } =
     [Templates.ORDER_PLACED]: orderPlacedEmail,
     [Templates.ORDER_SHIPPED]: orderShippedEmail,
     [Templates.RESET_PASSWORD]: resetPasswordEmail,
+    [Templates.ADMIN_ORDER_PLACED]: adminOrderPlacedEmail,
+    [Templates.ADMIN_ORDER_SHIPPED]: adminOrderShippedEmail,
   };
 
 class ResendNotificationProviderService extends AbstractNotificationProviderService {
@@ -107,6 +113,10 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
         return "Order Shipped";
       case Templates.RESET_PASSWORD:
         return "Reset Password";
+      case Templates.ADMIN_ORDER_PLACED:
+        return "New Order Placed";
+      case Templates.ADMIN_ORDER_SHIPPED:
+        return "Order Shipped";
       default:
         return "New Email";
     }

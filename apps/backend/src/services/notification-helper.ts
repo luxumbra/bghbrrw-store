@@ -17,7 +17,7 @@ export class NotificationHelperService {
 
     // Try creating an admin notification
     const notificationData = {
-      to: "admin@boughandburrow.uk", // Admin email
+      to: "hello@boughandburrow.uk", // Admin email
       template: "order-shipped",
       channel: "admin", // Try admin channel
       data: {

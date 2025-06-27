@@ -39,23 +39,23 @@ function OrderShippedEmailComponent({
 }: OrderShippedEmailProps) {
   const shouldDisplayBanner = email_banner && "title" in email_banner;
 
-  // const formatter = new Intl.NumberFormat([], {
-  //   style: "currency",
-  //   currencyDisplay: "narrowSymbol",
-  //   currency: order.currency_code,
-  // });
+  const formatter = new Intl.NumberFormat([], {
+    style: "currency",
+    currencyDisplay: "narrowSymbol",
+    currency: order.currency_code,
+  });
 
-  // const formatPrice = (price: BigNumberValue) => {
-  //   if (typeof price === "number") {
-  //     return formatter.format(price);
-  //   }
+  const formatPrice = (price: BigNumberValue) => {
+    if (typeof price === "number") {
+      return formatter.format(price);
+    }
 
-  //   if (typeof price === "string") {
-  //     return formatter.format(parseFloat(price));
-  //   }
+    if (typeof price === "string") {
+      return formatter.format(parseFloat(price));
+    }
 
-  //   return price?.toString() || "";
-  // };
+    return price?.toString() || "";
+  };
 
   return (
     <Tailwind>

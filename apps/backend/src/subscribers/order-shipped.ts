@@ -1,4 +1,3 @@
-import { NotificationHelperService } from "../services/notification-helper";
 import { Modules } from "@medusajs/framework/utils";
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework";
 import { sendOrderShippedWorkflow } from "../workflows/send-order-shipped-confirmation";
@@ -16,33 +15,38 @@ export default async function orderShippedHandler({
     },
   });
 
-  console.log("📧 Workflow result:", JSON.stringify(result, null, 2));
-
-  // Get the fulfillment and order data from the workflow result
   const fulfillment = result.fulfillment;
   const order = result.order;
 
-  console.log("📦 Fulfillment data:", fulfillment ? "Found" : "Not found");
-  console.log("📋 Order data:", order ? "Found" : "Not found");
-
   if (fulfillment && order) {
     try {
-      // Send email and store notification in one call
+      // Send customer email
       const notificationModuleService = container.resolve(Modules.NOTIFICATION);
-      const notification = await notificationModuleService.createNotifications({
+      await notificationModuleService.createNotifications({
         to: order.email || "issues@boughandburrow.uk",
         template: "order-shipped",
         channel: "email",
         data: { order, fulfillment },
       });
 
-      console.log("✅ Email sent and notification stored:", notification);
+      // Send admin notification email
+      await notificationModuleService.createNotifications({
+        to: "notify@updates.boughandburrow.uk",
+        template: "admin-order-shipped",
+        channel: "email",
+        data: {
+          order,
+          fulfillment,
+          isAdminNotification: true,
+          message: `Order #${String(
+            (order as any).display_id
+          )} has been shipped to ${order.email}`,
+        },
+      });
 
-      // Try using the notification helper service for admin notifications
-      const notificationHelper = new NotificationHelperService(container);
-      await notificationHelper.sendOrderShippedNotification(order, fulfillment);
+      console.log("✅ Customer and admin emails sent successfully");
     } catch (error) {
-      console.error("❌ Error sending email/storing notification:", error);
+      console.error("❌ Error sending emails:", error);
     }
   } else {
     console.error("❌ Missing fulfillment or order data");
