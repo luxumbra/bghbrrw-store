@@ -19,6 +19,7 @@ import {
   OrderDTO,
   FulfillmentDTO,
 } from "@medusajs/framework/types";
+import { EmailHeader, EmailHeading, EmailTailwind } from "./shared";
 
 type OrderShippedEmailProps = {
   fulfillment: FulfillmentDTO & {
@@ -58,26 +59,20 @@ function OrderShippedEmailComponent({
   };
 
   return (
-    <Tailwind>
-      <Html className="font-sans bg-gray-100">
+    <EmailTailwind>
+      <Html className="font-sans bg-secondary">
         <Head />
         <Preview>Your order from Bough &amp; Burrow is on its way!</Preview>
-        <Body className="w-full max-w-2xl mx-auto my-10 bg-[#18181B]">
+        <Body className="w-full max-w-2xl mx-auto my-10 bg-primary-background">
           {/* Header */}
-          <Section className="bg-[#18181b] text-white relative text-center py-4">
-            <Img
-              src="https://cdn.boughandburrow.uk/static/FullLogo.png"
-              alt="Bough & Burrow Logo"
-              className="h-20 mx-auto"
-            />
-          </Section>
+          <EmailHeader />
 
           {/* Thank You Message */}
           <Container className="p-6">
-            <Heading className="text-2xl font-bold text-center text-[#B87333]">
+            <EmailHeading>
               🎉 Your order is on its way, {order.billing_address?.first_name}{" "}
               🎉
-            </Heading>
+            </EmailHeading>
             <Section>
               <Text className="mt-4 text-center text-[#A8B0A3]">
                 Thank you for shopping with us! Your order #{order.display_id}{" "}
@@ -269,7 +264,7 @@ function OrderShippedEmailComponent({
           </Section>
         </Body>
       </Html>
-    </Tailwind>
+    </EmailTailwind>
   );
 }
 

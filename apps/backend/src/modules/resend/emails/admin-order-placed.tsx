@@ -14,6 +14,8 @@ import {
   Link,
 } from "@react-email/components";
 import { OrderDTO, BigNumberValue } from "@medusajs/framework/types";
+import { mockOrder } from "./order-placed";
+import { EmailHeader, EmailHeading, EmailTailwind } from "./shared";
 
 type AdminOrderPlacedEmailProps = {
   order: OrderDTO;
@@ -21,6 +23,11 @@ type AdminOrderPlacedEmailProps = {
   message?: string;
 };
 
+/**
+ * Admin order placed email component
+ * @param props - The props for the email
+ * @returns The email component
+ */
 function AdminOrderPlacedEmailComponent({
   order,
   isAdminNotification = true,
@@ -47,47 +54,41 @@ function AdminOrderPlacedEmailComponent({
   };
 
   return (
-    <Html>
+    <Html className="font-sans bg-secondary">
       <Head />
+
       <Preview>New Order Received - #{String(order.display_id)}</Preview>
-      <Tailwind>
+      <EmailTailwind>
         <Body className="w-full max-w-2xl mx-auto my-10 bg-[#18181B]">
-          {/* Header */}
-          <Section className="bg-[#18181b] text-white relative text-center py-4">
-            <Img
-              src="https://cdn.boughandburrow.uk/static/FullLogo.png"
-              alt="Bough & Burrow Logo"
-              className="h-20 mx-auto"
-            />
-          </Section>
+          <EmailHeader />
 
           {/* Admin Notification */}
           <Container className="p-6">
-            <Heading className="text-2xl font-bold text-center text-[#B87333]">
-              🛒 New Order Received
-            </Heading>
+            <EmailHeading>🛒 New Order Received</EmailHeading>
             <Section>
-              <Text className="mt-4 text-center text-[#A8B0A3]">
+              <Text className="mt-4 text-center text-secondary">
                 {message ||
-                  `Order #${String(order.display_id)} has been placed`}
+                  `${order.email} just placed order #${String(
+                    order.display_id
+                  )}`}
               </Text>
             </Section>
           </Container>
 
           {/* Order Details */}
           <Container className="px-6">
-            <Heading className="mb-4 text-xl font-semibold text-[#A8B0A3]">
+            <Heading className="mb-4 text-xl font-semibold text-secondary">
               Order Details
             </Heading>
             <Row>
               <Column className="w-1/2">
-                <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
+                <Text className="m-0 my-2 text-sm text-secondary">
                   <strong>Order ID:</strong> #{order.display_id}
                 </Text>
-                <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
+                <Text className="m-0 my-2 text-sm text-secondary">
                   <strong>Email:</strong> {order.email}
                 </Text>
-                <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
+                <Text className="m-0 my-2 text-sm text-secondary">
                   <strong>Total:</strong> {formatPrice(order.total)}
                 </Text>
               </Column>
@@ -96,28 +97,28 @@ function AdminOrderPlacedEmailComponent({
 
           {/* Customer Address */}
           <Container className="px-6">
-            <Heading className="mb-4 text-xl font-semibold text-[#A8B0A3]">
+            <Heading className="mb-4 text-xl font-semibold text-secondary">
               Shipping Address
             </Heading>
             <Row>
               <Column>
-                <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
+                <Text className="m-0 my-2 text-sm text-secondary">
                   {order.shipping_address?.first_name}{" "}
                   {order.shipping_address?.last_name}
                 </Text>
-                <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
+                <Text className="m-0 my-2 text-sm text-secondary">
                   {order.shipping_address?.address_1}
                 </Text>
                 {order.shipping_address?.address_2 && (
-                  <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
+                  <Text className="m-0 my-2 text-sm text-secondary">
                     {order.shipping_address.address_2}
                   </Text>
                 )}
-                <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
+                <Text className="m-0 my-2 text-sm text-secondary">
                   {order.shipping_address?.city},{" "}
                   {order.shipping_address?.postal_code}
                 </Text>
-                <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
+                <Text className="m-0 my-2 text-sm text-secondary">
                   {order.shipping_address?.country_code?.toUpperCase()}
                 </Text>
               </Column>
@@ -126,23 +127,23 @@ function AdminOrderPlacedEmailComponent({
 
           {/* Order Items */}
           <Container className="px-6">
-            <Heading className="mb-4 text-xl font-semibold text-[#A8B0A3]">
+            <Heading className="mb-4 text-xl font-semibold text-secondary">
               Order Items
             </Heading>
             {order.items?.map((item) => (
               <Section key={item.id} className="py-2 border-b border-gray-700">
                 <Row>
                   <Column className="w-2/3">
-                    <Text className="text-sm font-semibold text-[#A8B0A3]">
+                    <Text className="text-sm font-semibold text-secondary">
                       {item.title}
                     </Text>
                   </Column>
                   <Column className="w-1/3 text-right">
-                    <Text className="text-sm text-[#A8B0A3]">
+                    <Text className="text-sm text-secondary">
                       Qty: {item.quantity}
                     </Text>
-                    <Text className="text-sm font-bold text-[#A8B0A3]">
-                      {formatPrice(item.total)}
+                    <Text className="text-sm font-bold text-secondary">
+                      {formatPrice(item.item_total)}
                     </Text>
                   </Column>
                 </Row>
@@ -151,12 +152,12 @@ function AdminOrderPlacedEmailComponent({
             <Section>
               <Row>
                 <Column>
-                  <Text className="text-sm font-semibold text-[#A8B0A3]">
+                  <Text className="text-sm font-semibold text-secondary">
                     Total
                   </Text>
                 </Column>
                 <Column className="w-1/3 text-right">
-                  <Text className="text-sm font-bold text-[#A8B0A3]">
+                  <Text className="text-sm font-bold text-secondary">
                     {formatPrice(order.total)}
                   </Text>
                 </Column>
@@ -166,14 +167,37 @@ function AdminOrderPlacedEmailComponent({
 
           {/* Footer */}
           <Section className="bg-[#18181b] text-white text-center py-4 mt-8">
-            <Text className="text-sm text-[#A8B0A3]">
+            <Text className="text-sm text-secondary">
               This is an automated notification from Bough & Burrow
             </Text>
           </Section>
         </Body>
-      </Tailwind>
+      </EmailTailwind>
     </Html>
   );
 }
 
-export default AdminOrderPlacedEmailComponent;
+/**
+ * Admin order placed email
+ * @param props - The props for the email
+ * @returns The email component with test data
+ */
+const adminOrderPlacedEmail = (props: AdminOrderPlacedEmailProps) => (
+  <AdminOrderPlacedEmailComponent {...props} />
+);
+
+/**
+ * Mock data for the admin order placed email
+ * @example This is a mock email for testing purposes.
+ */
+const mockAdminOrderPlaced = mockOrder;
+
+export { adminOrderPlacedEmail, mockAdminOrderPlaced };
+
+/**
+ * Admin order placed email
+ * @example This is a mock email for testing purposes.
+ */
+export default () => (
+  <AdminOrderPlacedEmailComponent {...mockAdminOrderPlaced} />
+);

@@ -13,32 +13,30 @@ import {
   Body,
   Link,
 } from "@react-email/components";
+import { EmailHeader, EmailHeading, EmailTailwind } from "./shared";
 
 type ResetPasswordEmailProps = {
   url: string;
 };
 
+/**
+ * Password reset email component
+ * @param props - The props for the email
+ * @returns The email component
+ */
 function ResetPasswordEmailComponent({ url }: ResetPasswordEmailProps) {
   return (
-    <Tailwind>
-      <Html className="font-sans bg-gray-100">
+    <EmailTailwind>
+      <Html className="font-sans bg-secondary-background">
         <Head />
         <Preview>Reset your password</Preview>
-        <Body className="w-full max-w-2xl mx-auto my-10 bg-[#18181B]">
+        <Body className="w-full max-w-2xl mx-auto my-10 bg-primary-background">
           {/* Header */}
-          <Section className="bg-[#18181b] text-white relative text-center py-4">
-            <Img
-              src="https://cdn.boughandburrow.uk/static/FullLogo.png"
-              alt="Bough & Burrow Logo"
-              className="h-20 mx-auto"
-            />
-          </Section>
+          <EmailHeader />
 
           {/* Reset Message */}
-          <Container className="p-6">
-            <Heading className="text-2xl font-bold text-center text-[#B87333]">
-              Reset your password
-            </Heading>
+          <Container className="p-6 text-center">
+            <EmailHeading>Reset your password</EmailHeading>
             <Text className="mt-2 text-center text-[#A8B0A3]">
               Click the link below to reset your password.
             </Text>
@@ -64,10 +62,15 @@ function ResetPasswordEmailComponent({ url }: ResetPasswordEmailProps) {
           </Section>
         </Body>
       </Html>
-    </Tailwind>
+    </EmailTailwind>
   );
 }
 
+/**
+ * Password reset email
+ * @param props - The props for the email
+ * @returns The email component with test data
+ */
 export const resetPasswordEmail = (props: ResetPasswordEmailProps) => (
   <ResetPasswordEmailComponent {...props} />
 );
@@ -75,5 +78,8 @@ export const resetPasswordEmail = (props: ResetPasswordEmailProps) => (
 const mockResetPassword = {
   url: "https://boughandburrow.uk/reset-password",
 };
-// @ts-ignore
+
+/**
+ * @deprecated This is a mock email for testing purposes.
+ */
 export default () => <ResetPasswordEmailComponent {...mockResetPassword} />;

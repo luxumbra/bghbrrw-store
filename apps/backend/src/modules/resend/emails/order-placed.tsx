@@ -19,6 +19,7 @@ import {
   CustomerDTO,
   OrderDTO,
 } from "@medusajs/framework/types";
+import { EmailHeader, EmailHeading, EmailTailwind } from "./shared";
 
 type OrderPlacedEmailProps = {
   order: OrderDTO & {
@@ -31,6 +32,11 @@ type OrderPlacedEmailProps = {
   };
 };
 
+/**
+ * Order placed email component
+ * @param props - The props for the email
+ * @returns The email component
+ */
 function OrderPlacedEmailComponent({
   order,
   email_banner,
@@ -56,33 +62,20 @@ function OrderPlacedEmailComponent({
   };
 
   return (
-    <Tailwind>
-      <Html className="font-sans bg-gray-100">
+    <EmailTailwind>
+      <Html className="font-sans bg-primary-background">
         <Head />
         <Preview>Thank you for your order from Bough &amp; Burrow</Preview>
         <Body className="w-full max-w-2xl mx-auto my-10 bg-[#18181B]">
           {/* Header */}
-          <Section className="bg-[#3B3B3B] text-white px-6 py-4">
-            <svg
-              width="15"
-              height="15"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M16.2447 3.92183L12.1688 1.57686C10.8352 0.807712 9.20112 0.807712 7.86753 1.57686L3.77285 3.92183C2.45804 4.69098 1.63159 6.11673 1.63159 7.63627V12.345C1.63159 13.8833 2.45804 15.2903 3.77285 16.0594L7.84875 18.4231C9.18234 19.1923 10.8165 19.1923 12.15 18.4231L16.2259 16.0594C17.5595 15.2903 18.3672 13.8833 18.3672 12.345V7.63627C18.4048 6.11673 17.5783 4.69098 16.2447 3.92183ZM10.0088 14.1834C7.69849 14.1834 5.82019 12.3075 5.82019 10C5.82019 7.69255 7.69849 5.81657 10.0088 5.81657C12.3191 5.81657 14.2162 7.69255 14.2162 10C14.2162 12.3075 12.3379 14.1834 10.0088 14.1834Z"
-                fill="currentColor"
-              ></path>
-            </svg>
-          </Section>
+          <EmailHeader />
 
           {/* Thank You Message */}
           <Container className="p-6">
-            <Heading className="text-2xl font-bold text-center text-[#B87333]">
+            <EmailHeading>
               Thank you for your order,{" "}
               {order.customer?.first_name || order.shipping_address?.first_name}
-            </Heading>
+            </EmailHeading>
             <Text className="mt-2 text-center text-[#A8B0A3]">
               We're processing your order and will notify you when it ships.
             </Text>
@@ -213,15 +206,24 @@ function OrderPlacedEmailComponent({
           </Section>
         </Body>
       </Html>
-    </Tailwind>
+    </EmailTailwind>
   );
 }
 
-export const orderPlacedEmail = (props: OrderPlacedEmailProps) => (
+/**
+ * Order placed email
+ * @param props - The props for the email
+ * @returns The email component with test data
+ */
+const orderPlacedEmail = (props: OrderPlacedEmailProps) => (
   <OrderPlacedEmailComponent {...props} />
 );
 
-const mockOrder = {
+/**
+ * Mock data for the order placed email
+ * @example This is a mock email for testing purposes.
+ */
+const mockOrder: OrderPlacedEmailProps = {
   order: {
     id: "order_01JSNXDH9BPJWWKVW03B9E9KW8",
     display_id: 1,
@@ -263,7 +265,7 @@ const mockOrder = {
         is_tax_inclusive: false,
         is_custom_price: false,
         metadata: {},
-        raw_compare_at_unit_price: null,
+        raw_compare_at_unit_price: undefined,
         raw_unit_price: {
           value: "10",
           precision: 20,
@@ -273,7 +275,7 @@ const mockOrder = {
         deleted_at: null,
         tax_lines: [],
         adjustments: [],
-        compare_at_unit_price: null,
+        compare_at_unit_price: undefined,
         unit_price: 10,
         quantity: 1,
         raw_quantity: {
@@ -282,11 +284,7 @@ const mockOrder = {
         },
         detail: {
           id: "orditem_01JSNXDH9DK1XMESEZPADYFWKY",
-          version: 1,
           metadata: null,
-          order_id: "order_01JSNXDH9BPJWWKVW03B9E9KW8",
-          raw_unit_price: null,
-          raw_compare_at_unit_price: null,
           raw_quantity: {
             value: "1",
             precision: 20,
@@ -321,10 +319,7 @@ const mockOrder = {
           },
           created_at: new Date(),
           updated_at: new Date(),
-          deleted_at: null,
           item_id: "ordli_01JSNXDH9C47KZ43WQ3TBFXZA9",
-          unit_price: null,
-          compare_at_unit_price: null,
           quantity: 1,
           fulfilled_quantity: 0,
           delivered_quantity: 0,
@@ -333,6 +328,8 @@ const mockOrder = {
           return_received_quantity: 0,
           return_dismissed_quantity: 0,
           written_off_quantity: 0,
+          // @ts-ignore
+          item: {},
         },
         subtotal: 10,
         total: 10,
@@ -418,7 +415,7 @@ const mockOrder = {
     ],
     shipping_address: {
       id: "caaddr_01JSNXD6W0TGPH2JQD18K97B25",
-      customer_id: null,
+      customer_id: undefined,
       company: "",
       first_name: "safasf",
       last_name: "asfaf",
@@ -432,11 +429,10 @@ const mockOrder = {
       metadata: null,
       created_at: "2025-04-25T07:25:48.801Z",
       updated_at: "2025-04-25T07:25:48.801Z",
-      deleted_at: null,
     },
     billing_address: {
       id: "caaddr_01JSNXD6W0V7RNZH63CPG26K5W",
-      customer_id: null,
+      customer_id: undefined,
       company: "",
       first_name: "Dave",
       last_name: "asfaf",
@@ -450,15 +446,13 @@ const mockOrder = {
       metadata: null,
       created_at: "2025-04-25T07:25:48.801Z",
       updated_at: "2025-04-25T07:25:48.801Z",
-      deleted_at: null,
     },
     shipping_methods: [
       {
         id: "ordsm_01JSNXDH9B9DDRQXJT5J5AE5V1",
         name: "Standard Shipping",
-        description: null,
+        description: undefined,
         is_tax_inclusive: false,
-        is_custom_amount: false,
         shipping_option_id: "so_01JSNXAQA64APG6BNHGCMCTN6V",
         data: {},
         metadata: null,
@@ -468,31 +462,22 @@ const mockOrder = {
         },
         created_at: new Date(),
         updated_at: new Date(),
-        deleted_at: null,
         tax_lines: [],
         adjustments: [],
         amount: 10,
         order_id: "order_01JSNXDH9BPJWWKVW03B9E9KW8",
-        detail: {
-          id: "ordspmv_01JSNXDH9B5RAF4FH3M1HH3TEA",
-          version: 1,
-          order_id: "order_01JSNXDH9BPJWWKVW03B9E9KW8",
-          return_id: null,
-          exchange_id: null,
-          claim_id: null,
-          created_at: new Date(),
-          updated_at: new Date(),
-          deleted_at: null,
-          shipping_method_id: "ordsm_01JSNXDH9B9DDRQXJT5J5AE5V1",
-        },
         subtotal: 10,
         total: 10,
         original_total: 10,
         discount_total: 0,
-        discount_subtotal: 0,
         discount_tax_total: 0,
         tax_total: 0,
         original_tax_total: 0,
+        original_subtotal: 10,
+        raw_original_subtotal: {
+          value: "10",
+          precision: 20,
+        },
         raw_subtotal: {
           value: "10",
           precision: 20,
@@ -506,10 +491,6 @@ const mockOrder = {
           precision: 20,
         },
         raw_discount_total: {
-          value: "0",
-          precision: 20,
-        },
-        raw_discount_subtotal: {
           value: "0",
           precision: 20,
         },
@@ -535,13 +516,23 @@ const mockOrder = {
       email: "dave@foresite.rocks",
       phone: null,
       has_account: false,
-      metadata: null,
+      metadata: {},
       created_by: null,
       created_at: "2025-04-25T07:25:48.791Z",
       updated_at: "2025-04-25T07:25:48.791Z",
       deleted_at: null,
+      default_billing_address_id: null,
+      default_shipping_address_id: null,
+      addresses: [],
+      groups: [],
     },
   },
 };
-// @ts-ignore
+
+export { orderPlacedEmail, mockOrder };
+
+/**
+ * Order placed email
+ * @example This is a mock email for testing purposes.
+ */
 export default () => <OrderPlacedEmailComponent {...mockOrder} />;
