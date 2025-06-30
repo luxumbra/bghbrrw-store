@@ -14,6 +14,8 @@ import {
   resetPasswordEmail,
   adminOrderPlacedEmail,
   adminOrderShippedEmail,
+  orderDeliveredEmail,
+  adminOrderDeliveredEmail,
 } from "./emails";
 
 type ResendOptions = {
@@ -38,6 +40,8 @@ enum Templates {
   RESET_PASSWORD = "reset-password",
   ADMIN_ORDER_PLACED = "admin-order-placed",
   ADMIN_ORDER_SHIPPED = "admin-order-shipped",
+  ORDER_DELIVERED = "order-delivered",
+  ADMIN_ORDER_DELIVERED = "admin-order-delivered",
 }
 
 const templates: { [key in Templates]?: (props: unknown) => React.ReactNode } =
@@ -47,6 +51,8 @@ const templates: { [key in Templates]?: (props: unknown) => React.ReactNode } =
     [Templates.RESET_PASSWORD]: resetPasswordEmail,
     [Templates.ADMIN_ORDER_PLACED]: adminOrderPlacedEmail,
     [Templates.ADMIN_ORDER_SHIPPED]: adminOrderShippedEmail,
+    [Templates.ORDER_DELIVERED]: orderDeliveredEmail,
+    [Templates.ADMIN_ORDER_DELIVERED]: adminOrderDeliveredEmail,
   };
 
 class ResendNotificationProviderService extends AbstractNotificationProviderService {
@@ -116,7 +122,11 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
       case Templates.ADMIN_ORDER_PLACED:
         return "New Order Placed";
       case Templates.ADMIN_ORDER_SHIPPED:
-        return "Order Shipped";
+        return "An Order Just Got Shipped";
+      case Templates.ORDER_DELIVERED:
+        return "Your Bough & Burrow Order Has Been Delivered";
+      case Templates.ADMIN_ORDER_DELIVERED:
+        return "An Order Just Got Delivered";
       default:
         return "New Email";
     }

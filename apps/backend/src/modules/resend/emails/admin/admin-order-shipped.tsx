@@ -18,7 +18,7 @@ import {
   BigNumberValue,
 } from "@medusajs/framework/types";
 
-import { EmailHeading, EmailHeader, EmailTailwind } from "./shared";
+import { EmailHeading, EmailHeader, EmailTailwind } from "../shared";
 
 type AdminOrderShippedEmailProps = {
   order: OrderDTO;
@@ -58,12 +58,12 @@ function AdminOrderShippedEmailComponent({
     return price?.toString() || "";
   };
   return (
-    <Html className="font-sans bg-secondary">
-      <Head />
-      <Preview>
-        Order Shipped to Customer - {`#${String((order as any).display_id)}`}
-      </Preview>
-      <EmailTailwind>
+    <EmailTailwind>
+      <Html className="font-sans bg-secondary">
+        <Head />
+        <Preview>
+          Order Shipped to Customer - {`#${String((order as any).display_id)}`}
+        </Preview>
         <Body className="w-full max-w-2xl mx-auto my-10 bg-primary-background">
           <EmailHeader />
 
@@ -171,8 +171,8 @@ function AdminOrderShippedEmailComponent({
             </Text>
           </Section>
         </Body>
-      </EmailTailwind>
-    </Html>
+      </Html>
+    </EmailTailwind>
   );
 }
 

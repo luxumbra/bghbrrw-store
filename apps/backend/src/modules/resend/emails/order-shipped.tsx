@@ -20,6 +20,7 @@ import {
   FulfillmentDTO,
 } from "@medusajs/framework/types";
 import { EmailHeader, EmailHeading, EmailTailwind } from "./shared";
+import { CustomerEmailFooter } from "./shared/email-footer";
 
 type OrderShippedEmailProps = {
   fulfillment: FulfillmentDTO & {
@@ -63,7 +64,7 @@ function OrderShippedEmailComponent({
       <Html className="font-sans bg-secondary">
         <Head />
         <Preview>Your order from Bough &amp; Burrow is on its way!</Preview>
-        <Body className="w-full max-w-2xl mx-auto my-10 bg-primary-background">
+        <Body className="mx-auto my-10 w-full max-w-2xl bg-primary-background">
           {/* Header */}
           <EmailHeader />
 
@@ -111,7 +112,7 @@ function OrderShippedEmailComponent({
           {/* Promotional Banner */}
           {shouldDisplayBanner && (
             <Container
-              className="mb-4 rounded-lg p-7"
+              className="p-7 mb-4 rounded-lg"
               style={{
                 background: "linear-gradient(to right, #3b82f6, #4f46e5)",
               }}
@@ -191,7 +192,7 @@ function OrderShippedEmailComponent({
                       width="100%"
                     />
                   </Column>
-                  <Column className="w-2/3 pl-4">
+                  <Column className="pl-4 w-2/3">
                     <Text className="text-lg font-semibold text-[#A8B0A3]">
                       {item.product_title}
                     </Text>
@@ -248,20 +249,7 @@ function OrderShippedEmailComponent({
             </Section>
           </Container> */}
 
-          {/* Footer */}
-          <Section className="p-6 mt-10 bg-[#18181b]">
-            <Text className="text-sm text-center text-[#A8B0A3]">
-              If you have any questions, reply to this email or contact our
-              support team at hello@boughandburrow.uk.
-            </Text>
-            <Text className="text-sm text-center text-[#A8B0A3]">
-              {/* Order Token: {order.id} */}
-            </Text>
-            <Text className="mt-4 text-xs text-center text-gray-400">
-              © {new Date().getFullYear()} Bough &amp; Burrow. All rights
-              reserved.
-            </Text>
-          </Section>
+          <CustomerEmailFooter />
         </Body>
       </Html>
     </EmailTailwind>

@@ -1,4 +1,4 @@
-import { Text } from "@medusajs/ui"
+import { Text, Badge } from "@medusajs/ui"
 import { listProducts } from "@lib/data/products"
 import { getProductPrice } from "@lib/util/get-product-price"
 import { HttpTypes } from "@medusajs/types"
@@ -30,18 +30,38 @@ export default async function ProductPreview({
 
   return (
     <LocalizedClientLink href={`/products/${product.handle}`} className="group">
-      <div data-testid="product-wrapper">
+      <div data-testid="product-wrapper" className="relative">
         <Thumbnail
           thumbnail={product.thumbnail}
           images={product.images}
           size="full"
           isFeatured={isFeatured}
+          className="relative z-0"
         />
-        <div className="flex txt-compact-medium mt-4 justify-between">
-          <Text className="text-ui-fg-subtle" data-testid="product-title">
+        {(!product.variants ||
+          product.variants.length === 0 ||
+          product.variants.every(
+            (v) =>
+              v.manage_inventory &&
+              (!v.inventory_quantity || v.inventory_quantity <= 0) &&
+              !v.allow_backorder
+          )) && (
+          <Badge
+            color="red"
+            size="large"
+            className="absolute top-0 right-0 z-10 ml-2 text-xs rounded-tl-none rounded-tr-lg rounded-br-none rounded-bl-lg text-nowrap"
+          >
+            Sold out
+          </Badge>
+        )}
+        <div className="flex justify-between mt-4 txt-compact-medium">
+          <Text
+            className="flex gap-x-2 items-center text-ui-fg-subtle"
+            data-testid="product-title"
+          >
             {product.title}
           </Text>
-          <div className="flex items-center gap-x-2">
+          <div className="flex gap-x-2 items-center">
             {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
           </div>
         </div>

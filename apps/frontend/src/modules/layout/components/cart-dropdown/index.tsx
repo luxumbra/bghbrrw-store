@@ -99,10 +99,10 @@ const CartDropdown = ({
         >
           <PopoverPanel
             static
-            className="hidden small:block absolute top-[calc(100%+1px)] right-0 bg-secondary-bg border-x border-b border-gray-200 w-[420px] text-ui-fg-base"
+            className="hidden small:block absolute top-[calc(100%+1px)] right-0 bg-primary-bg border-x border-b border-primary rounded-b-xl w-[420px] shadow-2xl shadow-black text-ui-fg-base"
             data-testid="nav-cart-dropdown"
           >
-            <div className="flex items-center justify-center p-4">
+            <div className="flex justify-center items-center p-4">
               <h3 className="text-large-semi">Your Cart</h3>
             </div>
             {cartState && cartState.items?.length ? (
@@ -130,9 +130,9 @@ const CartDropdown = ({
                             size="square"
                           />
                         </LocalizedClientLink>
-                        <div className="flex flex-col justify-between flex-1">
+                        <div className="flex flex-col flex-1 justify-between">
                           <div className="flex flex-col flex-1">
-                            <div className="flex items-start justify-between">
+                            <div className="flex justify-between items-start">
                               <div className="flex flex-col overflow-ellipsis whitespace-nowrap mr-4 w-[180px]">
                                 <h3 className="overflow-hidden text-base-regular text-ellipsis">
                                   <LocalizedClientLink
@@ -174,8 +174,8 @@ const CartDropdown = ({
                       </div>
                     ))}
                 </div>
-                <div className="flex flex-col p-4 gap-y-4 text-small-regular">
-                  <div className="flex items-center justify-between">
+                <div className="flex flex-col gap-y-4 p-4 text-small-regular">
+                  <div className="flex justify-between items-center">
                     <span className="font-semibold text-ui-fg-base">
                       Subtotal <span className="font-normal">(inc. taxes)</span>
                     </span>
@@ -203,8 +203,8 @@ const CartDropdown = ({
               </>
             ) : (
               <div>
-                <div className="flex flex-col items-center justify-center py-16 gap-y-4">
-                  <div className="flex items-center justify-center w-6 h-6 text-white bg-gray-900 rounded-full text-small-regular">
+                <div className="flex flex-col gap-y-4 justify-center items-center py-16">
+                  <div className="flex justify-center items-center w-6 h-6 text-white bg-gray-900 rounded-full text-small-regular">
                     <span>0</span>
                   </div>
                   <span>Your shopping bag is empty.</span>

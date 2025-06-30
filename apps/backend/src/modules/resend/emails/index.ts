@@ -1,8 +1,12 @@
 import { orderPlacedEmail } from "./order-placed";
 import { orderShippedEmail } from "./order-shipped";
 import { resetPasswordEmail } from "./password-reset";
-import { adminOrderPlacedEmail } from "./admin-order-placed";
-import { adminOrderShippedEmail } from "./admin-order-shipped";
+import { orderDeliveredEmail } from "./order-delivered";
+import {
+  adminOrderPlacedEmail,
+  adminOrderShippedEmail,
+  adminOrderDeliveredEmail,
+} from "./admin";
 
 export {
   orderPlacedEmail,
@@ -10,4 +14,6 @@ export {
   resetPasswordEmail,
   adminOrderPlacedEmail,
   adminOrderShippedEmail,
+  adminOrderDeliveredEmail,
+  orderDeliveredEmail,
 };

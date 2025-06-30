@@ -1,30 +1,36 @@
 import {
-  Text,
+  BigNumberValue,
+  CustomerDTO,
+  FulfillmentDTO,
+  OrderDTO,
+} from "@medusajs/framework/types";
+import {
+  Body,
   Column,
   Container,
+  Head,
   Heading,
   Html,
   Img,
+  Link,
+  Preview,
   Row,
   Section,
   Tailwind,
-  Head,
-  Preview,
-  Body,
-  Link,
+  Text,
 } from "@react-email/components";
-
 import {
-  BigNumberValue,
-  CustomerDTO,
-  OrderDTO,
-} from "@medusajs/framework/types";
-import { EmailHeader, EmailHeading, EmailTailwind } from "./shared";
+  AdminEmailFooter,
+  EmailHeader,
+  EmailHeading,
+  EmailTailwind,
+} from "../shared";
 
-type OrderPlacedEmailProps = {
-  order: OrderDTO & {
-    customer: CustomerDTO;
+type OrderDeliveredEmailProps = {
+  fulfillment: FulfillmentDTO & {
+    orders: OrderDTO[];
   };
+  order: OrderDTO;
   email_banner?: {
     body: string;
     title: string;
@@ -32,15 +38,11 @@ type OrderPlacedEmailProps = {
   };
 };
 
-/**
- * Order placed email component
- * @param props - The props for the email
- * @returns The email component
- */
-function OrderPlacedEmailComponent({
+function AdminOrderDeliveredEmailComponent({
+  fulfillment,
   order,
   email_banner,
-}: OrderPlacedEmailProps) {
+}: OrderDeliveredEmailProps) {
   const shouldDisplayBanner = email_banner && "title" in email_banner;
 
   const formatter = new Intl.NumberFormat([], {
@@ -63,28 +65,53 @@ function OrderPlacedEmailComponent({
 
   return (
     <EmailTailwind>
-      <Html className="font-sans bg-secondary-background">
+      <Html className="font-sans bg-secondary">
         <Head />
-        <Preview>Thank you for your order from Bough &amp; Burrow</Preview>
-        <Body className="w-full max-w-2xl mx-auto my-10 bg-primary-background">
+        <Preview>
+          Your order from Bough &amp; Burrow has been delivered!
+        </Preview>
+        <Body className="mx-auto my-10 w-full max-w-2xl bg-primary-background">
           {/* Header */}
           <EmailHeader />
 
           {/* Thank You Message */}
           <Container className="p-6">
-            <EmailHeading>
-              Thank you for your order,{" "}
-              {order.customer?.first_name || order.shipping_address?.first_name}
-            </EmailHeading>
-            <Text className="mt-2 text-center text-[#A8B0A3]">
-              We're processing your order and will notify you when it ships.
-            </Text>
+            <EmailHeading>An order has been delivered! 🎉</EmailHeading>
+            <Section>
+              <Text className="mt-4 text-center text-secondary">
+                Order #{order.display_id} has been delivered to{" "}
+                {order.shipping_address?.first_name}{" "}
+                {order.shipping_address?.last_name} at{" "}
+                {order.shipping_address?.postal_code},{" "}
+                {order.shipping_address?.country_code}.
+              </Text>
+              <Text className="mt-4 text-center text-secondary">
+                The order was delivered on{" "}
+                {fulfillment.created_at.toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}{" "}
+                at{" "}
+                {fulfillment.created_at.toLocaleTimeString("en-GB", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+                .{" "}
+                <Link
+                  href={`https://admin.boughandburrow.uk/orders/${order.id}`}
+                  className="text-blue-500 underline"
+                >
+                  View order
+                </Link>
+              </Text>
+            </Section>
           </Container>
 
           {/* Promotional Banner */}
           {shouldDisplayBanner && (
             <Container
-              className="mb-4 rounded-lg p-7"
+              className="p-7 mb-4 rounded-lg"
               style={{
                 background: "linear-gradient(to right, #3b82f6, #4f46e5)",
               }}
@@ -110,19 +137,50 @@ function OrderPlacedEmailComponent({
             </Container>
           )}
 
-          {/* Order Items */}
+          {/* Shipping Details */}
           <Container className="px-6">
+            <Heading className="mb-4 text-xl font-semibold text-[#A8B0A3]">
+              Shipping Details
+            </Heading>
+            <Row>
+              <Column className="w-1/2">
+                <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
+                  {fulfillment.delivery_address?.first_name ||
+                    order.shipping_address?.first_name}{" "}
+                  {fulfillment.delivery_address?.last_name ||
+                    order.shipping_address?.last_name}
+                </Text>
+                <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
+                  {fulfillment.delivery_address?.address_1 ||
+                    order.shipping_address?.address_1}
+                  ,{" "}
+                  {fulfillment.delivery_address?.city ||
+                    order.shipping_address?.city}
+                  ,{" "}
+                  {fulfillment.delivery_address?.postal_code ||
+                    order.shipping_address?.postal_code}
+                </Text>
+                <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
+                  {fulfillment.delivery_address?.country_code ||
+                    order.shipping_address?.country_code}
+                </Text>
+              </Column>
+            </Row>
+          </Container>
+
+          {/* Order Items */}
+          {/* <Container className="px-6">
             <Heading className="mb-4 text-xl font-semibold text-[#A8B0A3]">
               Your Items
             </Heading>
             <Row>
               <Column>
                 <Text className="m-0 my-2 text-sm text-[#A8B0A3]">
-                  Order ID: #{order.display_id}
+                  Order ID: #{fulfillment.orders[0].display_id}
                 </Text>
               </Column>
             </Row>
-            {order.items?.map((item) => (
+            {/* {fulfillment.items?.map((item) => (
               <Section key={item.id} className="py-4 border-b border-gray-200">
                 <Row>
                   <Column className="w-1/3">
@@ -133,7 +191,7 @@ function OrderPlacedEmailComponent({
                       width="100%"
                     />
                   </Column>
-                  <Column className="w-2/3 pl-4">
+                  <Column className="pl-4 w-2/3">
                     <Text className="text-lg font-semibold text-[#A8B0A3]">
                       {item.product_title}
                     </Text>
@@ -144,10 +202,10 @@ function OrderPlacedEmailComponent({
                   </Column>
                 </Row>
               </Section>
-            ))}
+            ))} */}
 
-            {/* Order Summary */}
-            <Section className="mt-8">
+          {/* Order Summary */}
+          {/* <Section className="mt-8">
               <Heading className="mb-4 text-xl font-semibold text-[#A8B0A3]">
                 Order Summary
               </Heading>
@@ -188,42 +246,41 @@ function OrderPlacedEmailComponent({
                 </Column>
               </Row>
             </Section>
-          </Container>
+          </Container> */}
 
           {/* Footer */}
-          <Section className="p-6 mt-10 bg-[#18181b]">
-            <Text className="text-sm text-center text-[#A8B0A3]">
-              If you have any questions, reply to this email or contact our
-              support team at hello@boughandburrow.uk.
-            </Text>
-            <Text className="text-sm text-center text-[#A8B0A3]">
-              Order Token: {order.id}
-            </Text>
-            <Text className="mt-4 text-xs text-center text-gray-400">
-              © {new Date().getFullYear()} Bough &amp; Burrow. All rights
-              reserved.
-            </Text>
-          </Section>
+          <AdminEmailFooter />
         </Body>
       </Html>
     </EmailTailwind>
   );
 }
 
-/**
- * Order placed email
- * @param props - The props for the email
- * @returns The email component with test data
- */
-const orderPlacedEmail = (props: OrderPlacedEmailProps) => (
-  <OrderPlacedEmailComponent {...props} />
+export const adminOrderDeliveredEmail = (props: OrderDeliveredEmailProps) => (
+  <AdminOrderDeliveredEmailComponent {...props} />
 );
 
-/**
- * Mock data for the order placed email
- * @example This is a mock email for testing purposes.
- */
-const mockOrder: OrderPlacedEmailProps = {
+const mockDelivered = {
+  fulfillment: {
+    id: "fulfillment_01JSNXDH9C47KZ43WQ3TBFXZA9",
+    order_id: "order_01JSNXDH9BPJWWKVW03B9E9KW8",
+    order_version: 1,
+    created_at: new Date(),
+    updated_at: new Date(),
+    deleted_at: null,
+    labels: [
+      {
+        id: "fulfill_label_01JSNXDH9C47KZ43WQ3TBFXZA9",
+        tracking_number: "0212-F7DB-01DC-901D",
+        carrier_code: "rm",
+        tracking_url:
+          "https://www.royalmail.com/portal/rm/track?trackNumber=0212-F7DB-01DC-901D",
+        created_at: new Date(),
+        updated_at: new Date(),
+        deleted_at: null,
+      },
+    ],
+  },
   order: {
     id: "order_01JSNXDH9BPJWWKVW03B9E9KW8",
     display_id: 1,
@@ -237,7 +294,10 @@ const mockOrder: OrderPlacedEmailProps = {
     item_subtotal: 10,
     item_total: 10,
     item_tax_total: 0,
-    customer_id: "cus_01JSNXD6VQC1YH56E4TGC81NWX",
+    customer: {
+      id: "cus_01JSNXD6VQC1YH56E4TGC81NWX",
+      first_name: "Dave",
+    },
     items: [
       {
         id: "ordli_01JSNXDH9C47KZ43WQ3TBFXZA9",
@@ -265,7 +325,7 @@ const mockOrder: OrderPlacedEmailProps = {
         is_tax_inclusive: false,
         is_custom_price: false,
         metadata: {},
-        raw_compare_at_unit_price: undefined,
+        raw_compare_at_unit_price: null,
         raw_unit_price: {
           value: "10",
           precision: 20,
@@ -275,7 +335,7 @@ const mockOrder: OrderPlacedEmailProps = {
         deleted_at: null,
         tax_lines: [],
         adjustments: [],
-        compare_at_unit_price: undefined,
+        compare_at_unit_price: null,
         unit_price: 10,
         quantity: 1,
         raw_quantity: {
@@ -284,7 +344,11 @@ const mockOrder: OrderPlacedEmailProps = {
         },
         detail: {
           id: "orditem_01JSNXDH9DK1XMESEZPADYFWKY",
+          version: 1,
           metadata: null,
+          order_id: "order_01JSNXDH9BPJWWKVW03B9E9KW8",
+          raw_unit_price: null,
+          raw_compare_at_unit_price: null,
           raw_quantity: {
             value: "1",
             precision: 20,
@@ -319,7 +383,10 @@ const mockOrder: OrderPlacedEmailProps = {
           },
           created_at: new Date(),
           updated_at: new Date(),
+          deleted_at: null,
           item_id: "ordli_01JSNXDH9C47KZ43WQ3TBFXZA9",
+          unit_price: null,
+          compare_at_unit_price: null,
           quantity: 1,
           fulfilled_quantity: 0,
           delivered_quantity: 0,
@@ -328,8 +395,6 @@ const mockOrder: OrderPlacedEmailProps = {
           return_received_quantity: 0,
           return_dismissed_quantity: 0,
           written_off_quantity: 0,
-          // @ts-ignore
-          item: {},
         },
         subtotal: 10,
         total: 10,
@@ -415,24 +480,25 @@ const mockOrder: OrderPlacedEmailProps = {
     ],
     shipping_address: {
       id: "caaddr_01JSNXD6W0TGPH2JQD18K97B25",
-      customer_id: undefined,
+      customer_id: null,
       company: "",
-      first_name: "safasf",
-      last_name: "asfaf",
-      address_1: "asfasf",
+      first_name: "Dave",
+      last_name: "S",
+      address_1: "The Burrow",
       address_2: "",
-      city: "asfasf",
-      country_code: "dk",
+      city: "Wotton-Under-Edge",
+      country_code: "uk",
       province: "",
-      postal_code: "asfasf",
+      postal_code: "GL12 8DG",
       phone: "",
       metadata: null,
-      created_at: "2025-04-25T07:25:48.801Z",
-      updated_at: "2025-04-25T07:25:48.801Z",
+      created_at: new Date(),
+      updated_at: new Date(),
+      deleted_at: null,
     },
     billing_address: {
       id: "caaddr_01JSNXD6W0V7RNZH63CPG26K5W",
-      customer_id: undefined,
+      customer_id: null,
       company: "",
       first_name: "Dave",
       last_name: "asfaf",
@@ -446,13 +512,15 @@ const mockOrder: OrderPlacedEmailProps = {
       metadata: null,
       created_at: "2025-04-25T07:25:48.801Z",
       updated_at: "2025-04-25T07:25:48.801Z",
+      deleted_at: null,
     },
     shipping_methods: [
       {
         id: "ordsm_01JSNXDH9B9DDRQXJT5J5AE5V1",
         name: "Standard Shipping",
-        description: undefined,
+        description: null,
         is_tax_inclusive: false,
+        is_custom_amount: false,
         shipping_option_id: "so_01JSNXAQA64APG6BNHGCMCTN6V",
         data: {},
         metadata: null,
@@ -462,22 +530,31 @@ const mockOrder: OrderPlacedEmailProps = {
         },
         created_at: new Date(),
         updated_at: new Date(),
+        deleted_at: null,
         tax_lines: [],
         adjustments: [],
         amount: 10,
         order_id: "order_01JSNXDH9BPJWWKVW03B9E9KW8",
+        detail: {
+          id: "ordspmv_01JSNXDH9B5RAF4FH3M1HH3TEA",
+          version: 1,
+          order_id: "order_01JSNXDH9BPJWWKVW03B9E9KW8",
+          return_id: null,
+          exchange_id: null,
+          claim_id: null,
+          created_at: new Date(),
+          updated_at: new Date(),
+          deleted_at: null,
+          shipping_method_id: "ordsm_01JSNXDH9B9DDRQXJT5J5AE5V1",
+        },
         subtotal: 10,
         total: 10,
         original_total: 10,
         discount_total: 0,
+        discount_subtotal: 0,
         discount_tax_total: 0,
         tax_total: 0,
         original_tax_total: 0,
-        original_subtotal: 10,
-        raw_original_subtotal: {
-          value: "10",
-          precision: 20,
-        },
         raw_subtotal: {
           value: "10",
           precision: 20,
@@ -491,6 +568,10 @@ const mockOrder: OrderPlacedEmailProps = {
           precision: 20,
         },
         raw_discount_total: {
+          value: "0",
+          precision: 20,
+        },
+        raw_discount_subtotal: {
           value: "0",
           precision: 20,
         },
@@ -508,31 +589,10 @@ const mockOrder: OrderPlacedEmailProps = {
         },
       },
     ],
-    customer: {
-      id: "cus_01JSNXD6VQC1YH56E4TGC81NWX",
-      company_name: null,
-      first_name: null,
-      last_name: null,
-      email: "dave@foresite.rocks",
-      phone: null,
-      has_account: false,
-      metadata: {},
-      created_by: null,
-      created_at: "2025-04-25T07:25:48.791Z",
-      updated_at: "2025-04-25T07:25:48.791Z",
-      deleted_at: null,
-      default_billing_address_id: null,
-      default_shipping_address_id: null,
-      addresses: [],
-      groups: [],
-    },
+  },
+  customer: {
+    first_name: "Dave",
   },
 };
-
-export { orderPlacedEmail, mockOrder };
-
-/**
- * Order placed email
- * @example This is a mock email for testing purposes.
- */
-export default () => <OrderPlacedEmailComponent {...mockOrder} />;
+// @ts-ignore
+export default () => <AdminOrderDeliveredEmailComponent {...mockDelivered} />;

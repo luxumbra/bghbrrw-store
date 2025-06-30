@@ -14,8 +14,13 @@ import {
   Link,
 } from "@react-email/components";
 import { OrderDTO, BigNumberValue } from "@medusajs/framework/types";
-import { mockOrder } from "./order-placed";
-import { EmailHeader, EmailHeading, EmailTailwind } from "./shared";
+import { mockOrder } from "../order-placed";
+import {
+  AdminEmailFooter,
+  EmailHeader,
+  EmailHeading,
+  EmailTailwind,
+} from "../shared";
 
 type AdminOrderPlacedEmailProps = {
   order: OrderDTO;
@@ -54,11 +59,11 @@ function AdminOrderPlacedEmailComponent({
   };
 
   return (
-    <Html className="font-sans bg-secondary">
-      <Head />
+    <EmailTailwind>
+      <Html className="font-sans bg-secondary">
+        <Head />
 
-      <Preview>New Order Received - #{String(order.display_id)}</Preview>
-      <EmailTailwind>
+        <Preview>New Order Received - #{String(order.display_id)}</Preview>
         <Body className="w-full max-w-2xl mx-auto my-10 bg-[#18181B]">
           <EmailHeader />
 
@@ -165,15 +170,10 @@ function AdminOrderPlacedEmailComponent({
             </Section>
           </Container>
 
-          {/* Footer */}
-          <Section className="bg-[#18181b] text-white text-center py-4 mt-8">
-            <Text className="text-sm text-secondary">
-              This is an automated notification from Bough & Burrow
-            </Text>
-          </Section>
+          <AdminEmailFooter />
         </Body>
-      </EmailTailwind>
-    </Html>
+      </Html>
+    </EmailTailwind>
   );
 }
 
