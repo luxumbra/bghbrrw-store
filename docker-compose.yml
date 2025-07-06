@@ -1,0 +1,104 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: boughandburrow-postgres
+    environment:
+      POSTGRES_DB: boughandburrow_dev
+      POSTGRES_USER: medusa
+      POSTGRES_PASSWORD: medusa
+    command: postgres -c ssl=off
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U medusa -d boughandburrow_dev"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: boughandburrow-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+      target: development
+    container_name: boughandburrow-backend
+    ports:
+      - "9000:9000"
+      - "7000:7000"  # Admin UI
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - apps/backend/.env
+    environment:
+      # Override specific values for Docker networking
+      - DATABASE_URL=postgresql://medusa:medusa@postgres:5432/boughandburrow_dev?sslmode=disable
+      - REDIS_URL=redis://redis:6379
+      - PGSSLMODE=disable
+    volumes:
+      - ./apps/backend:/workspace/apps/backend
+      - /workspace/node_modules
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+      target: development
+    container_name: boughandburrow-frontend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - backend
+    env_file:
+      - apps/frontend/.env.local
+    environment:
+      # Override for Docker networking
+      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://localhost:9000
+      - MEDUSA_BACKEND_URL=http://backend:9000
+      - PORT=8000
+    volumes:
+      - ./apps/frontend:/workspace/apps/frontend
+      - /workspace/node_modules
+    restart: unless-stopped
+
+  # Future Sanity Studio (when you add it)
+  # sanity-studio:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/sanity-studio/Dockerfile
+  #   container_name: boughandburrow-sanity
+  #   ports:
+  #     - "3333:3333"
+  #   volumes:
+  #     - ./apps/sanity-studio:/app
+  #     - /app/node_modules
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  default:
+    name: boughandburrow-network

@@ -1,4 +1,4 @@
-import { AbstractNotificationProviderService } from "@medusajs/framework/utils";
+import { AbstractNotificationProviderService, MedusaError } from "@medusajs/framework/utils";
 import { Logger } from "@medusajs/framework/types";
 
 type InjectedDependencies = {

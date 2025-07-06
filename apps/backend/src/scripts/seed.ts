@@ -82,6 +82,12 @@ export default async function seedDemoData({ container }: ExecArgs) {
           countries,
           payment_providers: ["pp_system_default"],
         },
+        {
+          name: "United Kingdom",
+          currency_code: "gbp",
+          countries: ["gb"],
+          payment_providers: ["pp_system_default"],
+        },
       ],
     },
   });
@@ -104,11 +110,11 @@ export default async function seedDemoData({ container }: ExecArgs) {
     input: {
       locations: [
         {
-          name: "European Warehouse",
+          name: "The Burrow",
           address: {
-            city: "Copenhagen",
-            country_code: "DK",
-            address_1: "",
+            city: "Wotton-under-Edge",
+            country_code: "gb",
+            address_1: "123 The Burrow",
           },
         },
       ],
@@ -147,7 +153,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
   }
 
   const fulfillmentSet = await fulfillmentModuleService.createFulfillmentSets({
-    name: "European Warehouse delivery",
+    name: "The Burrow Delivery",
     type: "shipping",
     service_zones: [
       {
@@ -210,11 +216,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
         },
         prices: [
           {
-            currency_code: "usd",
-            amount: 10,
-          },
-          {
-            currency_code: "eur",
+            currency_code: "gbp",
             amount: 10,
           },
           {
@@ -248,7 +250,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
         },
         prices: [
           {
-            currency_code: "usd",
+            currency_code: "gbp",
             amount: 10,
           },
           {
@@ -389,7 +391,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -407,7 +409,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -443,7 +445,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -461,7 +463,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -497,7 +499,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -565,7 +567,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -582,7 +584,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -599,7 +601,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -666,7 +668,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -683,7 +685,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -700,7 +702,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -717,7 +719,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -767,7 +769,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -784,7 +786,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -801,7 +803,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },
@@ -818,7 +820,7 @@ export default async function seedDemoData({ container }: ExecArgs) {
                 },
                 {
                   amount: 15,
-                  currency_code: "usd",
+                  currency_code: "gbp",
                 },
               ],
             },

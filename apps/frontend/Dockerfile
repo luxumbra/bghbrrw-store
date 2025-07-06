@@ -1,0 +1,70 @@
+# apps/frontend/Dockerfile
+FROM node:20-alpine AS base
+
+# Install pnpm
+RUN npm install -g pnpm@latest
+
+# Set working directory
+WORKDIR /workspace
+
+# Copy workspace configuration
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+
+# Copy all package.json files for proper dependency resolution
+COPY apps/backend/package.json ./apps/backend/
+COPY apps/frontend/package.json ./apps/frontend/
+
+# Install all dependencies at workspace level
+RUN pnpm install --frozen-lockfile
+
+# Development stage
+FROM base AS development
+
+# Copy the frontend source code
+COPY apps/frontend ./apps/frontend
+
+# Set working directory to frontend
+WORKDIR /workspace/apps/frontend
+
+# Expose port
+EXPOSE 8000
+
+# Run development server
+CMD ["pnpm", "run", "dev"]
+
+# Build stage
+FROM base AS build
+COPY apps/frontend ./apps/frontend
+WORKDIR /workspace/apps/frontend
+
+# Set build-time environment variables
+ARG NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://localhost:9000
+ARG NEXT_PUBLIC_BASE_URL=http://localhost:3000
+
+ENV NEXT_PUBLIC_MEDUSA_BACKEND_URL=$NEXT_PUBLIC_MEDUSA_BACKEND_URL
+ENV NEXT_PUBLIC_BASE_URL=$NEXT_PUBLIC_BASE_URL
+
+RUN pnpm run build
+
+# Production stage
+FROM node:20-alpine AS production
+RUN npm install -g pnpm@latest
+
+WORKDIR /app
+
+# Copy built application
+COPY --from=build /workspace/apps/frontend/.next/standalone ./
+COPY --from=build /workspace/apps/frontend/.next/static ./.next/static
+COPY --from=build /workspace/apps/frontend/public ./public
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+CMD ["node", "server.js"]
