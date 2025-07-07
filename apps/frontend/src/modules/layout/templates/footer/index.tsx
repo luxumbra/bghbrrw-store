@@ -1,5 +1,6 @@
 import { listCategories } from "@lib/data/categories"
 import { listCollections } from "@lib/data/collections"
+import { getCompanyInfo } from "@lib/data/company"
 import { Text, clx } from "@medusajs/ui"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
@@ -10,6 +11,7 @@ export default async function Footer() {
     fields: "*products",
   })
   const productCategories = await listCategories()
+  const companyInfo = await getCompanyInfo()
 
   return (
     <footer className="w-full border-t border-ui-border-base">
@@ -20,8 +22,22 @@ export default async function Footer() {
               href="/"
               className="uppercase txt-compact-xlarge-plus text-ui-fg-subtle hover:text-ui-fg-base"
             >
-              Bough &amp; Burrow Store
+              {companyInfo.name}
             </LocalizedClientLink>
+            {companyInfo.location && (
+              <div className="mt-2 text-ui-fg-subtle txt-small">
+                <div className="font-medium">{companyInfo.location.name}</div>
+                {companyInfo.location.address.address_1 && (
+                  <div>{companyInfo.location.address.address_1}</div>
+                )}
+                {companyInfo.location.address.city && (
+                  <div>{companyInfo.location.address.city}</div>
+                )}
+                {companyInfo.location.address.country_code && (
+                  <div>{companyInfo.location.address.country_code.toUpperCase()}</div>
+                )}
+              </div>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-10 text-small-regular md:gap-x-16 sm:grid-cols-3">
             {productCategories && productCategories?.length > 0 && (
@@ -135,12 +151,10 @@ export default async function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://github.com/medusajs/nextjs-starter-medusa"
-                    target="_blank"
-                    rel="noreferrer"
+                    href={`mailto:${companyInfo.email}`}
                     className="hover:text-ui-fg-base"
                   >
-                    hello@boughandburrow.uk
+                    {companyInfo.email}
                   </a>
                 </li>
               </ul>
@@ -149,7 +163,7 @@ export default async function Footer() {
         </div>
         <div className="flex justify-between w-full mb-16 text-ui-fg-muted">
           <Text className="txt-compact-small">
-            © {new Date().getFullYear()} Bough & Burrow. All rights reserved.
+            © {new Date().getFullYear()} {companyInfo.name}. All rights reserved.
           </Text>
           <MedusaCTA />
         </div>
