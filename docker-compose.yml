@@ -58,6 +58,7 @@ services:
       - PGSSLMODE=disable
     volumes:
       - ./apps/backend:/workspace/apps/backend
+      - ./etsy:/workspace/etsy
       - /workspace/node_modules
     restart: unless-stopped
 
@@ -75,8 +76,9 @@ services:
       - apps/frontend/.env.local
     environment:
       # Override for Docker networking
-      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://localhost:9000
-      - MEDUSA_BACKEND_URL=http://backend:9000
+      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
+      - MEDUSA_BACKEND_URL=${MEDUSA_BACKEND_URL}
+      - NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}
       - PORT=8000
     volumes:
       - ./apps/frontend:/workspace/apps/frontend

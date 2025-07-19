@@ -1,5 +1,8 @@
 {
   "name": "badgerstore-monorepo",
+  "version": "0.0.1",
+  "description": "Badgerstore Monorepo",
+  "author": "FRST.uk",
   "private": true,
   "devDependencies": {
     "concurrently": "^8.0.1",

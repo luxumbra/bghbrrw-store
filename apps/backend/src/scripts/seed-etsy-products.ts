@@ -14,6 +14,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { parse } from "csv-parse/sync";
 
+
 interface EtsyProduct {
   TITLE: string;
   DESCRIPTION: string;
@@ -52,7 +53,7 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
   logger.info("Starting Etsy product seeding...");
 
   // Get the BB Website sales channel
-  const bbWebsiteSalesChannelId = "sc_01JZEPEZ94HMT7R7FSNV6DYTMK";
+  const bbWebsiteSalesChannelId = process.env.MEDUSA_SALES_CHANNEL_ID;
   const bbWebsiteSalesChannel = await salesChannelModuleService.listSalesChannels({
     id: bbWebsiteSalesChannelId,
   });
@@ -84,8 +85,8 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
   }
 
   // Read and parse the CSV file
-  const csvPath = path.join(process.cwd(), "../../etsy/EtsyListingsDownload.csv");
-  
+  const csvPath = "/workspace/etsy/EtsyListingsDownload.csv";
+
   if (!fs.existsSync(csvPath)) {
     logger.error(`CSV file not found at ${csvPath}`);
     return;
@@ -119,7 +120,7 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
   logger.info("Getting existing categories...");
   const productModuleService = container.resolve(Modules.PRODUCT);
   const categoryResult = await productModuleService.listProductCategories();
-  
+
   logger.info(`Available categories: ${categoryResult.map(cat => cat.name).join(", ")}`);
 
   // Check for existing products with matching SKUs
@@ -207,7 +208,7 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
         title: "Default",
         values: ["Default"],
       });
-      
+
       const variantSku = etsyProduct.SKU || `${handle}-default-${index}`;
       logger.info(`Creating default variant: ${variantSku}`);
       variants.push({
@@ -236,7 +237,7 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
       // Rebuild variants with both variations
       const newVariants = [];
       const variation1Values = etsyProduct["VARIATION 1 VALUES"].split(",").map(v => v.trim());
-      
+
       let combinationIndex = 0;
       variation1Values.forEach(value1 => {
         variation2Values.forEach(value2 => {
@@ -258,7 +259,7 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
           combinationIndex++;
         });
       });
-      
+
       variants.length = 0; // Clear existing variants
       variants.push(...newVariants);
     }
@@ -296,23 +297,23 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
 
   medusaProducts.forEach(productData => {
     // Check if any variant SKU exists OR if handle exists (for products without SKUs)
-    const hasExistingProductBySku = productData.variants.some(variant => 
+    const hasExistingProductBySku = productData.variants.some(variant =>
       existingProductsBySku.has(variant.sku)
     );
-    
+
     const hasExistingProductByHandle = existingProductsByHandle.has(productData.handle);
 
     if (hasExistingProductBySku || hasExistingProductByHandle) {
       // Find the existing product to update
       let existingProduct = null;
-      
+
       if (hasExistingProductBySku) {
         const firstVariantSku = productData.variants[0]?.sku;
         existingProduct = existingProductsBySku.get(firstVariantSku);
       } else if (hasExistingProductByHandle) {
         existingProduct = existingProductsByHandle.get(productData.handle);
       }
-      
+
       if (existingProduct) {
         productUpdates.push({
           id: existingProduct.id,
@@ -359,16 +360,16 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
   });
 
   const inventoryLevels: CreateInventoryLevelInput[] = [];
-  
+
   // Set inventory levels based on CSV quantity
   records.forEach(etsyProduct => {
     const quantity = parseInt(etsyProduct.QUANTITY) || 1;
-    
+
     // Find matching inventory items for this product
-    const matchingItems = inventoryItems.filter(item => 
+    const matchingItems = inventoryItems.filter(item =>
       item.sku && item.sku.includes(etsyProduct.TITLE.toLowerCase().replace(/[^a-z0-9]/g, ""))
     );
-    
+
     matchingItems.forEach(item => {
       inventoryLevels.push({
         location_id: stockLocation.id,

@@ -49,10 +49,13 @@ importers:
         version: 0.1.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tsc_tech/medusa-plugin-mailgun':
         specifier: ^0.0.1
-        version: 0.0.1(d62d2c18b864144d5d73b71b533f87a7)
+        version: 0.0.1(1c66fe740d65fb3672ab8abd77756227)
       awilix:
         specifier: ^8.0.1
         version: 8.0.1
+      csv-parse:
+        specifier: ^6.1.0
+        version: 6.1.0
       mailgun.js:
         specifier: ^12.0.3
         version: 12.0.3
@@ -128,10 +131,10 @@ importers:
         version: 2.8.6(react@19.0.0-rc-66855b96-20241106)
       '@medusajs/js-sdk':
         specifier: latest
-        version: 2.8.6(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@17.0.21)(lightningcss@1.30.1)(terser@5.43.1))
+        version: 2.8.7(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@17.0.21)(lightningcss@1.30.1)(terser@5.43.1))
       '@medusajs/ui':
         specifier: latest
-        version: 4.0.16(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)(typescript@5.8.3)
+        version: 4.0.17(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)(typescript@5.8.3)
       '@radix-ui/react-accordion':
         specifier: ^1.2.1
         version: 1.2.11(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
@@ -177,10 +180,10 @@ importers:
         version: 7.28.0
       '@medusajs/types':
         specifier: latest
-        version: 2.8.6(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@17.0.21)(lightningcss@1.30.1)(terser@5.43.1))
+        version: 2.8.7(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@17.0.21)(lightningcss@1.30.1)(terser@5.43.1))
       '@medusajs/ui-preset':
         specifier: latest
-        version: 2.8.6(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.5.7(@swc/helpers@0.5.17))(@types/node@17.0.21)(typescript@5.8.3)))
+        version: 2.8.7(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.5.7(@swc/helpers@0.5.17))(@types/node@17.0.21)(typescript@5.8.3)))
       '@tailwindcss/postcss':
         specifier: ^4.1.10
         version: 4.1.11
@@ -1641,6 +1644,11 @@ packages:
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
 
+  '@medusajs/icons@2.8.7':
+    resolution: {integrity: sha512-zGkAokqWBNJ1PcTktCPSMT5spIIjv8Pba88BXvfcbblG5cUbMSvvJ2v/BRODMFejQ9NqlboIeP0fo/9RzLpPHg==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+
   '@medusajs/index@2.8.4':
     resolution: {integrity: sha512-Odo/GSR8GoNNpsjvtgfyVz9YS9jIR/MqE6u8rQiW7k+ii6bCTtzrk8CNKD6vNFMs8lRGJxuW40XwVMUfrkZ6Xg==}
     engines: {node: '>=20'}
@@ -1668,6 +1676,10 @@ packages:
 
   '@medusajs/js-sdk@2.8.6':
     resolution: {integrity: sha512-nrecLAeo+uHfL8u7WhUleysSRPjcgPLSgWbiRIq1oFeJU91M8xVlvNZgz+MSgwiDWCJsMYBr/8bgEu7+PxSy0w==}
+    engines: {node: '>=20'}
+
+  '@medusajs/js-sdk@2.8.7':
+    resolution: {integrity: sha512-ZGYMQOM7GHuKtxOvJ+wgKyC/fzLlyMu5nij4hIWIf2osZy7d6dpvEglcV6w9B0UgSEADJh1SZ7a22HOJdjjJ9A==}
     engines: {node: '>=20'}
 
   '@medusajs/link-modules@2.8.4':
@@ -1932,8 +1944,21 @@ packages:
       vite:
         optional: true
 
-  '@medusajs/ui-preset@2.8.6':
-    resolution: {integrity: sha512-t5LKe7rOZeP8D87d1nzc3wjDSzVypMzasM3CbUlQVZ78xgfnewjqkbVlFacSQy4X36sIKHV4eHW8/E6cxdGbng==}
+  '@medusajs/types@2.8.7':
+    resolution: {integrity: sha512-8m/H9KkDUQz4YD+XkD/C63RfE/2elcdWf5G/KOK2QViTK0Jsd/Iw8Yy+T60pm0Lq/QQ925AfGH/Ji8UYNXjT8g==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      awilix: ^8.0.1
+      ioredis: ^5.4.1
+      vite: ^5 || ^6
+    peerDependenciesMeta:
+      ioredis:
+        optional: true
+      vite:
+        optional: true
+
+  '@medusajs/ui-preset@2.8.7':
+    resolution: {integrity: sha512-ro8BrYlqHh7iZvYKrxmJtLweJYYet+wYQQv0R3pyfxkkP0aQ09KDPo8yTwls11iuMC4cQHljekdaOyXtSR6ZiQ==}
     peerDependencies:
       tailwindcss: '>=3.0.0'
 
@@ -1945,6 +1970,12 @@ packages:
 
   '@medusajs/ui@4.0.16':
     resolution: {integrity: sha512-eAziJhmVM4mQPbAE1qXFKF3oTk+j32XFjXU8LEjuw5TN8gXuWHEu+5/aNxycV8N01ooO41Bms5rcGzPuj8kcGw==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+
+  '@medusajs/ui@4.0.17':
+    resolution: {integrity: sha512-N5KtZXvns13jDiCE3ZgZLINQnlECYLf4Q4GFdbRhCjAFKFBRGyyeNKX+Zo2wBUZA2Oi4kockdxFfsZfBHh/ZhA==}
     peerDependencies:
       react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
       react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
@@ -5406,6 +5437,9 @@ packages:
 
   csv-parse@5.6.0:
     resolution: {integrity: sha512-l3nz3euub2QMg5ouu5U09Ew9Wf6/wQ8I++ch1loQ0ljmzhmfZYrH9fflS22i/PQEvsPvxCwxgz5q7UB8K1JO4Q==}
+
+  csv-parse@6.1.0:
+    resolution: {integrity: sha512-CEE+jwpgLn+MmtCpVcPtiCZpVtB6Z2OKPTr34pycYYoL7sxdOkXDdQ4lRiw6ioC0q6BLqhc6cKweCVvral8yhw==}
 
   cva@1.0.0-beta.1:
     resolution: {integrity: sha512-gznFqTgERU9q4wg7jfgqtt34+RUt9S5t0xDAAEuDwQEAXEgjdDkKXpLLNjwSxsB4Ln/sqWJEH7yhE8Ny0mxd0w==}
@@ -10968,6 +11002,14 @@ snapshots:
     dependencies:
       react: 19.0.0-rc-66855b96-20241106
 
+  '@medusajs/icons@2.8.7(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
+
+  '@medusajs/icons@2.8.7(react@19.0.0-rc-66855b96-20241106)':
+    dependencies:
+      react: 19.0.0-rc-66855b96-20241106
+
   '@medusajs/index@2.8.4(@medusajs/framework@2.8.4(@medusajs/cli@2.8.4(@mikro-orm/core@6.4.3)(@mikro-orm/knex@6.4.3(@mikro-orm/core@6.4.3)(pg@8.16.3))(@mikro-orm/migrations@6.4.3(@mikro-orm/core@6.4.3)(@types/node@20.19.4)(pg@8.16.3))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)(ioredis@5.6.1)(pg@8.16.3)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1)))(@mikro-orm/cli@6.4.3(pg@8.16.3))(@mikro-orm/core@6.4.3)(@mikro-orm/knex@6.4.3(@mikro-orm/core@6.4.3)(pg@8.16.3))(@mikro-orm/migrations@6.4.3(@mikro-orm/core@6.4.3)(@types/node@20.19.4)(pg@8.16.3))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)(ioredis@5.6.1)(pg@8.16.3)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1)))(@mikro-orm/core@6.4.3)(@mikro-orm/knex@6.4.3(@mikro-orm/core@6.4.3)(pg@8.16.3))(@mikro-orm/migrations@6.4.3(@mikro-orm/core@6.4.3)(@types/node@20.19.4)(pg@8.16.3))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)':
     dependencies:
       '@medusajs/framework': 2.8.4(@medusajs/cli@2.8.4(@mikro-orm/core@6.4.3)(@mikro-orm/knex@6.4.3(@mikro-orm/core@6.4.3)(pg@8.16.3))(@mikro-orm/migrations@6.4.3(@mikro-orm/core@6.4.3)(@types/node@20.19.4)(pg@8.16.3))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)(ioredis@5.6.1)(pg@8.16.3)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1)))(@mikro-orm/cli@6.4.3(pg@8.16.3))(@mikro-orm/core@6.4.3)(@mikro-orm/knex@6.4.3(@mikro-orm/core@6.4.3)(pg@8.16.3))(@mikro-orm/migrations@6.4.3(@mikro-orm/core@6.4.3)(@types/node@20.19.4)(pg@8.16.3))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)(ioredis@5.6.1)(pg@8.16.3)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1))
@@ -10995,9 +11037,9 @@ snapshots:
       - ioredis
       - vite
 
-  '@medusajs/js-sdk@2.8.6(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@17.0.21)(lightningcss@1.30.1)(terser@5.43.1))':
+  '@medusajs/js-sdk@2.8.6(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1))':
     dependencies:
-      '@medusajs/types': 2.8.6(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@17.0.21)(lightningcss@1.30.1)(terser@5.43.1))
+      '@medusajs/types': 2.8.6(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1))
       fetch-event-stream: 0.1.5
       qs: 6.14.0
     transitivePeerDependencies:
@@ -11005,9 +11047,9 @@ snapshots:
       - ioredis
       - vite
 
-  '@medusajs/js-sdk@2.8.6(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1))':
+  '@medusajs/js-sdk@2.8.7(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@17.0.21)(lightningcss@1.30.1)(terser@5.43.1))':
     dependencies:
-      '@medusajs/types': 2.8.6(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1))
+      '@medusajs/types': 2.8.7(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@17.0.21)(lightningcss@1.30.1)(terser@5.43.1))
       fetch-event-stream: 0.1.5
       qs: 6.14.0
     transitivePeerDependencies:
@@ -11320,14 +11362,6 @@ snapshots:
       ioredis: 5.6.1
       vite: 5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1)
 
-  '@medusajs/types@2.8.6(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@17.0.21)(lightningcss@1.30.1)(terser@5.43.1))':
-    dependencies:
-      awilix: 8.0.1
-      bignumber.js: 9.3.0
-    optionalDependencies:
-      ioredis: 5.6.1
-      vite: 5.4.19(@types/node@17.0.21)(lightningcss@1.30.1)(terser@5.43.1)
-
   '@medusajs/types@2.8.6(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1))':
     dependencies:
       awilix: 8.0.1
@@ -11336,7 +11370,15 @@ snapshots:
       ioredis: 5.6.1
       vite: 5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1)
 
-  '@medusajs/ui-preset@2.8.6(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.5.7(@swc/helpers@0.5.17))(@types/node@17.0.21)(typescript@5.8.3)))':
+  '@medusajs/types@2.8.7(awilix@8.0.1)(ioredis@5.6.1)(vite@5.4.19(@types/node@17.0.21)(lightningcss@1.30.1)(terser@5.43.1))':
+    dependencies:
+      awilix: 8.0.1
+      bignumber.js: 9.3.0
+    optionalDependencies:
+      ioredis: 5.6.1
+      vite: 5.4.19(@types/node@17.0.21)(lightningcss@1.30.1)(terser@5.43.1)
+
+  '@medusajs/ui-preset@2.8.7(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.5.7(@swc/helpers@0.5.17))(@types/node@17.0.21)(typescript@5.8.3)))':
     dependencies:
       '@tailwindcss/forms': 0.5.10(tailwindcss@3.4.17(ts-node@10.9.2(@swc/core@1.5.7(@swc/helpers@0.5.17))(@types/node@17.0.21)(typescript@5.8.3)))
       tailwindcss: 3.4.17(ts-node@10.9.2(@swc/core@1.5.7(@swc/helpers@0.5.17))(@types/node@17.0.21)(typescript@5.8.3))
@@ -11386,9 +11428,31 @@ snapshots:
       - '@types/react-dom'
       - typescript
 
-  '@medusajs/ui@4.0.16(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)(typescript@5.8.3)':
+  '@medusajs/ui@4.0.17(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)':
     dependencies:
-      '@medusajs/icons': 2.8.6(react@19.0.0-rc-66855b96-20241106)
+      '@medusajs/icons': 2.8.7(react@18.3.1)
+      '@tanstack/react-table': 8.20.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      clsx: 1.2.1
+      copy-to-clipboard: 3.3.3
+      cva: 1.0.0-beta.1(typescript@5.8.3)
+      prism-react-renderer: 2.4.1(react@18.3.1)
+      prismjs: 1.30.0
+      radix-ui: 1.1.2(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+      react-aria: 3.41.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react-currency-input-field: 3.10.0(react@18.3.1)
+      react-dom: 18.3.1(react@18.3.1)
+      react-stately: 3.39.0(react@18.3.1)
+      sonner: 1.7.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      tailwind-merge: 2.6.0
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
+      - typescript
+
+  '@medusajs/ui@4.0.17(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)(typescript@5.8.3)':
+    dependencies:
+      '@medusajs/icons': 2.8.7(react@19.0.0-rc-66855b96-20241106)
       '@tanstack/react-table': 8.20.5(react-dom@19.0.0-rc-66855b96-20241106(react@19.0.0-rc-66855b96-20241106))(react@19.0.0-rc-66855b96-20241106)
       clsx: 1.2.1
       copy-to-clipboard: 3.3.3
@@ -16090,15 +16154,15 @@ snapshots:
 
   '@tanstack/virtual-core@3.13.12': {}
 
-  '@tsc_tech/medusa-plugin-mailgun@0.0.1(d62d2c18b864144d5d73b71b533f87a7)':
+  '@tsc_tech/medusa-plugin-mailgun@0.0.1(1c66fe740d65fb3672ab8abd77756227)':
     dependencies:
       '@medusajs/admin-sdk': 2.8.4
       '@medusajs/cli': 2.8.4(@mikro-orm/core@6.4.3)(@mikro-orm/knex@6.4.3(@mikro-orm/core@6.4.3)(pg@8.16.3))(@mikro-orm/migrations@6.4.3(@mikro-orm/core@6.4.3)(@types/node@20.19.4)(pg@8.16.3))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)(ioredis@5.6.1)(pg@8.16.3)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1))
       '@medusajs/framework': 2.8.4(@medusajs/cli@2.8.4(@mikro-orm/core@6.4.3)(@mikro-orm/knex@6.4.3(@mikro-orm/core@6.4.3)(pg@8.16.3))(@mikro-orm/migrations@6.4.3(@mikro-orm/core@6.4.3)(@types/node@20.19.4)(pg@8.16.3))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)(ioredis@5.6.1)(pg@8.16.3)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1)))(@mikro-orm/cli@6.4.3(pg@8.16.3))(@mikro-orm/core@6.4.3)(@mikro-orm/knex@6.4.3(@mikro-orm/core@6.4.3)(pg@8.16.3))(@mikro-orm/migrations@6.4.3(@mikro-orm/core@6.4.3)(@types/node@20.19.4)(pg@8.16.3))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)(ioredis@5.6.1)(pg@8.16.3)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1))
-      '@medusajs/icons': 2.8.6(react@18.3.1)
+      '@medusajs/icons': 2.8.7(react@18.3.1)
       '@medusajs/medusa': 2.8.4(2fca3c71569fc38b0834d6dbbf957f2d)
       '@medusajs/test-utils': 2.8.4(@medusajs/framework@2.8.4(@medusajs/cli@2.8.4(@mikro-orm/core@6.4.3)(@mikro-orm/knex@6.4.3(@mikro-orm/core@6.4.3)(pg@8.16.3))(@mikro-orm/migrations@6.4.3(@mikro-orm/core@6.4.3)(@types/node@20.19.4)(pg@8.16.3))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)(ioredis@5.6.1)(pg@8.16.3)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1)))(@mikro-orm/cli@6.4.3(pg@8.16.3))(@mikro-orm/core@6.4.3)(@mikro-orm/knex@6.4.3(@mikro-orm/core@6.4.3)(pg@8.16.3))(@mikro-orm/migrations@6.4.3(@mikro-orm/core@6.4.3)(@types/node@20.19.4)(pg@8.16.3))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)(ioredis@5.6.1)(pg@8.16.3)(vite@5.4.19(@types/node@20.19.4)(lightningcss@1.30.1)(terser@5.43.1)))(@medusajs/medusa@2.8.4(2fca3c71569fc38b0834d6dbbf957f2d))(@mikro-orm/postgresql@6.4.3(@mikro-orm/core@6.4.3))(awilix@8.0.1)
-      '@medusajs/ui': 4.0.16(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
+      '@medusajs/ui': 4.0.17(@types/react-dom@18.3.7(@types/react@18.3.23))(@types/react@18.3.23)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3)
       '@mikro-orm/cli': 6.4.3(pg@8.16.3)
       '@mikro-orm/core': 6.4.3
       '@mikro-orm/knex': 6.4.3(@mikro-orm/core@6.4.3)(pg@8.16.3)
@@ -17377,6 +17441,8 @@ snapshots:
   csstype@3.1.3: {}
 
   csv-parse@5.6.0: {}
+
+  csv-parse@6.1.0: {}
 
   cva@1.0.0-beta.1(typescript@5.8.3):
     dependencies:

@@ -84,14 +84,19 @@ db_migrate() {
 # Function to seed database
 db_seed() {
     print_status "Seeding database..."
-    docker-compose exec backend npx medusa run seed
+    if [ -f "apps/backend/src/scripts/seed.ts" ]; then
+        docker-compose exec backend npx medusa exec ./src/scripts/seed.ts
+    else
+        print_warning "No seed script found at apps/backend/src/scripts/seed.ts"
+        print_status "You can create a seed script or manually add data through the admin interface"
+    fi
 }
 
 # Function to setup database (migrate + seed)
 db_setup() {
     print_status "Setting up database (migrate + seed)..."
     docker-compose run --rm backend npx medusa db:migrate
-    docker-compose run --rm backend npx medusa run seed
+    docker-compose exec backend npx medusa exec ./src/scripts/seed.ts
 }
 
 # Function to reset database
@@ -145,6 +150,42 @@ EOF
     print_warning "Please update the API keys in apps/backend/.env"
 }
 
+# Function to generate secure secrets
+generate_secrets() {
+    print_status "Generating secure secrets..."
+
+    # Generate JWT secret (64 bytes = 512 bits)
+    JWT_SECRET=$(openssl rand -hex 64 2>/dev/null || node -e "console.log(require('crypto').randomBytes(64).toString('hex'))")
+
+    # Generate cookie secret (64 bytes = 512 bits)
+    COOKIE_SECRET=$(openssl rand -hex 64 2>/dev/null || node -e "console.log(require('crypto').randomBytes(64).toString('hex'))")
+
+    # Generate database password (32 bytes = 256 bits)
+    DB_PASSWORD=$(openssl rand -base64 32 2>/dev/null || node -e "console.log(require('crypto').randomBytes(32).toString('base64'))")
+
+    # Generate Redis password (24 bytes = 192 bits)
+    REDIS_PASSWORD=$(openssl rand -base64 24 2>/dev/null || node -e "console.log(require('crypto').randomBytes(24).toString('base64'))")
+
+    print_status "Generated secrets:"
+    echo "JWT_SECRET: ${JWT_SECRET:0:16}..." # Show first 16 chars
+    echo "COOKIE_SECRET: ${COOKIE_SECRET:0:16}..."
+    echo "DB_PASSWORD: ${DB_PASSWORD:0:16}..."
+    echo "REDIS_PASSWORD: ${REDIS_PASSWORD:0:16}..."
+
+    # Save to a temporary file for reference
+    cat > .secrets.tmp << EOF
+# Generated on $(date)
+# IMPORTANT: Keep these secure and don't commit to version control
+JWT_SECRET=$JWT_SECRET
+COOKIE_SECRET=$COOKIE_SECRET
+DB_PASSWORD=$DB_PASSWORD
+REDIS_PASSWORD=$REDIS_PASSWORD
+EOF
+
+    print_status "Secrets saved to .secrets.tmp (for reference only)"
+    print_warning "Delete .secrets.tmp after copying to your .env files"
+}
+
 # Function to create frontend .env file
 create_frontend_env() {
     cat > apps/frontend/.env.local << EOF
@@ -172,6 +213,30 @@ EOF
     print_warning "The MEDUSA_PUBLISHABLE_KEY is a dummy - will be replaced after backend setup"
 }
 
+# Function to create a user
+create_user() {
+    if [ -z "$1" ] || [ -z "$2" ]; then
+        print_error "Usage: $0 user <email> <password>"
+        print_error "Example: $0 user hello@boughandburrow.uk theburrow"
+        exit 1
+    fi
+
+    local email="$1"
+    local password="$2"
+
+    print_status "Creating user with email: $email"
+    docker-compose exec backend npx medusa user --email "$email" --password "$password"
+
+    if [ $? -eq 0 ]; then
+        print_status "User created successfully!"
+        print_status "You can now login to the admin at http://localhost:7000"
+        print_status "Email: $email"
+        print_status "Password: $password"
+    else
+        print_error "Failed to create user. Check the logs above for details."
+    fi
+}
+
 # Function to clean up Docker resources
 cleanup() {
     print_status "Cleaning up Docker resources..."
@@ -194,7 +259,7 @@ case "$1" in
     logs)
         dev_logs "$2"
         ;;
-            migrate)
+    migrate)
         db_migrate
         ;;
     seed)
@@ -206,13 +271,19 @@ case "$1" in
     reset)
         db_reset
         ;;
+    user)
+        create_user "$2" "$3"
+        ;;
+    secrets)
+        generate_secrets
+        ;;
     cleanup)
         cleanup
         ;;
     *)
         echo "Bough and Burrow Development Environment"
         echo ""
-        echo "Usage: $0 {up|down|restart|logs|migrate|seed|setup|reset|cleanup}"
+        echo "Usage: $0 {up|down|restart|logs|migrate|seed|setup|reset|user|cleanup}"
         echo ""
         echo "Commands:"
         echo "  up       - Start the development environment"
@@ -223,12 +294,15 @@ case "$1" in
         echo "  seed     - Seed the database with sample data"
         echo "  setup    - Setup database (migrate + seed)"
         echo "  reset    - Reset database (WARNING: destroys all data)"
+        echo "  user     - Create a user (email password)"
+        echo "  secrets  - Generate secure secrets"
         echo "  cleanup  - Clean up Docker resources"
         echo ""
         echo "Examples:"
         echo "  $0 up"
         echo "  $0 logs backend"
         echo "  $0 logs frontend"
+        echo "  $0 user hello@boughandburrow.uk theburrow"
         exit 1
         ;;
 esac

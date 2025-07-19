@@ -1,10 +1,14 @@
 import { loadEnv, defineConfig } from "@medusajs/framework/utils";
 
 loadEnv(process.env.NODE_ENV || "development", process.cwd());
+console.log("NODE_ENV!!!!", process.env.NODE_ENV);
 
 module.exports = defineConfig({
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
+    databaseDriverOptions: process.env.NODE_ENV !== "development"
+    ? { connection: { ssl: { rejectUnauthorized: false } } }
+    : {},
     http: {
       storeCors: process.env.STORE_CORS!,
       adminCors: process.env.ADMIN_CORS!,
