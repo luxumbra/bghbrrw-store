@@ -25,7 +25,7 @@ export default async function   FeaturedProducts({
     console.log({benefitsCount});
 
     return (
-      <li key={getContentKey(collection.id)}>
+      <li key={`${collection.handle}-${collection.id}`}>
         {isFirstOrEveryTwoAfter && ( benefitsCount < 2 ? <BenefitsBar benefits={shopWithConfidence} /> : <BenefitsBar benefits={whyBoughAndBurrow} />)}
         <ProductRail collection={collection} region={region} />
       </li>
