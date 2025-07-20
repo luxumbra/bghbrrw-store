@@ -5,6 +5,7 @@ import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "../thumbnail"
 import PreviewPrice from "./price"
+import { WishlistButton } from "@modules/wishlist"
 
 export default async function ProductPreview({
   product,
@@ -49,20 +50,23 @@ export default async function ProductPreview({
           <Badge
             color="red"
             size="large"
-            className="absolute top-0 right-0 z-10 ml-2 text-xs rounded-tl-none rounded-tr-lg rounded-br-none rounded-bl-lg text-nowrap"
+            className="absolute top-0 right-0 z-10 ml-2 text-xs rounded-tl-none rounded-tr-lg rounded-bl-lg rounded-br-none text-nowrap"
           >
             Sold out
           </Badge>
         )}
         <div className="flex justify-between mt-4 txt-compact-medium">
           <Text
-            className="flex gap-x-2 items-center text-ui-fg-subtle"
+            className="flex items-center gap-x-2 text-ui-fg-subtle"
             data-testid="product-title"
           >
             {product.title}
           </Text>
-          <div className="flex gap-x-2 items-center">
+          <div className="flex items-center gap-x-2">
             {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
+            <div className="wishlist absolute top-0 left-0 z-10">
+              <WishlistButton productId={product.id} size={36} />
+            </div>
           </div>
         </div>
       </div>
