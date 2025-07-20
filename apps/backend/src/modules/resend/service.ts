@@ -16,6 +16,8 @@ import {
   adminOrderShippedEmail,
   orderDeliveredEmail,
   adminOrderDeliveredEmail,
+  orderFulfilledEmail,
+  adminOrderFulfilledEmail,
 } from "./emails";
 
 type ResendOptions = {
@@ -42,6 +44,8 @@ enum Templates {
   ADMIN_ORDER_SHIPPED = "admin-order-shipped",
   ORDER_DELIVERED = "order-delivered",
   ADMIN_ORDER_DELIVERED = "admin-order-delivered",
+  ORDER_FULFILLED = "order-fulfilled",
+  ADMIN_ORDER_FULFILLED = "admin-order-fulfilled",
 }
 
 const templates: { [key in Templates]?: (props: unknown) => React.ReactNode } =
@@ -53,6 +57,8 @@ const templates: { [key in Templates]?: (props: unknown) => React.ReactNode } =
     [Templates.ADMIN_ORDER_SHIPPED]: adminOrderShippedEmail,
     [Templates.ORDER_DELIVERED]: orderDeliveredEmail,
     [Templates.ADMIN_ORDER_DELIVERED]: adminOrderDeliveredEmail,
+    [Templates.ORDER_FULFILLED]: orderFulfilledEmail,
+    [Templates.ADMIN_ORDER_FULFILLED]: adminOrderFulfilledEmail,
   };
 
 class ResendNotificationProviderService extends AbstractNotificationProviderService {
@@ -127,6 +133,10 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
         return "Your Bough & Burrow Order Has Been Delivered";
       case Templates.ADMIN_ORDER_DELIVERED:
         return "An Order Just Got Delivered";
+      case Templates.ORDER_FULFILLED:
+        return "Your Order Has Been Fulfilled";
+      case Templates.ADMIN_ORDER_FULFILLED:
+        return "An Order Just Got Fulfilled";
       default:
         return "New Email";
     }

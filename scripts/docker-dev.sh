@@ -48,7 +48,7 @@ dev_up() {
 
     print_status "Development environment is starting up!"
     print_status "Backend (Medusa): http://localhost:9000"
-    print_status "Admin UI: http://localhost:7000"
+    print_status "Admin UI: http://localhost:9000/app"
     print_status "Frontend (Next.js): http://localhost:8000"
     print_status "PostgreSQL: localhost:5432"
     print_status "Redis: localhost:6379"
@@ -92,11 +92,28 @@ db_seed() {
     fi
 }
 
+# Function to seed Bough & Burrow store
+db_seed_bnb() {
+    print_status "Seeding Bough & Burrow store..."
+    if [ -f "apps/backend/src/scripts/seed-bough-and-burrow.ts" ]; then
+        docker-compose exec backend npx medusa exec ./src/scripts/seed-bough-and-burrow.ts
+    else
+        print_warning "No Bough & Burrow seed script found"
+        print_status "You can create a seed script or manually add data through the admin interface"
+    fi
+}
+
 # Function to setup database (migrate + seed)
 db_setup() {
     print_status "Setting up database (migrate + seed)..."
     docker-compose run --rm backend npx medusa db:migrate
-    docker-compose exec backend npx medusa exec ./src/scripts/seed.ts
+
+    # Ensure backend container is running before seeding
+    print_status "Starting backend container for seeding..."
+    docker-compose up -d backend
+    sleep 10  # Wait for backend to be ready
+
+    docker-compose exec backend npx medusa exec ./src/scripts/seed-bough-and-burrow.ts
 }
 
 # Function to reset database
@@ -259,11 +276,14 @@ case "$1" in
     logs)
         dev_logs "$2"
         ;;
-    migrate)
+            migrate)
         db_migrate
         ;;
     seed)
         db_seed
+        ;;
+    seed-bnb)
+        db_seed_bnb
         ;;
     setup)
         db_setup
@@ -292,6 +312,7 @@ case "$1" in
         echo "  logs     - View logs (optionally specify service)"
         echo "  migrate  - Run database migrations"
         echo "  seed     - Seed the database with sample data"
+        echo "  seed-bnb - Seed the database with Bough & Burrow store data"
         echo "  setup    - Setup database (migrate + seed)"
         echo "  reset    - Reset database (WARNING: destroys all data)"
         echo "  user     - Create a user (email password)"

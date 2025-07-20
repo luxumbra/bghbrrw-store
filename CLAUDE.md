@@ -52,11 +52,11 @@ pnpm --filter @boughandburrow/frontend dev
 
 | Service   | URL                    | Port | Description           |
 |-----------|------------------------|------|----------------------|
-| Frontend  | http://localhost:8000  | 8000 | Next.js application  |
-| Backend   | http://localhost:9000  | 9000 | Medusa API           |
-| Admin UI  | http://localhost:7000  | 7000 | Medusa Admin         |
-| Postgres  | localhost:5432         | 5432 | Database             |
-| Redis     | localhost:6379         | 6379 | Cache/Sessions       |
+| Frontend  | http://localhost:8000      | 8000 | Next.js application  |
+| Backend   | http://localhost:9000      | 9000 | Medusa API           |
+| Admin UI  | http://localhost:9000/app  | 9000 | Medusa Admin         |
+| Postgres  | localhost:5432             | 5432 | Database             |
+| Redis     | localhost:6379             | 6379 | Cache/Sessions       |
 
 ## Environment Variables
 
@@ -76,7 +76,7 @@ REDIS_URL=redis://redis:6379
 # External Services
 STRIPE_API_KEY=your_stripe_key
 RESEND_API_KEY=your_resend_key
-EMAIL_FROM=hello@boughandburrow.com
+EMAIL_FROM=hello@boughandburrow.uk
 ```
 
 ### Frontend (apps/frontend/.env.local)
@@ -170,6 +170,10 @@ docker exec -i boughandburrow-postgres psql -U medusa boughandburrow_dev < backu
 
 # Check logs
 ./scripts/docker-dev.sh logs
+
+# Seed database (if you need to reset)
+This seeds all products, admin user, and the rest of the admin dashboard data.
+./scripts/docker-dev.sh seed-bnb
 ```
 
 ### 2. Making Changes
@@ -230,7 +234,7 @@ website/
 ## Notes
 
 - The frontend runs on port 8000 (not the default 3000)
-- Database uses `sslmode=prefer` (not `sslmode=disable`)
+- Prod database uses `sslmode=prefer`or`sslmode=require`. Dev should not include `sslmode` at all - using with `disable` broke the connection.
 - All services are containerized for consistency
 - Use `./scripts/docker-dev.sh` for common operations
 - Check logs frequently when troubleshooting

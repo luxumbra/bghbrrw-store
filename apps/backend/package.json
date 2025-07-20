@@ -25,7 +25,7 @@
   "dependencies": {
     "@medusajs/admin-sdk": "2.8.4",
     "@medusajs/cli": "2.8.4",
-    "@medusajs/dashboard": "^2.8.4",
+    "@medusajs/dashboard": "2.8.4",
     "@medusajs/framework": "2.8.4",
     "@medusajs/medusa": "2.8.4",
     "@mikro-orm/core": "6.4.3",
@@ -33,13 +33,12 @@
     "@mikro-orm/migrations": "6.4.3",
     "@mikro-orm/postgresql": "6.4.3",
     "@react-email/components": "0.1.0",
-    "@tsc_tech/medusa-plugin-mailgun": "^0.0.1",
     "awilix": "^8.0.1",
     "csv-parse": "^6.1.0",
-    "mailgun.js": "^12.0.3",
     "pg": "^8.13.0",
     "resend": "^4.6.0",
-    "tsconfig-paths": "^4.2.0"
+    "tsconfig-paths": "^4.2.0",
+    "zod": "^3.25.0"
   },
   "devDependencies": {
     "@medusajs/test-utils": "2.8.4",
