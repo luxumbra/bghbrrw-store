@@ -52,12 +52,12 @@ const BenefitsBar: React.FC<BenefitsBarProps> = (props) => {
       <ul className="grid grid-cols-3 gap-12 max-w-7xl mx-auto">
         {benefits &&
           benefits.map((b, i: number) => (
-            <li className="">
+            <li key={`${b.title}-${i}`} className="">
               <div className="flex flex-col items-start gap-2">
                 <div className="flex items-center justify-start gap-2 w-full">
                     <Icon icon={b.icon} width={48} height={48} />
 
-                    <p className="text-2xl font-heading text-ui-text-primary">
+                    <p className="text-2xl font-heading text-ui-text-secondary">
                       {b.title}
                     </p>
                 </div>

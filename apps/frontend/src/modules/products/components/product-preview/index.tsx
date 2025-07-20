@@ -55,6 +55,12 @@ export default async function ProductPreview({
             Sold out
           </Badge>
         )}
+
+        {/* Wishlist and Share buttons */}
+        <div className="absolute top-2 left-2 z-10 flex flex-row gap-2 pointer-events-none">
+            <WishlistButton productId={product.id} size={36} />
+        </div>
+
         <div className="flex justify-between mt-4 txt-compact-medium">
           <Text
             className="flex items-center gap-x-2 text-ui-fg-subtle"
@@ -64,9 +70,6 @@ export default async function ProductPreview({
           </Text>
           <div className="flex items-center gap-x-2">
             {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
-            <div className="wishlist absolute top-0 left-0 z-10">
-              <WishlistButton productId={product.id} size={36} />
-            </div>
           </div>
         </div>
       </div>

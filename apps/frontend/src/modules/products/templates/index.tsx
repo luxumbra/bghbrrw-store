@@ -11,6 +11,7 @@ import { notFound } from "next/navigation"
 import ProductActionsWrapper from "./product-actions-wrapper"
 import { HttpTypes } from "@medusajs/types"
 import { WishlistButton } from "@modules/wishlist"
+import ShareButton from "@modules/common/components/share-button"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -41,7 +42,20 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           <ImageGallery images={product?.images || []} />
         </div>
         <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-12">
-          <WishlistButton productId={product.id} />
+          <div className="flex items-center justify-start space-x-2">
+            <WishlistButton productId={product.id} size={36}  />
+            <ShareButton
+              product={{
+                title: product.title,
+                description: product.description || undefined,
+                images: product.images?.map(img => ({ url: img.url })) || undefined,
+                handle: product.handle,
+              }}
+              variant="icon"
+              className="text-copy-color"
+              iconSize={36}
+            />
+          </div>
           <ProductOnboardingCta />
           <Suspense
             fallback={

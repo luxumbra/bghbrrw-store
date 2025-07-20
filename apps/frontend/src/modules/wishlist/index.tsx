@@ -10,7 +10,7 @@ interface WishlistButtonProps {
   className?: string;
   onWishlistChange?: (isFavorited: boolean, wishlist: string[]) => void;
   initialFavorited?: boolean;
-  displayCount?: boolean;
+  variant?: 'icon' | 'text' | "count";
 }
 
 // Custom hook for wishlist management
@@ -77,7 +77,8 @@ const WishlistButton = React.memo(({
   className = "",
   onWishlistChange,
   initialFavorited = false,
-  displayCount = false
+
+  variant = 'icon'
 }: WishlistButtonProps) => {
   const [isAnimating, setIsAnimating] = useState<boolean>(false);
   const { isFavorited, setIsFavorited, wishlistCount, updateWishlist, getWishlistData } = useWishlist(productId);
@@ -155,7 +156,7 @@ const WishlistButton = React.memo(({
     transition-all duration-300 ease-in-out
     ${isFavorited
       ? 'fill-red-500 text-red-500 drop-shadow-xl'
-      : 'text-gray-400 hover:text-red-400'
+      : 'text-copy-color hover:text-red-400'
     }
     ${isAnimating ? 'animate-pulse scale-125' : ''}
   `, [isFavorited, isAnimating]);
@@ -170,6 +171,7 @@ const WishlistButton = React.memo(({
 
   return (
     <div className="flex items-center gap-2">
+
       <button
         onClick={toggleWishlist}
         disabled={isAnimating}
@@ -189,10 +191,10 @@ const WishlistButton = React.memo(({
           <div className="absolute inset-0 border-2 border-red-500 rounded-full opacity-75 animate-ping" />
         )}
       </button>
-
+      {variant === 'text' && <p>{`${isFavorited ? 'Remove from' : 'Add to'} wishlist`}</p>}
       {/* Optional wishlist counter */}
-      {displayCount && wishlistCount > 0 && (
-        <span className="text-sm font-medium text-gray-600">
+      {variant === 'count' && wishlistCount > 0 && (
+        <span className="text-sm font-medium text-copy-color">
           {wishlistCount} item{wishlistCount !== 1 ? 's' : ''} in wishlist
         </span>
       )}
