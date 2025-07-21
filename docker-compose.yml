@@ -59,7 +59,8 @@ services:
     volumes:
       - ./apps/backend:/workspace/apps/backend
       - ./etsy:/workspace/etsy
-      - ./apps/backend/node_modules:/workspace/apps/node_modules
+      - ./node_modules:/workspace/node_modules
+      - ./apps/backend/node_modules:/workspace/apps/backend/node_modules
     restart: unless-stopped
 
   frontend:
@@ -99,8 +100,6 @@ services:
 volumes:
   postgres_data:
   redis_data:
-  backend_node_modules:
-  frontend_node_modules:
 
 networks:
   default:

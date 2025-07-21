@@ -40,6 +40,9 @@ pnpm --filter @boughandburrow/frontend dev
 - `migrate` - Run database migrations
 - `seed` - Seed the database with sample data
 - `setup` - Setup database (migrate + seed)
+- `seed-bnb` - Seed the database with Bough & Burrow specific data
+- `backup` - Backup the database
+- `restore` - Restore the database from a backup
 - `reset` - Reset database (WARNING: destroys all data)
 - `cleanup` - Clean up Docker resources
 
@@ -74,7 +77,8 @@ COOKIE_SECRET=your_cookie_secret
 REDIS_URL=redis://redis:6379
 
 # External Services
-STRIPE_API_KEY=your_stripe_key
+STRIPE_API_KEY=sk_test_your_stripe_secret_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
 RESEND_API_KEY=your_resend_key
 EMAIL_FROM=hello@boughandburrow.uk
 ```
@@ -90,10 +94,98 @@ NODE_ENV=development
 NEXT_PUBLIC_BASE_URL=http://localhost:8000
 
 # External Services
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_key
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
 ```
 
 ## Troubleshooting
+
+### Critical Issues & Solutions
+
+#### 5. Medusa CLI Error: "TypeError: cmd is not a function"
+**Problem:** Backend fails to start with CLI internal error in versions 2.8.4+
+**Error:** 
+```
+TypeError: cmd is not a function
+at /workspace/node_modules/.pnpm/@medusajs+cli@2.8.4_.../src/create-cli.ts:384:11
+```
+**Root Cause:** Internal bug in Medusa CLI versions 2.8.4 and 2.8.5
+**Solution:** Use Medusa v2.8.0 (confirmed stable version)
+```bash
+# In apps/backend/package.json, set all @medusajs packages to "2.8.0"
+"@medusajs/admin-sdk": "2.8.0",
+"@medusajs/cli": "2.8.0", 
+"@medusajs/dashboard": "2.8.0",
+"@medusajs/framework": "2.8.0",
+"@medusajs/medusa": "2.8.0",
+"@medusajs/test-utils": "2.8.0"
+```
+
+#### 6. Stripe Integration Compatibility Issues
+**Problem:** Custom Stripe provider fails with "Class extends value undefined"
+**Root Cause:** Payment provider API changes between Medusa versions
+**Solution:** Use official built-in Stripe provider instead of custom implementation
+```typescript
+// In medusa-config.ts - use this:
+{
+  resolve: "@medusajs/medusa/payment-stripe",
+  id: "stripe",
+  options: {
+    apiKey: process.env.STRIPE_API_KEY,
+    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+    capture: true,
+  },
+}
+
+// Instead of custom provider path like:
+// resolve: "./src/modules/stripe"
+```
+
+#### 7. Docker Volume Mount Issues
+**Problem:** Dependencies not found in container despite being installed
+**Symptoms:** 
+- `Cannot find module '@medusajs/cli'`
+- `Cannot find module 'stripe'`
+**Root Cause:** Incorrect Docker volume mounting paths
+**Solution:** Fix volume paths in docker-compose.yml
+```yaml
+# Correct volume mounting:
+volumes:
+  - ./apps/backend:/workspace/apps/backend
+  - ./node_modules:/workspace/node_modules
+  - ./apps/backend/node_modules:/workspace/apps/backend/node_modules
+
+# Avoid using Docker named volumes for node_modules in development
+```
+
+#### 8. pnpm Workspace Dependency Resolution
+**Problem:** Dependencies installed but not accessible in Docker containers
+**Solution:** Ensure proper workspace structure and symlink preservation
+```bash
+# Always reinstall after major changes:
+rm pnpm-lock.yaml
+pnpm install
+
+# Use proper Docker build context (project root, not app directory)
+```
+
+### Development Environment Issues Encountered
+
+#### Version Compatibility Matrix
+| Medusa Version | CLI Status | Stripe Provider | Recommendation |
+|----------------|------------|-----------------|----------------|
+| 2.8.0 | ✅ Working | ✅ Official provider | **Use this** |
+| 2.8.1-2.8.3 | ❓ Untested | ✅ Official provider | Untested |
+| 2.8.4 | ❌ CLI broken | ✅ Official provider | Avoid |
+| 2.8.5 | ❌ CLI broken | ✅ Official provider | Avoid |
+
+#### Docker Build Timeout Issues
+**Problem:** Docker builds timing out during dependency installation
+**Solution:** Increase Docker timeouts
+```bash
+export DOCKER_CLIENT_TIMEOUT=600
+export COMPOSE_HTTP_TIMEOUT=600
+docker-compose up -d --build
+```
 
 ### Common Issues
 
@@ -238,6 +330,52 @@ website/
 - All services are containerized for consistency
 - Use `./scripts/docker-dev.sh` for common operations
 - Check logs frequently when troubleshooting
+
+## Stripe Integration
+
+### Current Setup (Official Provider)
+The project uses Medusa's built-in Stripe payment provider, configured in `apps/backend/medusa-config.ts`:
+
+```typescript
+{
+  resolve: "@medusajs/medusa/payment-stripe",
+  id: "stripe",
+  options: {
+    apiKey: process.env.STRIPE_API_KEY,
+    webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+    capture: true,
+  },
+}
+```
+
+### Development Setup
+1. Create a Stripe account at https://stripe.com
+2. Get your test API keys from the Stripe Dashboard
+3. Add the keys to your environment files:
+   - Backend: `STRIPE_API_KEY` and `STRIPE_WEBHOOK_SECRET`
+   - Frontend: `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+
+### Webhook Configuration
+The official Stripe provider handles webhooks automatically. For local development:
+- Webhook endpoint: `http://localhost:9000/webhooks/stripe` (handled by Medusa)
+- Required events (configured in Stripe Dashboard):
+  - `payment_intent.amount_capturable_updated`
+  - `payment_intent.succeeded`
+  - `payment_intent.payment_failed`
+  - `payment_intent.partially_funded`
+
+### Supported Payment Methods
+The official provider supports:
+- Credit/Debit Cards
+- Apple Pay / Google Pay (with `automatic_payment_methods: true`)
+- iDeal (Netherlands)
+- Bancontact (Belgium)
+- BLIK, giropay, Przelewy24, PromptPay
+
+### Migration Notes
+- **Previous Implementation**: Custom Stripe provider was removed due to API compatibility issues
+- **Current Implementation**: Uses official `@medusajs/medusa/payment-stripe` provider
+- **Benefits**: Better stability, automatic updates, official support
 
 ## Contributing
 
