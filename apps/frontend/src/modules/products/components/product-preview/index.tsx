@@ -5,7 +5,7 @@ import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "../thumbnail"
 import PreviewPrice from "./price"
-import { WishlistButton } from "@modules/wishlist"
+import WishlistWrapper from "./wishlist-wrapper"
 
 export default async function ProductPreview({
   product,
@@ -58,7 +58,7 @@ export default async function ProductPreview({
 
         {/* Wishlist and Share buttons */}
         <div className="absolute top-2 left-2 z-10 flex flex-row gap-2 pointer-events-none">
-            <WishlistButton productId={product.id} size={36} />
+            <WishlistWrapper productId={product.id} size={36} />
         </div>
 
         <div className="flex justify-between mt-4 txt-compact-medium">
