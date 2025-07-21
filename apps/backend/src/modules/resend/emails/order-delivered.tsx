@@ -20,7 +20,7 @@ import {
   Text,
 } from "@react-email/components";
 import { EmailHeader, EmailHeading, EmailTailwind } from "./shared";
-import { CONTACT_EMAIL } from "utils/constants";
+import { CONTACT_EMAIL } from "../../../utils/constants";
 
 type OrderDeliveredEmailProps = {
   fulfillment: FulfillmentDTO & {

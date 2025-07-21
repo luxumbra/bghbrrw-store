@@ -1,5 +1,5 @@
 import { Section, Text } from "@react-email/components";
-import { BRAND_NAME, CONTACT_EMAIL } from "utils/constants";
+import { BRAND_NAME, CONTACT_EMAIL } from "../../../../utils/constants";
 
 const CustomerEmailFooter = () => {
   return (
