@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",
+    "@iconify/react": "^6.0.0",
     "@medusajs/types": "2.8.8",
     "@medusajs/ui-preset": "2.8.8",
     "@tailwindcss/postcss": "^4.1.10",

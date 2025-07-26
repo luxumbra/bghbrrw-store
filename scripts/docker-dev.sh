@@ -257,6 +257,127 @@ create_user() {
     fi
 }
 
+# Function to backup database
+db_backup() {
+    local backup_name="boughandburrow_backup_$(date +%Y%m%d_%H%M%S)"
+    local sql_backup="backups/${backup_name}.sql"
+    local dump_backup="backups/${backup_name}.dump"
+
+    print_status "Creating database backups..."
+
+    # Create backups directory if it doesn't exist
+    mkdir -p backups
+
+    # Create SQL backup (human-readable)
+    print_status "Creating SQL backup..."
+    docker-compose exec -T postgres pg_dump -U medusa -d boughandburrow_dev > "$sql_backup"
+
+    if [ $? -eq 0 ]; then
+        print_status "SQL backup created: $sql_backup"
+
+        # Compress SQL backup
+        gzip "$sql_backup"
+        print_status "Compressed SQL backup: ${sql_backup}.gz"
+
+        # Show SQL backup size
+        local sql_size=$(du -h "${sql_backup}.gz" | cut -f1)
+        print_status "SQL backup size: $sql_size"
+    else
+        print_error "Failed to create SQL backup"
+        exit 1
+    fi
+
+    # Create custom format backup (binary, faster restore)
+    print_status "Creating custom format backup..."
+    docker-compose exec -T postgres pg_dump -U medusa -d boughandburrow_dev -Fc > "$dump_backup"
+
+    if [ $? -eq 0 ]; then
+        print_status "Custom format backup created: $dump_backup"
+
+        # Show dump backup size
+        local dump_size=$(du -h "$dump_backup" | cut -f1)
+        print_status "Custom format backup size: $dump_size"
+
+        # Summary
+        print_status "Backup summary:"
+        echo "  SQL (compressed): ${sql_backup}.gz ($sql_size)"
+        echo "  Custom format: $dump_backup ($dump_size)"
+
+        # List recent backups
+        print_status "Recent backups:"
+        ls -lah backups/ | tail -8
+    else
+        print_error "Failed to create custom format backup"
+        # Don't exit here since SQL backup succeeded
+    fi
+}
+
+# Function to restore database from backup
+db_restore() {
+    if [ -z "$1" ]; then
+        print_error "Usage: $0 restore <backup_file>"
+        print_error "Available backups:"
+        ls -la backups/
+        exit 1
+    fi
+
+    local backup_file="$1"
+
+    # Check if file exists
+    if [ ! -f "$backup_file" ]; then
+        # Try with .gz extension for SQL files
+        if [ -f "${backup_file}.gz" ]; then
+            backup_file="${backup_file}.gz"
+        else
+            print_error "Backup file not found: $backup_file"
+            exit 1
+        fi
+    fi
+
+    print_warning "This will replace all data in the database. Are you sure? (y/N)"
+    read -r response
+    if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        print_status "Database restore cancelled."
+        exit 0
+    fi
+
+    print_status "Restoring database from: $backup_file"
+
+    # Stop backend to avoid conflicts
+    docker-compose stop backend
+
+    # Drop and recreate database
+    docker-compose exec postgres psql -U medusa -c "DROP DATABASE IF EXISTS boughandburrow_dev;"
+    docker-compose exec postgres psql -U medusa -c "CREATE DATABASE boughandburrow_dev;"
+
+    # Determine restore method based on file extension
+    if [[ "$backup_file" == *.dump ]]; then
+        # Custom format restore (faster, supports parallel restore)
+        print_status "Restoring from custom format backup..."
+        docker-compose exec -T postgres pg_restore -U medusa -d boughandburrow_dev --clean --if-exists < "$backup_file"
+    elif [[ "$backup_file" == *.sql.gz ]]; then
+        # Compressed SQL restore
+        print_status "Restoring from compressed SQL backup..."
+        gunzip -c "$backup_file" | docker-compose exec -T postgres psql -U medusa -d boughandburrow_dev
+    elif [[ "$backup_file" == *.sql ]]; then
+        # Plain SQL restore
+        print_status "Restoring from SQL backup..."
+        docker-compose exec -T postgres psql -U medusa -d boughandburrow_dev < "$backup_file"
+    else
+        print_error "Unsupported backup file format. Supported: .sql, .sql.gz, .dump"
+        exit 1
+    fi
+
+    if [ $? -eq 0 ]; then
+        print_status "Database restored successfully from: $backup_file"
+        print_status "Starting backend..."
+        docker-compose start backend
+    else
+        print_error "Failed to restore database"
+        exit 1
+    fi
+}
+
 # Function to clean up Docker resources
 cleanup() {
     print_status "Cleaning up Docker resources..."
@@ -279,8 +400,14 @@ case "$1" in
     logs)
         dev_logs "$2"
         ;;
-            migrate)
+    migrate)
         db_migrate
+        ;;
+    backup)
+        db_backup
+        ;;
+    restore)
+        db_restore "$2"
         ;;
     seed)
         db_seed
@@ -314,6 +441,8 @@ case "$1" in
         echo "  restart  - Restart all services"
         echo "  logs     - View logs (optionally specify service)"
         echo "  migrate  - Run database migrations"
+        echo "  backup   - Create database backups"
+        echo "  restore  - Restore database from backup"
         echo "  seed     - Seed the database with sample data"
         echo "  seed-bnb - Seed the database with Bough & Burrow store data"
         echo "  setup    - Setup database (migrate + seed)"
