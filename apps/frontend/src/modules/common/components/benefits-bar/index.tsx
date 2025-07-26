@@ -21,7 +21,7 @@ const shopWithConfidence: BenefitsBarProps['benefits'] = [
 const whyBoughAndBurrow: BenefitsBarProps['benefits'] = [
   {
     title: "Artisan Crafted in the UK",
-    description: "Each piece is lovingly handcrafted in our Devon studio, where passion for woodworking meets meticulous attention to detail.",
+    description: "Each piece is lovingly handcrafted in our Cotswold studio, where passion for woodworking meets meticulous attention to detail.",
     icon: "mdi:hand-heart"
   },
   {
@@ -63,7 +63,7 @@ const BenefitsBar: React.FC<BenefitsBarProps> = (props) => {
                     </h3>
                 </div>
 
-                <p className="text-lg text-copy-color">
+                <p className="text-lg text-copy-color/80">
                   {b.description}
                 </p>
               </div>
