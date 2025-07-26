@@ -5,6 +5,7 @@ import { HttpTypes } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Thumbnail from "../thumbnail"
 import PreviewPrice from "./price"
+import { useMemo } from "react"
 
 export default async function ProductPreview({
   product,
@@ -24,6 +25,21 @@ export default async function ProductPreview({
   //   return null
   // }
 
+  // check if the products and it's variants are in stock
+  const inStock = useMemo(() => {
+    // If there are no variants, product is out of stock
+    if (!product.variants?.length) return false
+
+    // Check if any variant is available
+    return product.variants.some(variant => {
+      // If variant doesn't manage inventory or allows backorders, it's in stock
+      if (!variant.manage_inventory || variant.allow_backorder) return true
+
+      // Otherwise check inventory quantity
+      return variant.inventory_quantity && variant.inventory_quantity > 0
+    })
+  }, [product.variants])
+
   const { cheapestPrice } = getProductPrice({
     product,
   })
@@ -38,14 +54,7 @@ export default async function ProductPreview({
           isFeatured={isFeatured}
           className="relative z-0"
         />
-        {(!product.variants ||
-          product.variants.length === 0 ||
-          product.variants.every(
-            (v) =>
-              v.manage_inventory &&
-              (!v.inventory_quantity || v.inventory_quantity <= 0) &&
-              !v.allow_backorder
-          )) && (
+        {!inStock && (
           <Badge
             color="red"
             size="large"

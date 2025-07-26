@@ -34,7 +34,9 @@ export default async function Footer() {
                   <div>{companyInfo.location.address.city}</div>
                 )}
                 {companyInfo.location.address.country_code && (
-                  <div>{companyInfo.location.address.country_code.toUpperCase()}</div>
+                  <div>
+                    {companyInfo.location.address.country_code.toUpperCase()}
+                  </div>
                 )}
               </div>
             )}
@@ -157,13 +159,30 @@ export default async function Footer() {
                     {companyInfo.email}
                   </a>
                 </li>
+                <li>
+                  <LocalizedClientLink
+                    className="hover:text-ui-fg-base"
+                    href={`/privacy`}
+                  >
+                    Privacy Policy
+                  </LocalizedClientLink>
+                </li>
+                <li>
+                  <LocalizedClientLink
+                    className="hover:text-ui-fg-base"
+                    href={`/terms`}
+                  >
+                    Terms &amp; Conditions
+                  </LocalizedClientLink>
+                </li>
               </ul>
             </div>
           </div>
         </div>
         <div className="flex justify-between w-full mb-16 text-ui-fg-muted">
           <Text className="txt-compact-small">
-            © {new Date().getFullYear()} {companyInfo.name}. All rights reserved.
+            © {new Date().getFullYear()} {companyInfo.name}. All rights
+            reserved.
           </Text>
           <MedusaCTA />
         </div>

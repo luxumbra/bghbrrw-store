@@ -12,6 +12,7 @@
     @apply font-heading uppercase text-copy-color;
   }
 
+
   h1 + h2 {
     @apply mt-4 font-body font-normal text-primary;
   }

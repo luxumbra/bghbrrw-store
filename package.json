@@ -9,7 +9,13 @@
     "ts-node": "^10.9.2"
   },
   "scripts": {
-    "dev": "concurrently \"pnpm --filter @badgerstore/backend dev\" \"pnpm --filter @badgerstore/frontend dev\"",
-    "build": "pnpm --recursive run build"
+    "dev": "pnpm --parallel --filter ./apps/* dev",
+    "dev:frontend": "pnpm --filter @badgerstore/frontend dev",
+    "dev:backend": "pnpm --filter @badgerstore/backend dev",
+    "dev:cms": "pnpm --filter @badgerstore/cms dev",
+    "build": "pnpm --recursive build",
+    "build:frontend": "pnpm --filter @badgerstore/frontend build",
+    "build:backend": "pnpm --filter @badgerstore/backend build",
+    "build:cms": "pnpm --filter @badgerstore/cms build"
   }
 }
