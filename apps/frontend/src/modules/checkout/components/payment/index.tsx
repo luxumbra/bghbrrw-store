@@ -11,7 +11,7 @@ import PaymentContainer, {
 } from "@modules/checkout/components/payment-container"
 import Divider from "@modules/common/components/divider"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState, useMemo } from "react"
 
 const Payment = ({
   cart,
@@ -20,9 +20,12 @@ const Payment = ({
   cart: any
   availablePaymentMethods: any[]
 }) => {
-  const activeSession = cart.payment_collection?.payment_sessions?.find(
-    (paymentSession: any) => paymentSession.status === "pending"
-  )
+  // Memoize the active session to prevent unnecessary recalculations
+  const activeSession = useMemo(() =>
+    cart.payment_collection?.payment_sessions?.find(
+      (paymentSession: any) => paymentSession.status === "pending"
+    )
+  , [cart.payment_collection?.payment_sessions])
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -40,7 +43,8 @@ const Payment = ({
 
   const isStripe = isStripeFunc(selectedPaymentMethod)
 
-  const setPaymentMethod = async (method: string) => {
+  // Memoize the payment method setter to prevent unnecessary recreations
+  const setPaymentMethod = useCallback(async (method: string) => {
     setError(null)
     setSelectedPaymentMethod(method)
     if (isStripeFunc(method)) {
@@ -48,31 +52,32 @@ const Payment = ({
         provider_id: method,
       })
     }
-  }
+  }, [cart])
 
-  const paidByGiftcard =
+  const paidByGiftcard = useMemo(() =>
     cart?.gift_cards && cart?.gift_cards?.length > 0 && cart?.total === 0
+  , [cart?.gift_cards, cart?.total])
 
-  const paymentReady =
+  const paymentReady = useMemo(() =>
     (activeSession && cart?.shipping_methods.length !== 0) || paidByGiftcard
+  , [activeSession, cart?.shipping_methods.length, paidByGiftcard])
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
       const params = new URLSearchParams(searchParams)
       params.set(name, value)
-
       return params.toString()
     },
     [searchParams]
   )
 
-  const handleEdit = () => {
+  const handleEdit = useCallback(() => {
     router.push(pathname + "?" + createQueryString("step", "payment"), {
       scroll: false,
     })
-  }
+  }, [router, pathname, createQueryString])
 
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     setIsLoading(true)
     try {
       const shouldInputCard =
@@ -100,8 +105,9 @@ const Payment = ({
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [cart, selectedPaymentMethod, activeSession, router, pathname, createQueryString])
 
+  // Clear error when payment step is opened/closed
   useEffect(() => {
     setError(null)
   }, [isOpen])

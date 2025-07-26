@@ -5,7 +5,7 @@ import { placeOrder } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import { Button } from "@medusajs/ui"
 import { useElements, useStripe } from "@stripe/react-stripe-js"
-import React, { useState } from "react"
+import React, { useState, useMemo, useCallback } from "react"
 import ErrorMessage from "../error-message"
 
 type PaymentButtonProps = {
@@ -56,7 +56,22 @@ const StripePaymentButton = ({
   const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const onPaymentCompleted = async () => {
+  const stripe = useStripe()
+  const elements = useElements()
+  const card = elements?.getElement("card")
+
+  // Memoize the session lookup
+  const session = useMemo(() =>
+    cart.payment_collection?.payment_sessions?.find(
+      (s) => s.status === "pending"
+    )
+  , [cart.payment_collection?.payment_sessions])
+
+  // Memoize the disabled state calculation
+  const disabled = useMemo(() => !stripe || !elements, [stripe, elements])
+
+  // Memoize the payment completion handler
+  const onPaymentCompleted = useCallback(async () => {
     await placeOrder()
       .catch((err) => {
         setErrorMessage(err.message)
@@ -64,19 +79,10 @@ const StripePaymentButton = ({
       .finally(() => {
         setSubmitting(false)
       })
-  }
+  }, [])
 
-  const stripe = useStripe()
-  const elements = useElements()
-  const card = elements?.getElement("card")
-
-  const session = cart.payment_collection?.payment_sessions?.find(
-    (s) => s.status === "pending"
-  )
-
-  const disabled = !stripe || !elements ? true : false
-
-  const handlePayment = async () => {
+  // Memoize the payment handler
+  const handlePayment = useCallback(async () => {
     setSubmitting(true)
 
     if (!stripe || !elements || !card || !cart) {
@@ -130,7 +136,7 @@ const StripePaymentButton = ({
 
         return
       })
-  }
+  }, [stripe, elements, card, cart, session?.data.client_secret, onPaymentCompleted])
 
   return (
     <>

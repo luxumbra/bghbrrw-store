@@ -6,7 +6,7 @@
   ],
   "compilerOptions": {
     "target": "ES2022",
-    "module": "CommonJS",
+    "module": "NodeNext",
     "moduleResolution": "nodenext",
     "skipLibCheck": true
   }

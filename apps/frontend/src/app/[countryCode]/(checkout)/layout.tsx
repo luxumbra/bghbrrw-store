@@ -1,6 +1,7 @@
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import ChevronDown from "@modules/common/icons/chevron-down"
 import MedusaCTA from "@modules/layout/components/medusa-cta"
+import { BrandHeading } from "@modules/common/components/brand-heading"
 
 export default function CheckoutLayout({
   children,
@@ -24,13 +25,7 @@ export default function CheckoutLayout({
               Back
             </span>
           </LocalizedClientLink>
-          <LocalizedClientLink
-            href="/"
-            className="uppercase txt-compact-xlarge-plus text-ui-fg-subtle hover:text-ui-fg-base"
-            data-testid="store-link"
-          >
-            Bough & Burrow
-          </LocalizedClientLink>
+          <BrandHeading />
           <div className="flex-1 basis-0" />
         </nav>
       </div>

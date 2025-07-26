@@ -53,9 +53,14 @@ services:
       - apps/backend/.env
     environment:
       # Override specific values for Docker networking
-      - DATABASE_URL=postgresql://medusa:medusa@postgres:5432/boughandburrow_dev?sslmode=disable
+      - DATABASE_URL=postgresql://medusa:medusa@postgres:5432/boughandburrow_dev
       - REDIS_URL=redis://redis:6379
       - PGSSLMODE=disable
+      # Stripe configuration
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      # Node environment
+      - NODE_ENV=development
     volumes:
       - ./apps/backend:/workspace/apps/backend
       - ./etsy:/workspace/etsy
@@ -79,6 +84,7 @@ services:
       # Override for Docker networking
       - NEXT_PUBLIC_MEDUSA_BACKEND_URL=${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
       - MEDUSA_BACKEND_URL=${MEDUSA_BACKEND_URL}
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
       - PORT=8000
     volumes:
       - ./apps/frontend:/workspace/apps/frontend

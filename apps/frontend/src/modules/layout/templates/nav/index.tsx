@@ -5,6 +5,7 @@ import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
+import { BrandHeading } from "@modules/common/components/brand-heading"
 
 export default async function Nav() {
   const regions = await listRegions().then((regions: StoreRegion[]) => regions)
@@ -20,13 +21,7 @@ export default async function Nav() {
           </div>
 
           <div className="flex items-center h-full">
-            <LocalizedClientLink
-              href="/"
-              className="uppercase font-heading txt-compact-xlarge-plus hover:text-ui-fg-base"
-              data-testid="nav-store-link"
-            >
-              Bough & Burrow
-            </LocalizedClientLink>
+            <BrandHeading />
           </div>
 
           <div className="flex flex-1 gap-x-6 justify-end items-center h-full basis-0">
