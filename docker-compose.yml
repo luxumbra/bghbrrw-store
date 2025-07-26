@@ -91,17 +91,23 @@ services:
       - ./apps/frontend/node_modules:/workspace/apps/frontend/node_modules
     restart: unless-stopped
 
-  # Future Sanity Studio (when you add it)
-  # sanity-studio:
-  #   build:
-  #     context: .
-  #     dockerfile: apps/sanity-studio/Dockerfile
-  #   container_name: boughandburrow-sanity
-  #   ports:
-  #     - "3333:3333"
-  #   volumes:
-  #     - ./apps/sanity-studio:/app
-  #     - /app/node_modules
+  cms:
+    build:
+      context: .
+      dockerfile: apps/cms/Dockerfile
+      target: development
+    container_name: boughandburrow-cms
+    ports:
+      - "3333:3333"
+    environment:
+      # Sanity configuration
+      - SANITY_STUDIO_PROJECT_ID=b3tpdz7f
+      - SANITY_STUDIO_DATASET=production
+    volumes:
+      - ./apps/cms:/workspace/apps/cms
+      - ./node_modules:/workspace/node_modules
+      - ./apps/cms/node_modules:/workspace/apps/cms/node_modules
+    restart: unless-stopped
 
 volumes:
   postgres_data:

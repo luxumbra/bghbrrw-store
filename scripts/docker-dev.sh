@@ -46,10 +46,13 @@ dev_up() {
 
     docker-compose up -d frontend
 
+    docker-compose up -d cms
+
     print_status "Development environment is starting up!"
     print_status "Backend (Medusa): http://localhost:9000"
     print_status "Admin UI: http://localhost:9000/app"
     print_status "Frontend (Next.js): http://localhost:8000"
+    print_status "CMS (Sanity Studio): http://localhost:3333"
     print_status "PostgreSQL: localhost:5432"
     print_status "Redis: localhost:6379"
 }

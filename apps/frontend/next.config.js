@@ -40,6 +40,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "i.etsystatic.com",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+      },
     ],
   },
 }

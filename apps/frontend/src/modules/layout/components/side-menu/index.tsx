@@ -1,6 +1,11 @@
 "use client"
 
-import { Popover, PopoverPanel, Transition } from "@headlessui/react"
+import {
+  Popover,
+  PopoverButton,
+  PopoverPanel,
+  Transition,
+} from "@headlessui/react"
 import { ArrowRightMini, XMark } from "@medusajs/icons"
 import { Text, clx, useToggleState } from "@medusajs/ui"
 import { Fragment } from "react"
@@ -14,6 +19,8 @@ const SideMenuItems = {
   Store: "/store",
   Account: "/account",
   Cart: "/cart",
+  Blog: "/blog",
+  About: "/about",
 }
 
 const SideMenu = ({ regions }: { regions: HttpTypes.StoreRegion[] | null }) => {
@@ -26,12 +33,12 @@ const SideMenu = ({ regions }: { regions: HttpTypes.StoreRegion[] | null }) => {
           {({ open, close }) => (
             <>
               <div className="relative flex h-full">
-                <Popover.Button
+                <PopoverButton
                   data-testid="nav-menu-button"
                   className="relative flex items-center h-full transition-all duration-200 ease-out focus:outline-none hover:text-ui-fg-base"
                 >
                   Menu
-                </Popover.Button>
+                </PopoverButton>
               </div>
 
               <Transition

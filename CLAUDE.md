@@ -48,8 +48,9 @@ pnpm --filter @boughandburrow/frontend dev
 
 ### Local Development Commands
 - `pnpm install` - Install all dependencies
-- `pnpm --filter @boughandburrow/backend dev` - Start backend
-- `pnpm --filter @boughandburrow/frontend dev` - Start frontend
+- `pnpm --filter @badgerstore/backend dev` - Start backend
+- `pnpm --filter @badgerstore/frontend dev` - Start frontend
+- `pnpm --filter @badgerstore/cms dev` - Start CMS (Sanity Studio)
 
 ## Services & Ports
 
@@ -58,6 +59,7 @@ pnpm --filter @boughandburrow/frontend dev
 | Frontend  | http://localhost:8000      | 8000 | Next.js application  |
 | Backend   | http://localhost:9000      | 9000 | Medusa API           |
 | Admin UI  | http://localhost:9000/app  | 9000 | Medusa Admin         |
+| CMS       | http://localhost:3333      | 3333 | Sanity Studio        |
 | Postgres  | localhost:5432             | 5432 | Database             |
 | Redis     | localhost:6379             | 6379 | Cache/Sessions       |
 
@@ -95,6 +97,18 @@ NEXT_PUBLIC_BASE_URL=http://localhost:8000
 
 # External Services
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
+
+# Sanity CMS
+NEXT_PUBLIC_SANITY_PROJECT_ID=b3tpdz7f
+NEXT_PUBLIC_SANITY_DATASET=production
+SANITY_API_TOKEN=your_sanity_api_token
+```
+
+### CMS (Environment Variables)
+```bash
+# Sanity Studio (set in docker-compose.yml)
+SANITY_STUDIO_PROJECT_ID=b3tpdz7f
+SANITY_STUDIO_DATASET=production
 ```
 
 ## Troubleshooting
