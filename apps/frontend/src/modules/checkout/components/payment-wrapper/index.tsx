@@ -11,7 +11,7 @@ type PaymentWrapperProps = {
   children: React.ReactNode
 }
 
-const stripeKey = process.env.NEXT_PUBLIC_STRIPE_KEY
+const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 const stripePromise = stripeKey ? loadStripe(stripeKey) : null
 
 const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cart, children }) => {
