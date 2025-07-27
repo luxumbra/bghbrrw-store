@@ -12,9 +12,10 @@ interface BlogPostCardProps {
 export default function BlogPostCard({ post, countryCode }: BlogPostCardProps) {
   const publishedDate = new Date(post.publishedAt)
   const timeAgo = formatDistanceToNow(publishedDate, { addSuffix: true })
+    console.log(post.slug, post._id);
 
   return (
-    <article className="overflow-hidden transition-shadow duration-300 bg-white rounded-lg shadow-md hover:shadow-lg">
+    <article className="overflow-hidden transition-shadow duration-300 rounded-lg shadow-md bg-zinc-800 hover:shadow-lg">
       <Link href={`/${countryCode}/blog/${post.slug.current}`}>
         {post.mainImage && (
           <div className="relative aspect-video">
@@ -33,11 +34,11 @@ export default function BlogPostCard({ post, countryCode }: BlogPostCardProps) {
             <div className="flex items-center gap-2 mb-3">
               {post.categories.map((category) => (
                 <span
-                  key={category._id}
+                  key={`${post.slug}-${category._id}-${category.slug}`}
                   className="inline-block px-2 py-1 text-xs font-medium rounded-full"
                   style={{
-                    backgroundColor: category.color || "#e5e7eb",
-                    color: "#374151",
+                    backgroundColor: category.color || "#18181b",
+                    color: "#fff",
                   }}
                 >
                   {category.title}
@@ -46,13 +47,13 @@ export default function BlogPostCard({ post, countryCode }: BlogPostCardProps) {
             </div>
           )}
 
-          <h2 className="mb-2 text-xl font-bold text-gray-900 line-clamp-2">
+          <h2 className="mb-2 text-xl line-clamp-2">
             {post.title}
           </h2>
 
-          <p className="mb-4 text-gray-600 line-clamp-3">{post.excerpt}</p>
+          <p className="mb-4 line-clamp-3">{post.excerpt}</p>
 
-          <div className="flex items-center justify-between text-sm text-gray-500">
+          <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-3">
               {post.author.image && (
                 <div className="relative w-6 h-6">

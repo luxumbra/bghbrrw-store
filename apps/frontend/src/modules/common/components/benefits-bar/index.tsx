@@ -14,7 +14,7 @@ const shopWithConfidence: BenefitsBarProps['benefits'] = [
   {
     title: "Happiness Guaranteed",
       description: "Love your piece or we'll make it right - full refund or replacement, no questions asked.",
-    icon: "mdi:shield-check"
+    icon: "ph:smiley-duotone"
   }
 ]
 
@@ -50,7 +50,7 @@ const BenefitsBar: React.FC<BenefitsBarProps> = (props) => {
   const { benefits, borderless } = props
   return (
     <div className={`p-4 bg-ui-bg-secondary content-container ${borderless ? "" : "border-t-2 border-ui-border-base border-b-2 py-12"} w-screen`}>
-      <ul className="grid grid-cols-3 gap-12 mx-auto max-w-7xl">
+      <ul className="grid grid-cols-1 gap-12 mx-auto xl:grid-cols-3 xl:max-w-7xl">
         {benefits &&
           benefits.map((b, i: number) => (
             <li key={`${b.title}-${i}`} className="">
@@ -58,7 +58,7 @@ const BenefitsBar: React.FC<BenefitsBarProps> = (props) => {
                 <div className="flex items-center justify-start w-full gap-2">
                     <Icon icon={b.icon} width={48} height={48} className="text-primary" />
 
-                    <h3 className="text-2xl font-heading capitalize text-primary">
+                    <h3 className="text-2xl capitalize font-heading text-primary">
                       {b.title}
                     </h3>
                 </div>
@@ -73,9 +73,33 @@ const BenefitsBar: React.FC<BenefitsBarProps> = (props) => {
     </div>
   )
 }
+
+const BenefitsList: React.FC<BenefitsBarProps> = (props) => {
+  const { benefits } = props
+  return (
+    <ul className="grid w-full grid-cols-1 gap-6">
+      {benefits && benefits.map((b, i: number) => (
+        <li key={`${b.title}-${i}`} className="">
+          <div className="flex flex-col items-start gap-2">
+            <div className="flex items-center justify-start w-full gap-2">
+              <Icon icon={b.icon} width={26} height={26} className="text-copy-color" />
+              <h3 className="text-xl capitalize font-heading text-copy-color">
+                {b.title}
+              </h3>
+            </div>
+            <p className="text-base text-copy-color/80">
+              {b.description}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 const benefitsData = {
     shopWithConfidence,
     whyBoughAndBurrow
 }
-export { BenefitsBar, benefitsData  }
+export { BenefitsBar, BenefitsList, benefitsData  }
 export type { BenefitsBarProps }

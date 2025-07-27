@@ -14,28 +14,39 @@ export default function BlogPostContent({ post, countryCode }: BlogPostContentPr
   const publishedDate = new Date(post.publishedAt)
 
   return (
-    <article className="max-w-4xl mx-auto">
+    <article className="max-w-4xl mx-auto prose prose-xl prose-invert">
       <header className="mb-8">
-        <div className="flex items-center gap-2 mb-4">
+        <div className="flex items-center justify-between gap-2 mb-4">
           {post.categories.map((category) => (
             <span
               key={category._id}
               className="inline-block px-3 py-1 text-sm font-medium rounded-full"
               style={{
-                backgroundColor: category.color || '#e5e7eb',
-                color: '#374151'
+                backgroundColor: category.color || '#333',
+                color: '#fff'
               }}
             >
               {category.title}
             </span>
           ))}
+                              <div className="flex items-center justify-end gap-2">
+              <p className="inline-flex gap-1 text-sm text-gray-400">Written by: {post.author.name}</p>
+              <div className="inline-flex gap-1 pl-2 text-sm text-gray-400 border-l-2 border-gray-600">Published:
+                      <time
+                dateTime={post.publishedAt}
+                className=""
+              >
+                {format(publishedDate, 'MMMM d, yyyy')}
+                          </time>
+                          </div>
+            </div>
         </div>
 
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        <h1 className="font-normal text-copy-color">
           {post.title}
         </h1>
 
-        <p className="text-xl text-gray-600 mb-6">
+        <p className="mb-6 text-xl leading-normal font-body font-extralight xl:text-3xl">
           {post.excerpt}
         </p>
 
@@ -47,25 +58,17 @@ export default function BlogPostContent({ post, countryCode }: BlogPostContentPr
                   src={urlFor(post.author.image.asset).width(48).height(48).url()}
                   alt={post.author.name}
                   fill
-                  className="rounded-full object-cover"
+                  className="object-cover rounded-full"
                 />
               </div>
             )}
-            <div>
-              <p className="font-medium text-gray-900">{post.author.name}</p>
-              <time 
-                dateTime={post.publishedAt}
-                className="text-sm text-gray-500"
-              >
-                {format(publishedDate, 'MMMM d, yyyy')}
-              </time>
-            </div>
+
           </div>
         </div>
       </header>
 
       {post.mainImage && (
-        <div className="relative aspect-video mb-8 rounded-lg overflow-hidden">
+        <div className="relative mb-8 overflow-hidden rounded-lg aspect-video">
           <Image
             src={urlFor(post.mainImage.asset).width(1200).height(675).url()}
             alt={post.mainImage.alt || post.title}
@@ -74,48 +77,48 @@ export default function BlogPostContent({ post, countryCode }: BlogPostContentPr
             priority
           />
           {post.mainImage.caption && (
-            <figcaption className="absolute bottom-0 left-0 right-0 bg-black/50 text-white p-4 text-sm">
+            <figcaption className="absolute bottom-0 left-0 right-0 p-4 text-sm text-white bg-black/50">
               {post.mainImage.caption}
             </figcaption>
           )}
         </div>
       )}
 
-      <div className="prose prose-lg max-w-none">
+      <div className="prose prose-lg prose-invert max-w-none">
         {post.body && (
-          <PortableText 
-            value={post.body} 
+          <PortableText
+            value={post.body}
             components={portableTextComponents}
           />
         )}
       </div>
 
       {post.author.bio && (
-        <div className="mt-12 p-6 bg-gray-50 rounded-lg">
-          <h3 className="text-lg font-semibold mb-3">About the Author</h3>
+        <div className="p-6 mt-12 rounded-lg shadow-inner bg-zinc-800 shadow-black">
+          <h3 className="mb-3 text-lg font-semibold">About the Author</h3>
           <div className="flex gap-4">
             {post.author.image && (
-              <div className="relative w-16 h-16 flex-shrink-0">
+              <div className="relative flex-shrink-0 w-16 h-16">
                 <Image
                   src={urlFor(post.author.image.asset).width(64).height(64).url()}
                   alt={post.author.name}
                   fill
-                  className="rounded-full object-cover"
+                  className="object-cover rounded-full"
                 />
               </div>
             )}
             <div>
-              <h4 className="font-medium text-gray-900 mb-2">{post.author.name}</h4>
-              <div className="prose prose-sm">
-                <PortableText 
-                  value={post.author.bio} 
+              <h4 className="mb-2 font-medium">{post.author.name}</h4>
+              <div className="prose-sm prose prose-invert">
+                <PortableText
+                  value={post.author.bio}
                   components={portableTextComponents}
                 />
               </div>
               {(post.author.website || post.author.socialLinks) && (
                 <div className="flex gap-3 mt-3">
                   {post.author.website && (
-                    <a 
+                    <a
                       href={post.author.website}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -125,7 +128,7 @@ export default function BlogPostContent({ post, countryCode }: BlogPostContentPr
                     </a>
                   )}
                   {post.author.socialLinks?.twitter && (
-                    <a 
+                    <a
                       href={post.author.socialLinks.twitter}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -135,7 +138,7 @@ export default function BlogPostContent({ post, countryCode }: BlogPostContentPr
                     </a>
                   )}
                   {post.author.socialLinks?.linkedin && (
-                    <a 
+                    <a
                       href={post.author.socialLinks.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"

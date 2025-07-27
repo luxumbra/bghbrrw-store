@@ -10,6 +10,7 @@ import SkeletonRelatedProducts from "@modules/skeletons/templates/skeleton-relat
 import { notFound } from "next/navigation"
 import ProductActionsWrapper from "./product-actions-wrapper"
 import { HttpTypes } from "@medusajs/types"
+import { BenefitsBar, BenefitsList, benefitsData } from "@/modules/common/components/benefits-bar"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -52,6 +53,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           >
             <ProductActionsWrapper id={product.id} region={region} />
           </Suspense>
+          <BenefitsList benefits={benefitsData.shopWithConfidence} borderless={true} />
         </div>
       </div>
       <div

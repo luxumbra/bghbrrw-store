@@ -11,6 +11,7 @@ import { useParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
+import { Icon } from "@iconify/react"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -154,6 +155,7 @@ export default function ProductActions({
           isLoading={isAdding}
           data-testid="add-product-button"
         >
+          <Icon icon="mdi:cart-plus" width={20} height={20} />
           {!selectedVariant && !options
             ? "Select variant"
             : !inStock || !isValidVariant
