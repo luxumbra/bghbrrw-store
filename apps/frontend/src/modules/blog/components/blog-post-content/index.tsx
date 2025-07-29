@@ -1,50 +1,67 @@
-import Image from 'next/image'
-import { format } from 'date-fns'
-import { PortableText } from '@portabletext/react'
-import { BlogPost } from '@/types/sanity'
-import { urlFor } from '@/sanity/lib/client'
-import { portableTextComponents } from '@/modules/content/components/portable-text'
+import Image from "next/image"
+import { format } from "date-fns"
+import { PortableText } from "@portabletext/react"
+import { BlogPost } from "@/types/sanity"
+import { urlFor } from "@/sanity/lib/client"
+import { portableTextComponents } from "@/modules/content/components/portable-text"
+import { Icon } from "@iconify/react"
 
 interface BlogPostContentProps {
   post: BlogPost
   countryCode: string
 }
 
-export default function BlogPostContent({ post, countryCode }: BlogPostContentProps) {
+export default function BlogPostContent({
+  post,
+  countryCode,
+}: BlogPostContentProps) {
   const publishedDate = new Date(post.publishedAt)
 
   return (
     <article className="max-w-4xl mx-auto prose prose-xl prose-invert">
       <header className="mb-8">
-        <div className="flex items-center justify-between gap-2 mb-4">
+              <div className="flex items-center justify-between gap-2 mb-4">
+                  <div className="flex items-center justify-start gap-2">
           {post.categories.map((category) => (
             <span
               key={category._id}
               className="inline-block px-3 py-1 text-sm font-medium rounded-full"
               style={{
-                backgroundColor: category.color || '#333',
-                color: '#fff'
+                backgroundColor: category.color || "#333",
+                color: "#fff",
               }}
             >
               {category.title}
             </span>
           ))}
-                              <div className="flex items-center justify-end gap-2">
-              <p className="inline-flex gap-1 text-sm text-gray-400">Written by: {post.author.name}</p>
-              <div className="inline-flex gap-1 pl-2 text-sm text-gray-400 border-l-2 border-gray-600">Published:
-                      <time
-                dateTime={post.publishedAt}
-                className=""
-              >
-                {format(publishedDate, 'MMMM d, yyyy')}
-                          </time>
-                          </div>
+                      </div>
+          <div className="flex items-center justify-end gap-2">
+            {post.author.image && (
+              <div className="relative w-6 h-6">
+                <Image
+                  src={urlFor(post.author.image.asset)
+                    .width(16)
+                    .height(16)
+                    .url()}
+                  alt={post.author.name}
+                  fill
+                  className="object-cover my-0 rounded-full"
+                />
+              </div>
+            )}
+            <p className="inline-flex gap-1 text-sm text-gray-400">
+              Written by: {post.author.name}
+            </p>
+            <div className="inline-flex items-center gap-1 pl-2 text-sm text-gray-400 border-l-2 border-gray-600">
+              <Icon icon="mdi:calendar-outline" className="size-5" />
+              <time dateTime={post.publishedAt} className="">
+                {format(publishedDate, "MMMM d, yyyy")}
+              </time>
             </div>
+          </div>
         </div>
 
-        <h1 className="font-normal text-copy-color">
-          {post.title}
-        </h1>
+        <h1 className="font-normal text-copy-color">{post.title}</h1>
 
         <p className="mb-6 text-xl leading-normal font-body font-extralight xl:text-3xl">
           {post.excerpt}
@@ -52,17 +69,19 @@ export default function BlogPostContent({ post, countryCode }: BlogPostContentPr
 
         <div className="flex items-center gap-4 pb-6 mb-8 border-b">
           <div className="flex items-center gap-3">
-            {post.author.image && (
+            {/* {post.author.image && (
               <div className="relative w-12 h-12">
                 <Image
-                  src={urlFor(post.author.image.asset).width(48).height(48).url()}
+                  src={urlFor(post.author.image.asset)
+                    .width(48)
+                    .height(48)
+                    .url()}
                   alt={post.author.name}
                   fill
                   className="object-cover rounded-full"
                 />
               </div>
-            )}
-
+            )} */}
           </div>
         </div>
       </header>
@@ -86,10 +105,7 @@ export default function BlogPostContent({ post, countryCode }: BlogPostContentPr
 
       <div className="prose prose-lg prose-invert max-w-none">
         {post.body && (
-          <PortableText
-            value={post.body}
-            components={portableTextComponents}
-          />
+          <PortableText value={post.body} components={portableTextComponents} />
         )}
       </div>
 
@@ -100,7 +116,10 @@ export default function BlogPostContent({ post, countryCode }: BlogPostContentPr
             {post.author.image && (
               <div className="relative flex-shrink-0 w-16 h-16">
                 <Image
-                  src={urlFor(post.author.image.asset).width(64).height(64).url()}
+                  src={urlFor(post.author.image.asset)
+                    .width(64)
+                    .height(64)
+                    .url()}
                   alt={post.author.name}
                   fill
                   className="object-cover rounded-full"

@@ -5,12 +5,14 @@ import ProductActions from "@modules/products/components/product-actions"
 import ProductOnboardingCta from "@modules/products/components/product-onboarding-cta"
 import ProductTabs from "@modules/products/components/product-tabs"
 import RelatedProducts from "@modules/products/components/related-products"
+import ProductReviews from "@modules/products/components/product-reviews"
 import ProductInfo from "@modules/products/templates/product-info"
 import SkeletonRelatedProducts from "@modules/skeletons/templates/skeleton-related-products"
 import { notFound } from "next/navigation"
 import ProductActionsWrapper from "./product-actions-wrapper"
 import { HttpTypes } from "@medusajs/types"
 import { BenefitsBar, BenefitsList, benefitsData } from "@/modules/common/components/benefits-bar"
+import { retrieveCustomer } from "@/lib/data/customer"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -18,7 +20,7 @@ type ProductTemplateProps = {
   countryCode: string
 }
 
-const ProductTemplate: React.FC<ProductTemplateProps> = ({
+const ProductTemplate: React.FC<ProductTemplateProps> = async ({
   product,
   region,
   countryCode,
@@ -26,6 +28,9 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   if (!product || !product.id) {
     return notFound()
   }
+
+  const customer = await retrieveCustomer()
+  const isAuthenticated = !!customer
 
   return (
     <>
@@ -56,6 +61,15 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           <BenefitsList benefits={benefitsData.shopWithConfidence} borderless={true} />
         </div>
       </div>
+      
+      {/* Product Reviews Section */}
+      <div 
+        className="content-container my-16 small:my-32"
+        data-testid="product-reviews-container"
+      >
+        <ProductReviews product={product} />
+      </div>
+
       <div
         className="content-container my-16 small:my-32"
         data-testid="related-products-container"

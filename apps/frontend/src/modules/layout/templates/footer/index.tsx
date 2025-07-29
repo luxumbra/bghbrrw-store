@@ -26,7 +26,7 @@ export default async function Footer() {
             </LocalizedClientLink>
             {companyInfo.location && (
               <div className="mt-2 text-ui-fg-subtle txt-small">
-                <div className="font-medium">{companyInfo.location.name}</div>
+                {/* <div className="font-medium">{companyInfo.location.name}</div> */}
                 {companyInfo.location.address.address_1 && (
                   <div>{companyInfo.location.address.address_1}</div>
                 )}
@@ -109,7 +109,7 @@ export default async function Footer() {
                   className={clx(
                     "grid grid-cols-1 gap-2 text-ui-fg-subtle txt-small",
                     {
-                      "grid-cols-2": (collections?.length || 0) > 3,
+                      "grid-cols-1": (collections?.length || 0) > 3,
                     }
                   )}
                 >
