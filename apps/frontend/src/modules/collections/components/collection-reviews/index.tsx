@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react"
 import { HttpTypes } from "@medusajs/types"
-import { getCollectionReviews, CollectionReviewsResponse } from "@/lib/data/collections"
+import { getCollectionReviews } from "@/lib/data/products"
+import { ReviewsResponse } from "@/types/global"
 import StarRating from "@/modules/products/components/product-reviews/star-rating"
 import ReviewItem from "@/modules/products/components/product-reviews/review-item"
 
@@ -11,7 +12,7 @@ interface CollectionReviewsProps {
 }
 
 const CollectionReviews = ({ collection }: CollectionReviewsProps) => {
-  const [reviewsData, setReviewsData] = useState<CollectionReviewsResponse | null>(null)
+  const [reviewsData, setReviewsData] = useState<ReviewsResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
 
@@ -74,7 +75,7 @@ const CollectionReviews = ({ collection }: CollectionReviewsProps) => {
 
   const hasReviews = reviewsData && reviewsData.reviews.length > 0
   const averageRating = reviewsData?.average_rating || 0
-  const totalReviews = reviewsData?.total_reviews || 0
+  const totalReviews = reviewsData?.count || 0
 
   if (!hasReviews) {
     return (
@@ -115,7 +116,7 @@ const CollectionReviews = ({ collection }: CollectionReviewsProps) => {
         </div>
 
         {/* Load More Button */}
-        {reviewsData.reviews.length < reviewsData.total_reviews && (
+        {reviewsData.reviews.length < reviewsData.count && (
           <div className="mt-8 text-center">
             <button
               onClick={handleLoadMore}

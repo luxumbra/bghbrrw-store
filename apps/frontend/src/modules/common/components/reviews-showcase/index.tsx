@@ -1,8 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { getShowcaseReviews, CollectionReviewsResponse } from "@/lib/data/collections"
+import { ReviewsResponse } from "@/types/global"
 import StarRating from "@/modules/products/components/product-reviews/star-rating"
+import { sdk } from "@/lib/config"
+import { getAuthHeaders, getCacheOptions } from "@/lib/data/cookies"
 
 interface ReviewShowcaseProps {
   title?: string
@@ -19,16 +21,33 @@ const ReviewsShowcase = ({
   minRating = 4,
   className = ""
 }: ReviewShowcaseProps) => {
-  const [reviewsData, setReviewsData] = useState<CollectionReviewsResponse | null>(null)
+  const [reviewsData, setReviewsData] = useState<ReviewsResponse | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const loadShowcaseReviews = async () => {
       try {
-        const data = await getShowcaseReviews({
-          limit,
-          minRating
-        })
+        const headers = {
+          ...(await getAuthHeaders()),
+        }
+
+        const next = {
+          ...(await getCacheOptions("reviews")),
+        }
+
+        const data = await sdk.client.fetch<ReviewsResponse>(
+          `/store/reviews/showcase`,
+          {
+            method: "GET",
+            query: {
+              limit,
+              minRating,
+            },
+            headers,
+            next,
+            cache: "force-cache",
+          }
+        )
         setReviewsData(data)
       } catch (error) {
         console.error("Error loading showcase reviews:", error)
@@ -108,10 +127,10 @@ const ReviewsShowcase = ({
         </div>
 
         {/* Call to Action */}
-        {reviewsData.total_reviews > limit && (
+        {reviewsData.count > limit && (
           <div className="text-center mt-12">
             <p className="text-gray-600 mb-4">
-              Join {reviewsData.total_reviews}+ happy customers
+              Join {reviewsData.count}+ happy customers
             </p>
             <a 
               href="/products" 

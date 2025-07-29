@@ -173,6 +173,42 @@ export const getProductReviews = async ({
 }
 
 /**
+ * Get reviews for a specific collection
+ */
+export const getCollectionReviews = async ({
+  collectionId,
+  limit = 20,
+  offset = 0,
+}: {
+  collectionId: string
+  limit?: number
+  offset?: number
+}): Promise<ReviewsResponse> => {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  const next = {
+    ...(await getCacheOptions("reviews")),
+  }
+
+  return sdk.client
+    .fetch<ReviewsResponse>(
+      `/store/reviews/collections/${collectionId}`,
+      {
+        method: "GET",
+        query: {
+          limit,
+          offset,
+        },
+        headers,
+        next,
+        cache: "force-cache",
+      }
+    )
+}
+
+/**
  * Add a review for a product
  */
 export const addProductReview = async ({

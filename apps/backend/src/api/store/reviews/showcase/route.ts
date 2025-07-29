@@ -1,4 +1,5 @@
 import { MedusaRequest, MedusaResponse } from "@medusajs/framework/http"
+import { ContainerRegistrationKeys } from "@medusajs/framework/utils"
 import { PRODUCT_REVIEW_MODULE } from "../../../../modules/product-review"
 import ProductReviewModuleService from "../../../../modules/product-review/service"
 import { z } from "zod"
@@ -12,9 +13,9 @@ export const GetStoreReviewsShowcaseSchema = z.object({
     (val) => val ? parseInt(val as string) : 0,
     z.number().min(0).default(0)
   ),
-  min_rating: z.preprocess(
-    (val) => val ? parseInt(val as string) : undefined,
-    z.number().min(1).max(5).optional()
+  minRating: z.preprocess(
+    (val) => val ? parseInt(val as string) : 1,
+    z.number().min(1).max(5).default(1)
   )
 })
 
@@ -22,36 +23,52 @@ export const GET = async (
   req: MedusaRequest,
   res: MedusaResponse
 ) => {
-  const reviewModuleService: ProductReviewModuleService = req.scope.resolve(PRODUCT_REVIEW_MODULE)
-  const { limit, offset, min_rating } = GetStoreReviewsShowcaseSchema.parse(req.query)
+  const { limit, offset, minRating } = GetStoreReviewsShowcaseSchema.parse(req.query)
+  const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
 
   try {
     const filters: any = {
       status: "approved"
     }
 
-    if (min_rating) {
-      filters.rating = { $gte: min_rating }
+    if (minRating > 1) {
+      filters.rating = { $gte: minRating }
     }
 
-    const reviews = await reviewModuleService.listReviews(
+    const { data: reviews, metadata: {
+      count,
+      take,
+      skip
+    } = { count: 0, take: limit, skip: offset } } = await query.graph({
+      entity: "review",
+      fields: [
+        "id",
+        "title",
+        "content", 
+        "rating",
+        "first_name",
+        "last_name",
+        "product_id",
+        "created_at",
+        "updated_at"
+      ],
       filters,
-      {
+      pagination: {
         take: limit,
-        skip: offset,
-        order: { created_at: "DESC" }
-      }
-    )
+        skip: offset
+      },
+      order: { created_at: "DESC" }
+    })
 
     res.json({
-      reviews: reviews.data,
-      meta: {
-        ...reviews.metadata,
-        limit,
-        offset
-      }
+      reviews,
+      count,
+      limit: take || limit,
+      offset: skip || offset,
+      average_rating: 0 // We could calculate this if needed
     })
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch showcase reviews" })
+    console.error("Error fetching showcase reviews:", error)
+    res.status(500).json({ error: "Failed to fetch showcase reviews", details: error.message })
   }
 }
