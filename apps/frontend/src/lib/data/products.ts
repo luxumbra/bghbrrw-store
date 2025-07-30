@@ -209,6 +209,43 @@ export const getCollectionReviews = async ({
 }
 
 /**
+ * Get showcase reviews (all reviews across products)
+ */
+export const getShowcaseReviews = async ({
+  limit = 20,
+  offset = 0,
+  minRating = 1,
+}: {
+  limit?: number
+  offset?: number
+  minRating?: number
+}): Promise<ReviewsResponse> => {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  const next = {
+    ...(await getCacheOptions("reviews")),
+  }
+
+  return sdk.client
+    .fetch<ReviewsResponse>(
+      `/store/reviews/showcase`,
+      {
+        method: "GET",
+        query: {
+          limit,
+          offset,
+          minRating,
+        },
+        headers,
+        next,
+        cache: "force-cache",
+      }
+    )
+}
+
+/**
  * Add a review for a product
  */
 export const addProductReview = async ({

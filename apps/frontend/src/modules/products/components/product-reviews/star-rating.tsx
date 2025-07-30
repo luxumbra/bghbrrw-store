@@ -14,7 +14,7 @@ const StarRating = ({ value, onChange, readonly = false, size = "md" }: StarRati
 
   const sizeClasses = {
     sm: "w-4 h-4",
-    md: "w-5 h-5", 
+    md: "w-5 h-5",
     lg: "w-6 h-6"
   }
 
@@ -53,7 +53,7 @@ const StarRating = ({ value, onChange, readonly = false, size = "md" }: StarRati
             disabled={readonly}
           >
             <svg
-              className={`w-full h-full ${
+              className={`w-full h-full hover:scale-110 transition-all ease-in-out ${
                 filled ? "text-yellow-400" : "text-gray-300"
               } transition-colors duration-150`}
               fill="currentColor"

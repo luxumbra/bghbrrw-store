@@ -7,17 +7,17 @@ import HeroImage from "~public/images/tlh-010.jpg"
 const Hero = () => {
   return (
     <div className="h-[75vh] w-full border-b border-ui-border-base relative bg-ui-bg-subtle">
-      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 text-center small:p-32">
+      <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 p-10 text-center small:p-32">
         <span>
           <Heading
             level="h1"
-            className="font-normal leading-10 font-heading text-7xl"
+            className="text-4xl font-normal leading-10 font-heading lg:text-7xl"
           >
             Bough & Burrow
           </Heading>
           <Heading
             level="h2"
-            className="text-2xl font-normal leading-10 tracking-widest"
+            className="text-lg font-normal leading-10 tracking-widest lg:text-2xl"
           >
             Hand-crafted | Sustainable | Nature-Inspired
           </Heading>

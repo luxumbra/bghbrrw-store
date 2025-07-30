@@ -10,7 +10,7 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
     const date = new Date(dateString)
     return date.toLocaleDateString("en-GB", {
       year: "numeric",
-      month: "long", 
+      month: "long",
       day: "numeric"
     })
   }
@@ -20,35 +20,35 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
   }
 
   return (
-    <div className="border-b border-gray-200 pb-6 mb-6 last:border-b-0 last:pb-0 last:mb-0">
+    <div className="pb-6 mb-6 border-b border-zinc-800 last:border-b-0 last:pb-0 last:mb-0">
       <div className="flex items-start gap-4">
         {/* Avatar */}
-        <div className="flex-shrink-0 w-10 h-10 bg-gray-600 text-white rounded-full flex items-center justify-center text-sm font-medium">
+        <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 text-sm font-medium text-white bg-gray-600 rounded-full">
           {getInitials(review.first_name, review.last_name)}
         </div>
-        
+
         {/* Review content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
             <StarRating value={review.rating} readonly size="sm" />
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-500">
               {formatDate(review.created_at)}
             </span>
           </div>
-          
+
           <div className="mb-2">
-            <span className="font-medium text-gray-900">
+            <span className="font-medium text-primary">
               {review.first_name} {review.last_name.charAt(0)}.
             </span>
           </div>
-          
+
           {review.title && (
-            <h4 className="font-medium text-gray-900 mb-2">
+            <h4 className="mb-2 font-medium text-copy-color">
               {review.title}
             </h4>
           )}
-          
-          <p className="text-gray-700 leading-relaxed">
+
+          <p className="leading-relaxed text-copy-color/70">
             {review.content}
           </p>
         </div>

@@ -43,4 +43,8 @@ export type ReviewsResponse = {
   limit: number
   offset: number
   average_rating: number
+  business_stats?: {
+    overall_rating: number
+    total_reviews: number
+  }
 }

@@ -1,3 +1,5 @@
+import BusinessRatingWidget from "@/modules/common/components/business-rating-widget"
+import { Icon } from "@iconify/react"
 import { listCategories } from "@lib/data/categories"
 import { listCollections } from "@lib/data/collections"
 import { getCompanyInfo } from "@lib/data/company"
@@ -33,13 +35,22 @@ export default async function Footer() {
                 {companyInfo.location.address.city && (
                   <div>{companyInfo.location.address.city}</div>
                 )}
-                {companyInfo.location.address.country_code && (
-                  <div>
-                    {companyInfo.location.address.country_code.toUpperCase()}
-                  </div>
-                )}
+                <div>
+                  <a
+                    href={`mailto:${companyInfo.email}`}
+                    className="hover:text-ui-fg-base"
+                  >
+                    {companyInfo.email}
+                  </a>
+                </div>
               </div>
-            )}
+                      )}
+            <BusinessRatingWidget size="small" showLink={true} />
+                          <ul className="grid grid-cols-3">
+                              <li><Icon icon="mage:stripe" className="w-5 h-5" /></li>
+                              <li><Icon icon="mage:visa" className="w-5 h-5" /></li>
+                              <li><Icon icon="lineicons:mastercard" className="w-5 h-5" /></li>
+                          </ul>
           </div>
           <div className="grid grid-cols-2 gap-10 text-small-regular md:gap-x-16 sm:grid-cols-3">
             {productCategories && productCategories?.length > 0 && (
@@ -153,10 +164,10 @@ export default async function Footer() {
                 </li>
                 <li>
                   <a
-                    href={`mailto:${companyInfo.email}`}
+                    href={`/contact-us`}
                     className="hover:text-ui-fg-base"
                   >
-                    {companyInfo.email}
+                    Contact Us
                   </a>
                 </li>
                 <li>
@@ -175,7 +186,7 @@ export default async function Footer() {
                     Terms &amp; Conditions
                   </LocalizedClientLink>
                 </li>
-                                <li>
+                <li>
                   <LocalizedClientLink
                     className="hover:text-ui-fg-base"
                     href={`/shipping-and-returns`}

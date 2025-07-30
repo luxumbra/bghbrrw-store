@@ -15,9 +15,6 @@ const ProductReviews = ({ product }: ProductReviewsProps) => {
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
 
-
-  console.log("REVIEWS DATA", reviewsData)
-
   const loadReviews = async (offset = 0, append = false) => {
     try {
       const data = await getProductReviews({
@@ -69,7 +66,7 @@ const ProductReviews = ({ product }: ProductReviewsProps) => {
   return (
     <div className="space-y-8">
       {/* Reviews Summary */}
-      <div className="pb-6 border-b border-gray-200">
+      <div className="pb-6 border-b border-zinc-700">
         <h2 className="mb-4">Customer Reviews</h2>
 
         {hasReviews ? (

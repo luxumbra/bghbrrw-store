@@ -56,14 +56,14 @@ const BenefitsBar: React.FC<BenefitsBarProps> = (props) => {
             <li key={`${b.title}-${i}`} className="">
               <div className="flex flex-col items-start gap-2">
                 <div className="flex items-center justify-start w-full gap-2">
-                    <Icon icon={b.icon} width={48} height={48} className="text-primary" />
+                    <Icon icon={b.icon} width={48} height={48} className="w-6 h-6 text-primary lg:w-12 lg:h-12" />
 
-                    <h3 className="text-2xl capitalize font-heading text-primary">
+                    <h3 className="text-xl capitalize lg:text-2xl font-heading text-primary">
                       {b.title}
                     </h3>
                 </div>
 
-                <p className="text-lg text-copy-color/80">
+                <p className="text-base lg:text-lg text-copy-color/80">
                   {b.description}
                 </p>
               </div>
@@ -82,7 +82,7 @@ const BenefitsList: React.FC<BenefitsBarProps> = (props) => {
         <li key={`${b.title}-${i}`} className="">
           <div className="flex flex-col items-start gap-2">
             <div className="flex items-center justify-start w-full gap-2">
-              <Icon icon={b.icon} width={26} height={26} className="text-copy-color" />
+              <Icon icon={b.icon} width={28} height={28} className="w-5 h-5 text-copy-color lg:h-7 lg:w-7" />
               <h3 className="text-xl capitalize font-heading text-copy-color">
                 {b.title}
               </h3>

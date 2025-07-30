@@ -55,7 +55,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   return (
     <>
       <div
-        className={clx("lg:hidden inset-x-0 bottom-0 fixed", {
+        className={clx("lg:hidden inset-x-0 bottom-0 fixed bg-white/5 backdrop-blur-lg z-20", {
           "pointer-events-none": !show,
         })}
       >
@@ -70,7 +70,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
           leaveTo="opacity-0"
         >
           <div
-            className="bg-primary-bg flex flex-col gap-y-3 justify-center items-center text-large-regular p-4 h-full w-full border-t border-gray-200"
+            className="flex flex-col items-center justify-center w-full h-full p-4 border-t border-gray-200 bg-primary-bg gap-y-3 text-large-regular"
             data-testid="mobile-actions"
           >
             <div className="flex items-center gap-x-2">
@@ -151,8 +151,8 @@ const MobileActions: React.FC<MobileActionsProps> = ({
             <div className="fixed inset-0 bg-gray-700 bg-opacity-75 backdrop-blur-sm" />
           </Transition.Child>
 
-          <div className="fixed bottom-0 inset-x-0">
-            <div className="flex min-h-full h-full items-center justify-center text-center">
+          <div className="fixed inset-x-0 bottom-0">
+            <div className="flex items-center justify-center h-full min-h-full text-center">
               <Transition.Child
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -163,19 +163,19 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                 leaveTo="opacity-0"
               >
                 <Dialog.Panel
-                  className="w-full h-full transform overflow-hidden text-left flex flex-col gap-y-3"
+                  className="flex flex-col w-full h-full overflow-hidden text-left transform gap-y-3"
                   data-testid="mobile-actions-modal"
                 >
-                  <div className="w-full flex justify-end pr-6">
+                  <div className="flex justify-end w-full pr-6">
                     <button
                       onClick={close}
-                      className="bg-primary-bg w-12 h-12 rounded-full text-ui-fg-base flex justify-center items-center"
+                      className="flex items-center justify-center w-12 h-12 rounded-full bg-primary-bg text-ui-fg-base"
                       data-testid="close-modal-button"
                     >
                       <X />
                     </button>
                   </div>
-                  <div className="bg-primary-bg px-6 py-12">
+                  <div className="px-6 py-12 bg-primary-bg">
                     {(product.variants?.length ?? 0) > 1 && (
                       <div className="flex flex-col gap-y-6">
                         {(product.options || []).map((option) => {

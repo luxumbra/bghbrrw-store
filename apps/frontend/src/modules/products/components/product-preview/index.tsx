@@ -58,19 +58,19 @@ export default async function ProductPreview({
           <Badge
             color="red"
             size="large"
-            className="absolute top-0 right-0 z-10 ml-2 text-xs rounded-tl-none rounded-tr-lg rounded-br-none rounded-bl-lg text-nowrap"
+            className="absolute top-0 right-0 z-10 ml-2 text-xs rounded-tl-none rounded-tr-lg rounded-bl-lg rounded-br-none text-nowrap"
           >
             Sold out
           </Badge>
         )}
         <div className="flex justify-between mt-4 txt-compact-medium">
           <Text
-            className="flex gap-x-2 items-center text-ui-fg-subtle"
+            className="flex items-center gap-x-2 text-ui-fg-subtle line-clamp-2 lg:line-clamp-3"
             data-testid="product-title"
           >
             {product.title}
           </Text>
-          <div className="flex gap-x-2 items-center">
+          <div className="flex items-center gap-x-2">
             {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
           </div>
         </div>

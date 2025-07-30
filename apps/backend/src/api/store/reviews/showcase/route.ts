@@ -25,6 +25,7 @@ export const GET = async (
 ) => {
   const { limit, offset, minRating } = GetStoreReviewsShowcaseSchema.parse(req.query)
   const query = req.scope.resolve(ContainerRegistrationKeys.QUERY)
+  const reviewModuleService: ProductReviewModuleService = req.scope.resolve(PRODUCT_REVIEW_MODULE)
 
   try {
     const filters: any = {
@@ -60,12 +61,20 @@ export const GET = async (
       order: { created_at: "DESC" }
     })
 
+    // Get business-wide statistics
+    const businessRating = await reviewModuleService.getOverallBusinessRating()
+    const businessReviewCount = await reviewModuleService.getBusinessReviewCount()
+
     res.json({
       reviews,
       count,
       limit: take || limit,
       offset: skip || offset,
-      average_rating: 0 // We could calculate this if needed
+      average_rating: businessRating,
+      business_stats: {
+        overall_rating: businessRating,
+        total_reviews: businessReviewCount
+      }
     })
   } catch (error) {
     console.error("Error fetching showcase reviews:", error)

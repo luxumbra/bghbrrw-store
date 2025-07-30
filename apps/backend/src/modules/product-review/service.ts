@@ -58,6 +58,32 @@ class ProductReviewModuleService extends MedusaService({
       status: "approved"
     }, {}, sharedContext)
   }
+
+  @InjectManager()
+  async getOverallBusinessRating(
+    @MedusaContext() sharedContext?: Context<EntityManager>
+  ): Promise<number> {
+    const result = await sharedContext?.manager?.execute(
+      `SELECT AVG(rating) as average 
+       FROM review 
+       WHERE status = 'approved'`
+    )
+
+    return parseFloat(parseFloat(result?.[0]?.average ?? 0).toFixed(1))
+  }
+
+  @InjectManager()
+  async getBusinessReviewCount(
+    @MedusaContext() sharedContext?: Context<EntityManager>
+  ): Promise<number> {
+    const result = await sharedContext?.manager?.execute(
+      `SELECT COUNT(*) as count 
+       FROM review 
+       WHERE status = 'approved'`
+    )
+
+    return parseInt(result?.[0]?.count ?? 0)
+  }
 }
 
 export default ProductReviewModuleService
