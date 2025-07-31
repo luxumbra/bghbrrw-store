@@ -44,13 +44,19 @@ export default async function Footer() {
                   </a>
                 </div>
               </div>
-                      )}
+            )}
             <BusinessRatingWidget size="small" showLink={true} />
-                          <ul className="grid grid-cols-3">
-                              <li><Icon icon="mage:stripe" className="w-5 h-5" /></li>
-                              <li><Icon icon="mage:visa" className="w-5 h-5" /></li>
-                              <li><Icon icon="lineicons:mastercard" className="w-5 h-5" /></li>
-                          </ul>
+            <ul className="grid grid-cols-3">
+              <li>
+                <Icon icon="mage:stripe" className="w-5 h-5" />
+              </li>
+              <li>
+                <Icon icon="mage:visa" className="w-5 h-5" />
+              </li>
+              <li>
+                <Icon icon="lineicons:mastercard" className="w-5 h-5" />
+              </li>
+            </ul>
           </div>
           <div className="grid grid-cols-2 gap-10 text-small-regular md:gap-x-16 sm:grid-cols-3">
             {productCategories && productCategories?.length > 0 && (
@@ -163,10 +169,7 @@ export default async function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a
-                    href={`/contact-us`}
-                    className="hover:text-ui-fg-base"
-                  >
+                  <a href={`/contact-us`} className="hover:text-ui-fg-base">
                     Contact Us
                   </a>
                 </li>

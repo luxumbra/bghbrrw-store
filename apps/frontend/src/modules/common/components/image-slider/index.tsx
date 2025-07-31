@@ -2,6 +2,7 @@
 
 import { clx } from "@medusajs/ui"
 import React, { useState, useEffect, useCallback, useRef } from "react"
+import Image from "next/image"
 import ChevronLeft from "@modules/common/icons/chevron-left"
 import ChevronRight from "@modules/common/icons/chevron-right"
 
@@ -45,26 +46,49 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
   const nextSlide = useCallback(() => {
     if (isTransitioning) return
     setIsTransitioning(true)
-    setCurrentIndex((prevIndex) => 
-      prevIndex === images.length - 1 ? 0 : prevIndex + 1
-    )
-    setTimeout(() => setIsTransitioning(false), 300)
+    
+    setCurrentIndex((prevIndex) => {
+      const newIndex = prevIndex === images.length - 1 ? 0 : prevIndex + 1
+      return newIndex
+    })
+    
+    // Reset transitioning state after the transition completes
+    const transitionTimer = setTimeout(() => {
+      setIsTransitioning(false)
+    }, 350) // Slightly longer than transition duration
+    
+    return () => clearTimeout(transitionTimer)
   }, [images.length, isTransitioning])
 
   const prevSlide = useCallback(() => {
     if (isTransitioning) return
     setIsTransitioning(true)
-    setCurrentIndex((prevIndex) => 
-      prevIndex === 0 ? images.length - 1 : prevIndex - 1
-    )
-    setTimeout(() => setIsTransitioning(false), 300)
+    
+    setCurrentIndex((prevIndex) => {
+      const newIndex = prevIndex === 0 ? images.length - 1 : prevIndex - 1
+      return newIndex
+    })
+    
+    // Reset transitioning state after the transition completes
+    const transitionTimer = setTimeout(() => {
+      setIsTransitioning(false)
+    }, 350) // Slightly longer than transition duration
+    
+    return () => clearTimeout(transitionTimer)
   }, [images.length, isTransitioning])
 
   const goToSlide = useCallback((index: number) => {
     if (isTransitioning || index === currentIndex) return
     setIsTransitioning(true)
+    
     setCurrentIndex(index)
-    setTimeout(() => setIsTransitioning(false), 300)
+    
+    // Reset transitioning state after the transition completes
+    const transitionTimer = setTimeout(() => {
+      setIsTransitioning(false)
+    }, 350) // Slightly longer than transition duration
+    
+    return () => clearTimeout(transitionTimer)
   }, [currentIndex, isTransitioning])
 
   // Auto-play functionality
@@ -145,8 +169,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
     <div
       data-testid={dataTestId}
       className={clx(
-        "relative w-full overflow-hidden rounded-lg bg-gray-100",
-        aspectRatioClasses[aspectRatio],
+        "relative w-full aspect-[29/34] overflow-hidden rounded-lg bg-ui-bg-subtle",
         className
       )}
       onMouseEnter={handleMouseEnter}
@@ -157,7 +180,7 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
     >
       {/* Image container */}
       <div
-        className="flex h-full transition-transform duration-300 ease-in-out"
+        className="flex h-full transition-transform duration-300 ease-[cubic-bezier(0.25, 0.1, 0.25, 1)] will-change-transform"
         style={{
           transform: `translateX(-${currentIndex * 100}%)`,
           width: `${images.length * 100}%`
@@ -167,13 +190,20 @@ const ImageSlider: React.FC<ImageSliderProps> = ({
           <div
             key={index}
             className="relative w-full h-full flex-shrink-0"
-            style={{ width: `${100 / images.length}%` }}
           >
-            <img
+            <Image
               src={image.src}
               alt={image.alt}
-              className="w-full h-full object-cover"
-              loading={index === 0 ? "eager" : "lazy"}
+              fill
+              priority={index === 0}
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              onError={(e) => {
+                // Handle broken images
+                const target = e.target as HTMLImageElement
+                target.src = '/images/placeholder.jpg'
+                target.alt = 'Image not available'
+              }}
             />
             {(image.title || image.description) && (
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 text-white">
