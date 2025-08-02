@@ -4,6 +4,9 @@
   "description": "Badgerstore Monorepo",
   "author": "FRST.uk",
   "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
   "devDependencies": {
     "concurrently": "^8.0.1",
     "ts-node": "^10.9.2"

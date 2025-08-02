@@ -2,7 +2,8 @@
   "files": [],
   "references": [
     { "path": "./apps/backend" },
-    { "path": "./apps/frontend" }
+    { "path": "./apps/frontend" },
+    { "path": "./apps/cms" }
   ],
   "compilerOptions": {
     "target": "ES2022",

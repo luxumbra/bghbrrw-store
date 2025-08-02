@@ -13,7 +13,7 @@ import ProductActionsWrapper from "./product-actions-wrapper"
 import { HttpTypes } from "@medusajs/types"
 import { BenefitsBar, BenefitsList, benefitsData } from "@/modules/common/components/benefits-bar"
 import { retrieveCustomer } from "@/lib/data/customer"
-import ProductImageCarousel, { SlideImage } from "@/modules/common/components/product-image-carousel"
+import { ProductImageCarousel } from "@/modules/common/components/product-image-carousel"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -32,7 +32,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = async ({
 
   const customer = await retrieveCustomer()
   const isAuthenticated = !!customer
-const sliderImages: SlideImage[] = product.images?.map((image) => ({
+const sliderImages = product.images?.map((image) => ({
   src: image.url,
   alt: product.subtitle || product.title,
 })) || []
@@ -43,20 +43,15 @@ const sliderImages: SlideImage[] = product.images?.map((image) => ({
         className="content-container flex flex-col small:flex-row small:items-start py-6 relative"
         data-testid="product-container"
       >
-        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-6 order-1 small:order-0">
+        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-6 order-2 small:order-1">
           <ProductInfo product={product} />
           <ProductTabs product={product} />
         </div>
-        <div className="block w-full relative order-0">
+        <div className="block w-full relative order-1 small:order-2">
           {sliderImages && (
-          <div className="small:hidden block order-0">
-            <ProductImageCarousel 
-              images={sliderImages || []} 
-              aspectRatio="tall"
-              showDots={true}
-              showArrows={true}
-              autoPlay={true}
-              autoPlayInterval={5000}
+          <div className="small:hidden block">
+            <ProductImageCarousel
+              images={sliderImages || []}
             />
           </div>
           )}
@@ -66,7 +61,7 @@ const sliderImages: SlideImage[] = product.images?.map((image) => ({
           </div>
           )}
         </div>
-        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-12 order-2 small:order-1">
+        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-12 order-3 small:order-3">
           <ProductOnboardingCta />
           <Suspense
             fallback={
