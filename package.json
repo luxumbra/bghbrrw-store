@@ -19,6 +19,7 @@
     "build": "pnpm --recursive build",
     "build:frontend": "pnpm --filter @badgerstore/frontend build",
     "build:backend": "pnpm --filter @badgerstore/backend build",
+    "start:backend": "pnpm --filter @badgerstore/backend start",
     "build:cms": "pnpm --filter @badgerstore/cms build"
   }
 }
