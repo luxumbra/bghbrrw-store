@@ -2,25 +2,6 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:15-alpine
-    container_name: boughandburrow-postgres
-    environment:
-      POSTGRES_DB: boughandburrow_dev
-      POSTGRES_USER: medusa
-      POSTGRES_PASSWORD: medusa
-    command: postgres -c ssl=off
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U medusa -d boughandburrow_dev"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   redis:
     image: redis:7-alpine
     container_name: boughandburrow-redis
@@ -45,17 +26,13 @@ services:
       - "9000:9000"
       - "7000:7000"  # Admin UI
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
     env_file:
       - apps/backend/.env
     environment:
-      # Override specific values for Docker networking
-      - DATABASE_URL=postgresql://medusa:medusa@postgres:5432/boughandburrow_dev
+      # Override specific values for Docker networking  
       - REDIS_URL=redis://redis:6379
-      - PGSSLMODE=disable
       # Stripe configuration
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
@@ -110,7 +87,6 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres_data:
   redis_data:
 
 networks:
