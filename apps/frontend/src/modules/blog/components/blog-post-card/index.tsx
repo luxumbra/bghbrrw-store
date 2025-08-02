@@ -1,7 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
 import { formatDistanceToNow } from "date-fns"
-import { BlogPost } from "@/types/sanity"
+import type { BlogPost } from "@/types/sanity"
 import { urlFor } from "@/sanity/lib/client"
 
 interface BlogPostCardProps {
@@ -33,7 +33,7 @@ export default function BlogPostCard({ post, countryCode }: BlogPostCardProps) {
             <div className="flex items-center gap-2 mb-3">
               {post.categories.map((category) => (
                 <span
-                  key={`${post.slug}-${category._id}-${category.slug}`}
+                  key={`${post.slug.current}-${category._id}-${category.slug.current}`}
                   className="inline-block px-2 py-1 text-xs font-medium rounded-full"
                   style={{
                     backgroundColor: category.color || "#18181b",

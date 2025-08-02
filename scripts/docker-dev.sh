@@ -36,9 +36,7 @@ dev_up() {
         create_frontend_env
     fi
 
-    docker-compose up -d postgres redis
-    print_status "Waiting for database to be ready..."
-    sleep 10
+    docker-compose up -d redis
 
     docker-compose up -d backend
     print_status "Waiting for backend to be ready..."
@@ -53,7 +51,7 @@ dev_up() {
     print_status "Admin UI: http://localhost:9000/app"
     print_status "Frontend (Next.js): http://localhost:8000"
     print_status "CMS (Sanity Studio): http://localhost:3333"
-    print_status "PostgreSQL: localhost:5432"
+    print_status "Database: Neon Cloud (PostgreSQL)"
     print_status "Redis: localhost:6379"
 }
 
@@ -139,14 +137,17 @@ db_setup() {
 
 # Function to reset database
 db_reset() {
-    print_warning "This will destroy all data in the database. Are you sure? (y/N)"
+    print_warning "This will destroy all data in the Neon database. Are you sure? (y/N)"
     read -r response
     if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
-        print_status "Resetting database..."
-        docker-compose down
-        docker volume rm website_postgres_data 2>/dev/null || true
-        docker-compose up -d postgres
-        sleep 10
+        print_status "Resetting Neon database..."
+        print_warning "Note: This will drop all tables and recreate the schema."
+        print_warning "Make sure you have a backup if you need to restore data later."
+        
+        # Stop backend to avoid conflicts
+        docker-compose stop backend
+        
+        # Run setup which will handle migrations and seeding
         db_setup
     else
         print_status "Database reset cancelled."
@@ -156,8 +157,8 @@ db_reset() {
 # Function to create backend .env file
 create_backend_env() {
     cat > apps/backend/.env << EOF
-# Database (Docker will override this)
-DATABASE_URL=postgresql://medusa:medusa@localhost:5432/boughandburrow_dev
+# Database (Neon Cloud - replace with your actual connection string)
+DATABASE_URL=postgresql://your_username:your_password@your_host/your_database?sslmode=require&channel_binding=require
 
 # Medusa Core
 NODE_ENV=development
@@ -281,14 +282,22 @@ db_backup() {
     local sql_backup="backups/${backup_name}.sql"
     local dump_backup="backups/${backup_name}.dump"
 
-    print_status "Creating database backups..."
+    print_status "Creating database backups from Neon..."
 
     # Create backups directory if it doesn't exist
     mkdir -p backups
 
+    # Get database URL from backend .env
+    local db_url=$(grep "^DATABASE_URL=" apps/backend/.env | cut -d'=' -f2-)
+
+    if [ -z "$db_url" ]; then
+        print_error "DATABASE_URL not found in apps/backend/.env"
+        exit 1
+    fi
+
     # Create SQL backup (human-readable)
     print_status "Creating SQL backup..."
-    docker-compose exec -T postgres pg_dump -U medusa -d boughandburrow_dev > "$sql_backup"
+    pg_dump "$db_url" > "$sql_backup"
 
     if [ $? -eq 0 ]; then
         print_status "SQL backup created: $sql_backup"
@@ -307,7 +316,7 @@ db_backup() {
 
     # Create custom format backup (binary, faster restore)
     print_status "Creating custom format backup..."
-    docker-compose exec -T postgres pg_dump -U medusa -d boughandburrow_dev -Fc > "$dump_backup"
+    pg_dump "$db_url" -Fc > "$dump_backup"
 
     if [ $? -eq 0 ]; then
         print_status "Custom format backup created: $dump_backup"
@@ -352,7 +361,7 @@ db_restore() {
         fi
     fi
 
-    print_warning "This will replace all data in the database. Are you sure? (y/N)"
+    print_warning "This will replace all data in the Neon database. Are you sure? (y/N)"
     read -r response
     if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
         print_status "Database restore cancelled."
@@ -361,26 +370,30 @@ db_restore() {
 
     print_status "Restoring database from: $backup_file"
 
+    # Get database URL from backend .env
+    local db_url=$(grep "^DATABASE_URL=" apps/backend/.env | cut -d'=' -f2-)
+
+    if [ -z "$db_url" ]; then
+        print_error "DATABASE_URL not found in apps/backend/.env"
+        exit 1
+    fi
+
     # Stop backend to avoid conflicts
     docker-compose stop backend
-
-    # Drop and recreate database
-    docker-compose exec postgres psql -U medusa -c "DROP DATABASE IF EXISTS boughandburrow_dev;"
-    docker-compose exec postgres psql -U medusa -c "CREATE DATABASE boughandburrow_dev;"
 
     # Determine restore method based on file extension
     if [[ "$backup_file" == *.dump ]]; then
         # Custom format restore (faster, supports parallel restore)
         print_status "Restoring from custom format backup..."
-        docker-compose exec -T postgres pg_restore -U medusa -d boughandburrow_dev --clean --if-exists < "$backup_file"
+        pg_restore "$db_url" --clean --if-exists < "$backup_file"
     elif [[ "$backup_file" == *.sql.gz ]]; then
         # Compressed SQL restore
         print_status "Restoring from compressed SQL backup..."
-        gunzip -c "$backup_file" | docker-compose exec -T postgres psql -U medusa -d boughandburrow_dev
+        gunzip -c "$backup_file" | psql "$db_url"
     elif [[ "$backup_file" == *.sql ]]; then
         # Plain SQL restore
         print_status "Restoring from SQL backup..."
-        docker-compose exec -T postgres psql -U medusa -d boughandburrow_dev < "$backup_file"
+        psql "$db_url" < "$backup_file"
     else
         print_error "Unsupported backup file format. Supported: .sql, .sql.gz, .dump"
         exit 1

@@ -24,7 +24,7 @@ export default function BlogPostContent({
                   <div className="flex items-center justify-start gap-2">
           {post.categories.map((category) => (
             <span
-              key={category._id}
+              key={category.slug.current}
               className="inline-block px-3 py-1 text-sm font-medium rounded-full"
               style={{
                 backgroundColor: category.color || "#333",
