@@ -106,6 +106,24 @@ db_seed_bnb() {
     fi
 }
 
+# Function to import Etsy reviews
+import_etsy_reviews() {
+    print_status "Importing Etsy reviews..."
+    if [ -f "apps/backend/src/scripts/import-etsy-reviews.ts" ]; then
+        if [ -f "etsy/reviews.json" ]; then
+            docker-compose exec backend npx medusa exec ./src/scripts/import-etsy-reviews.ts
+            print_status "Etsy reviews imported successfully!"
+            print_status "You can view and manage reviews in the admin at http://localhost:9000/app/reviews"
+        else
+            print_error "Etsy reviews file not found: etsy/reviews.json"
+            print_status "Please ensure the etsy/reviews.json file exists with review data"
+        fi
+    else
+        print_error "Etsy reviews import script not found"
+        print_status "The script should be at apps/backend/src/scripts/import-etsy-reviews.ts"
+    fi
+}
+
 # Function to setup database (migrate + seed)
 db_setup() {
     print_status "Setting up database (migrate + seed)..."
@@ -415,6 +433,9 @@ case "$1" in
     seed-bnb)
         db_seed_bnb
         ;;
+    import-reviews)
+        import_etsy_reviews
+        ;;
     setup)
         db_setup
         ;;
@@ -433,29 +454,31 @@ case "$1" in
     *)
         echo "Bough and Burrow Development Environment"
         echo ""
-        echo "Usage: $0 {up|down|restart|logs|migrate|seed|setup|reset|user|cleanup}"
+        echo "Usage: $0 {up|down|restart|logs|migrate|seed|setup|reset|user|cleanup|import-reviews}"
         echo ""
         echo "Commands:"
-        echo "  up       - Start the development environment"
-        echo "  down     - Stop the development environment"
-        echo "  restart  - Restart all services"
-        echo "  logs     - View logs (optionally specify service)"
-        echo "  migrate  - Run database migrations"
-        echo "  backup   - Create database backups"
-        echo "  restore  - Restore database from backup"
-        echo "  seed     - Seed the database with sample data"
-        echo "  seed-bnb - Seed the database with Bough & Burrow store data"
-        echo "  setup    - Setup database (migrate + seed)"
-        echo "  reset    - Reset database (WARNING: destroys all data)"
-        echo "  user     - Create a user (email password)"
-        echo "  secrets  - Generate secure secrets"
-        echo "  cleanup  - Clean up Docker resources"
+        echo "  up             - Start the development environment"
+        echo "  down           - Stop the development environment"
+        echo "  restart        - Restart all services"
+        echo "  logs           - View logs (optionally specify service)"
+        echo "  migrate        - Run database migrations"
+        echo "  backup         - Create database backups"
+        echo "  restore        - Restore database from backup"
+        echo "  seed           - Seed the database with sample data"
+        echo "  seed-bnb       - Seed the database with Bough & Burrow store data"
+        echo "  import-reviews - Import Etsy reviews into the product review system"
+        echo "  setup          - Setup database (migrate + seed)"
+        echo "  reset          - Reset database (WARNING: destroys all data)"
+        echo "  user           - Create a user (email password)"
+        echo "  secrets        - Generate secure secrets"
+        echo "  cleanup        - Clean up Docker resources"
         echo ""
         echo "Examples:"
         echo "  $0 up"
         echo "  $0 logs backend"
         echo "  $0 logs frontend"
         echo "  $0 user hello@boughandburrow.uk theburrow"
+        echo "  $0 import-reviews"
         exit 1
         ;;
 esac

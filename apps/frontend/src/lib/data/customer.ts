@@ -15,6 +15,13 @@ import {
   setAuthToken,
 } from "./cookies"
 
+export interface ReviewableOrdersResponse {
+  orders: any[]
+  count: number
+  limit: number
+  offset: number
+}
+
 export const retrieveCustomer =
   async (): Promise<HttpTypes.StoreCustomer | null> => {
     const authHeaders = await getAuthHeaders()
@@ -258,4 +265,93 @@ export const updateCustomerAddress = async (
     .catch((err) => {
       return { success: false, error: err.toString() }
     })
+}
+
+export const getReviewableOrders = async ({
+  limit = 20,
+  offset = 0
+}: {
+  limit?: number
+  offset?: number
+} = {}): Promise<ReviewableOrdersResponse> => {
+  const headers = await getAuthHeaders()
+
+  if (!headers) {
+    return {
+      orders: [],
+      count: 0,
+      limit,
+      offset
+    }
+  }
+
+  try {
+    const response = await sdk.client.fetch("/store/customers/me/orders/reviewable", {
+      query: {
+        limit: limit.toString(),
+        offset: offset.toString()
+      },
+      headers
+    })
+
+    return response as ReviewableOrdersResponse
+  } catch (error) {
+    console.error("Error fetching reviewable orders:", error)
+    return {
+      orders: [],
+      count: 0,
+      limit,
+      offset
+    }
+  }
+}
+
+export const submitOrderReview = async ({
+  orderId,
+  productId,
+  title,
+  content,
+  rating,
+  firstName,
+  lastName
+}: {
+  orderId: string
+  productId: string
+  title?: string
+  content: string
+  rating: number
+  firstName: string
+  lastName: string
+}): Promise<{ success: boolean; error?: string }> => {
+  const headers = await getAuthHeaders()
+
+  if (!headers) {
+    return { success: false, error: "Authentication required" }
+  }
+
+  try {
+    await sdk.client.fetch(`/store/orders/${orderId}/reviews`, {
+      method: "POST",
+      headers: {
+        ...headers,
+        "Content-Type": "application/json"
+      },
+      body: {
+        product_id: productId,
+        title,
+        content,
+        rating,
+        first_name: firstName,
+        last_name: lastName
+      }
+    })
+
+    return { success: true }
+  } catch (error) {
+    console.error("Error submitting review:", error)
+    return { 
+      success: false, 
+      error: error.message || "Failed to submit review" 
+    }
+  }
 }

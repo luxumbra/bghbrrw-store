@@ -5,12 +5,15 @@ import ProductActions from "@modules/products/components/product-actions"
 import ProductOnboardingCta from "@modules/products/components/product-onboarding-cta"
 import ProductTabs from "@modules/products/components/product-tabs"
 import RelatedProducts from "@modules/products/components/related-products"
+import ProductReviews from "@modules/products/components/product-reviews"
 import ProductInfo from "@modules/products/templates/product-info"
 import SkeletonRelatedProducts from "@modules/skeletons/templates/skeleton-related-products"
 import { notFound } from "next/navigation"
 import ProductActionsWrapper from "./product-actions-wrapper"
 import { HttpTypes } from "@medusajs/types"
 import { BenefitsBar, BenefitsList, benefitsData } from "@/modules/common/components/benefits-bar"
+import { retrieveCustomer } from "@/lib/data/customer"
+import { ProductImageCarousel } from "@/modules/common/components/product-image-carousel"
 
 type ProductTemplateProps = {
   product: HttpTypes.StoreProduct
@@ -18,7 +21,7 @@ type ProductTemplateProps = {
   countryCode: string
 }
 
-const ProductTemplate: React.FC<ProductTemplateProps> = ({
+const ProductTemplate: React.FC<ProductTemplateProps> = async ({
   product,
   region,
   countryCode,
@@ -27,20 +30,38 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
     return notFound()
   }
 
+  const customer = await retrieveCustomer()
+  const isAuthenticated = !!customer
+const sliderImages = product.images?.map((image) => ({
+  src: image.url,
+  alt: product.subtitle || product.title,
+})) || []
+
   return (
     <>
       <div
         className="content-container flex flex-col small:flex-row small:items-start py-6 relative"
         data-testid="product-container"
       >
-        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-6">
+        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-6 order-2 small:order-1">
           <ProductInfo product={product} />
           <ProductTabs product={product} />
         </div>
-        <div className="block w-full relative">
-          <ImageGallery images={product?.images || []} />
+        <div className="block w-full relative order-1 small:order-2">
+          {sliderImages && (
+          <div className="small:hidden block">
+            <ProductImageCarousel
+              images={sliderImages || []}
+            />
+          </div>
+          )}
+          {product.images && (
+          <div className="hidden small:block">
+            <ImageGallery images={product.images || []} />
+          </div>
+          )}
         </div>
-        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-12">
+        <div className="flex flex-col small:sticky small:top-48 small:py-0 small:max-w-[300px] w-full py-8 gap-y-12 order-3 small:order-3">
           <ProductOnboardingCta />
           <Suspense
             fallback={
@@ -56,6 +77,15 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           <BenefitsList benefits={benefitsData.shopWithConfidence} borderless={true} />
         </div>
       </div>
+
+      {/* Product Reviews Section */}
+      <div
+        className="content-container my-16 small:my-32"
+        data-testid="product-reviews-container"
+      >
+        <ProductReviews product={product} />
+      </div>
+
       <div
         className="content-container my-16 small:my-32"
         data-testid="related-products-container"

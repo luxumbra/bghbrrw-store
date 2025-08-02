@@ -12,6 +12,9 @@
     @apply font-heading uppercase text-copy-color font-normal;
   }
 
+  h1 {
+    @apply text-2xl xl:text-6xl;
+  }
 
   h1 + h2 {
     @apply mt-4 font-body font-normal text-primary;

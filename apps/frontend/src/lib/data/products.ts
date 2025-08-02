@@ -6,6 +6,7 @@ import { HttpTypes } from "@medusajs/types"
 import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
 import { getAuthHeaders, getCacheOptions } from "./cookies"
 import { getRegion, retrieveRegion } from "./regions"
+import { ProductReview, ReviewsResponse } from "@/types/global"
 
 export const listProducts = async ({
   pageParam = 1,
@@ -133,4 +134,153 @@ export const listProductsWithSort = async ({
     nextPage,
     queryParams,
   }
+}
+
+/**
+ * Get reviews for a specific product
+ */
+export const getProductReviews = async ({
+  productId,
+  limit = 10,
+  offset = 0,
+}: {
+  productId: string
+  limit?: number
+  offset?: number
+}): Promise<ReviewsResponse> => {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  const next = {
+    ...(await getCacheOptions("reviews")),
+  }
+
+  return sdk.client
+    .fetch<ReviewsResponse>(
+      `/store/products/${productId}/reviews`,
+      {
+        method: "GET",
+        query: {
+          limit,
+          offset,
+        },
+        headers,
+        next,
+        cache: "force-cache",
+      }
+    )
+}
+
+/**
+ * Get reviews for a specific collection
+ */
+export const getCollectionReviews = async ({
+  collectionId,
+  limit = 20,
+  offset = 0,
+}: {
+  collectionId: string
+  limit?: number
+  offset?: number
+}): Promise<ReviewsResponse> => {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  const next = {
+    ...(await getCacheOptions("reviews")),
+  }
+
+  return sdk.client
+    .fetch<ReviewsResponse>(
+      `/store/reviews/collections/${collectionId}`,
+      {
+        method: "GET",
+        query: {
+          limit,
+          offset,
+        },
+        headers,
+        next,
+        cache: "force-cache",
+      }
+    )
+}
+
+/**
+ * Get showcase reviews (all reviews across products)
+ */
+export const getShowcaseReviews = async ({
+  limit = 20,
+  offset = 0,
+  minRating = 1,
+}: {
+  limit?: number
+  offset?: number
+  minRating?: number
+}): Promise<ReviewsResponse> => {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  const next = {
+    ...(await getCacheOptions("reviews")),
+  }
+
+  return sdk.client
+    .fetch<ReviewsResponse>(
+      `/store/reviews/showcase`,
+      {
+        method: "GET",
+        query: {
+          limit,
+          offset,
+          minRating,
+        },
+        headers,
+        next,
+        cache: "force-cache",
+      }
+    )
+}
+
+/**
+ * Add a review for a product
+ */
+export const addProductReview = async ({
+  title,
+  content,
+  rating,
+  product_id,
+  first_name,
+  last_name,
+}: {
+  title?: string
+  content: string
+  rating: number
+  product_id: string
+  first_name: string
+  last_name: string
+}): Promise<{ review: ProductReview }> => {
+  const headers = {
+    ...(await getAuthHeaders()),
+  }
+
+  return sdk.client
+    .fetch<{ review: ProductReview }>(
+      `/store/reviews`,
+      {
+        method: "POST",
+        body: {
+          title,
+          content,
+          rating,
+          product_id,
+          first_name,
+          last_name,
+        },
+        headers,
+      }
+    )
 }

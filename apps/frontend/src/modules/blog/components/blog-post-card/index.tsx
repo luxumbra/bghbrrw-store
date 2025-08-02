@@ -12,7 +12,6 @@ interface BlogPostCardProps {
 export default function BlogPostCard({ post, countryCode }: BlogPostCardProps) {
   const publishedDate = new Date(post.publishedAt)
   const timeAgo = formatDistanceToNow(publishedDate, { addSuffix: true })
-    console.log(post.slug, post._id);
 
   return (
     <article className="overflow-hidden transition-shadow duration-300 rounded-lg shadow-md bg-zinc-800 hover:shadow-lg">

@@ -1,0 +1,29 @@
+{
+  "mappingStrategy": "intelligent",
+  "manualMappings": {
+    "3714239716": {
+      "comment": "Edward's review - mentions wood and lights",
+      "keywords": ["wood", "lights", "natural"],
+      "productHandle": null,
+      "note": "Will use intelligent mapping"
+    },
+    "3659104608": {
+      "comment": "Andy's review - mentions wood slices and lights", 
+      "keywords": ["wood", "slice", "lights", "art"],
+      "productHandle": null,
+      "note": "Will use intelligent mapping"
+    },
+    "3594517773": {
+      "comment": "Ria's review - mentions wood/gonk with flowers",
+      "keywords": ["wood", "gonk", "flowers", "decorative"],
+      "productHandle": null,
+      "note": "Will use intelligent mapping"
+    }
+  },
+  "fallbackStrategy": "first-product",
+  "notes": [
+    "Set productHandle to a specific product handle to force mapping",
+    "Set to null to use intelligent keyword matching",
+    "Keywords are used for intelligent mapping when productHandle is null"
+  ]
+}

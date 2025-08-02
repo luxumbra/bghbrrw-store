@@ -1,16 +1,28 @@
 import { Button } from "@medusajs/ui"
-import { useMemo } from "react"
+import { useMemo, useState } from "react"
 
 import Thumbnail from "@modules/products/components/thumbnail"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import ReviewFormModal from "../review-form-modal"
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
 
 type OrderCardProps = {
-  order: HttpTypes.StoreOrder
+  order: HttpTypes.StoreOrder & {
+    has_delivered_items?: boolean
+    items?: Array<HttpTypes.StoreOrderLineItem & {
+      can_review?: boolean
+      is_delivered?: boolean
+    }>
+  }
 }
 
 const OrderCard = ({ order }: OrderCardProps) => {
+  const [selectedProductForReview, setSelectedProductForReview] = useState<{
+    productId: string
+    productTitle: string
+  } | null>(null)
+
   const numberOfLines = useMemo(() => {
     return (
       order.items?.reduce((acc, item) => {
@@ -22,6 +34,13 @@ const OrderCard = ({ order }: OrderCardProps) => {
   const numberOfProducts = useMemo(() => {
     return order.items?.length ?? 0
   }, [order])
+
+  const hasReviewableItems = useMemo(() => {
+    return order.items?.some(item => item.can_review) ?? false
+  }, [order])
+
+  // Use the delivered status from the merged order data
+  const isDelivered = order.has_delivered_items ?? false
 
   return (
     <div className="bg-primary-bg flex flex-col" data-testid="order-card">
@@ -51,15 +70,35 @@ const OrderCard = ({ order }: OrderCardProps) => {
               data-testid="order-item"
             >
               <Thumbnail thumbnail={i.thumbnail} images={[]} size="full" />
-              <div className="flex items-center text-small-regular text-ui-fg-base">
-                <span
-                  className="text-ui-fg-base font-semibold"
-                  data-testid="item-title"
-                >
-                  {i.title}
-                </span>
-                <span className="ml-2">x</span>
-                <span data-testid="item-quantity">{i.quantity}</span>
+              <div className="flex flex-col gap-y-1">
+                <div className="flex items-center text-small-regular text-ui-fg-base">
+                  <span
+                    className="text-ui-fg-base font-semibold"
+                    data-testid="item-title"
+                  >
+                    {i.title}
+                  </span>
+                  <span className="ml-2">x</span>
+                  <span data-testid="item-quantity">{i.quantity}</span>
+                </div>
+                {isDelivered && i.can_review && (
+                  <Button
+                    size="small"
+                    variant="secondary"
+                    onClick={() => setSelectedProductForReview({
+                      productId: i.product_id!,
+                      productTitle: i.title
+                    })}
+                    className="mt-1 text-xs"
+                  >
+                    Leave Review
+                  </Button>
+                )}
+                {isDelivered && i.can_review === false && (
+                  <span className="text-xs text-gray-500 mt-1">
+                    Review submitted
+                  </span>
+                )}
               </div>
             </div>
           )
@@ -80,6 +119,21 @@ const OrderCard = ({ order }: OrderCardProps) => {
           </Button>
         </LocalizedClientLink>
       </div>
+
+      {/* Review Form Modal */}
+      {selectedProductForReview && (
+        <ReviewFormModal
+          isOpen={!!selectedProductForReview}
+          onClose={() => setSelectedProductForReview(null)}
+          orderId={order.id}
+          productId={selectedProductForReview.productId}
+          productTitle={selectedProductForReview.productTitle}
+          customerName={{
+            firstName: order.shipping_address?.first_name || "",
+            lastName: order.shipping_address?.last_name || ""
+          }}
+        />
+      )}
     </div>
   )
 }

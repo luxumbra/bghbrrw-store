@@ -50,9 +50,9 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
 
   return (
     <div className="py-16 content-container">
-      <div className="mb-12">
-        <h1 className="mb-4 text-4xl font-bold">Blog</h1>
-        <p className="max-w-2xl text-xl">
+      <div className="mb-12 prose prose-xl prose-invert prose-h1:font-normal">
+        <h1 className="text-copy-color">Blog</h1>
+        <p className="max-w-2xl text-xl text-copy-color/70">
           Discover the latest news, tips, and insights from our team at Bough & Burrow.
         </p>
       </div>

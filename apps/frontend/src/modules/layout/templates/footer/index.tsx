@@ -1,3 +1,5 @@
+import BusinessRatingWidget from "@/modules/common/components/business-rating-widget"
+import { Icon } from "@iconify/react"
 import { listCategories } from "@lib/data/categories"
 import { listCollections } from "@lib/data/collections"
 import { getCompanyInfo } from "@lib/data/company"
@@ -26,20 +28,35 @@ export default async function Footer() {
             </LocalizedClientLink>
             {companyInfo.location && (
               <div className="mt-2 text-ui-fg-subtle txt-small">
-                <div className="font-medium">{companyInfo.location.name}</div>
+                {/* <div className="font-medium">{companyInfo.location.name}</div> */}
                 {companyInfo.location.address.address_1 && (
                   <div>{companyInfo.location.address.address_1}</div>
                 )}
                 {companyInfo.location.address.city && (
                   <div>{companyInfo.location.address.city}</div>
                 )}
-                {companyInfo.location.address.country_code && (
-                  <div>
-                    {companyInfo.location.address.country_code.toUpperCase()}
-                  </div>
-                )}
+                <div>
+                  <a
+                    href={`mailto:${companyInfo.email}`}
+                    className="hover:text-ui-fg-base"
+                  >
+                    {companyInfo.email}
+                  </a>
+                </div>
               </div>
             )}
+            <BusinessRatingWidget size="small" showLink={true} />
+            <ul className="grid grid-cols-3">
+              <li>
+                <Icon icon="mage:stripe" className="w-5 h-5" />
+              </li>
+              <li>
+                <Icon icon="mage:visa" className="w-5 h-5" />
+              </li>
+              <li>
+                <Icon icon="lineicons:mastercard" className="w-5 h-5" />
+              </li>
+            </ul>
           </div>
           <div className="grid grid-cols-2 gap-10 text-small-regular md:gap-x-16 sm:grid-cols-3">
             {productCategories && productCategories?.length > 0 && (
@@ -109,7 +126,7 @@ export default async function Footer() {
                   className={clx(
                     "grid grid-cols-1 gap-2 text-ui-fg-subtle txt-small",
                     {
-                      "grid-cols-2": (collections?.length || 0) > 3,
+                      "grid-cols-1": (collections?.length || 0) > 3,
                     }
                   )}
                 >
@@ -152,11 +169,8 @@ export default async function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a
-                    href={`mailto:${companyInfo.email}`}
-                    className="hover:text-ui-fg-base"
-                  >
-                    {companyInfo.email}
+                  <a href={`/contact-us`} className="hover:text-ui-fg-base">
+                    Contact Us
                   </a>
                 </li>
                 <li>
@@ -175,7 +189,7 @@ export default async function Footer() {
                     Terms &amp; Conditions
                   </LocalizedClientLink>
                 </li>
-                                <li>
+                <li>
                   <LocalizedClientLink
                     className="hover:text-ui-fg-base"
                     href={`/shipping-and-returns`}
