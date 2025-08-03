@@ -1,30 +1,25 @@
 # Railway-specific Dockerfile for backend only
 FROM node:20-alpine
 
-# Install pnpm
-RUN npm install -g pnpm@latest
+# Install pnpm and medusa CLI
+RUN npm install -g pnpm@latest @medusajs/cli@2.8.0
 
 WORKDIR /app
 
-# Copy backend package.json specifically
-COPY ./package.json ./package.json
+# Copy backend package.json only
+COPY package.json ./
 
-# Install backend dependencies only
+# Install backend dependencies
 RUN pnpm install
 
 # Copy backend source code
 COPY . .
 
-# Debug: Verify we have the right package.json
-RUN echo "=== Package.json contents ===" && cat package.json | head -10
-RUN echo "=== Checking for backend scripts ===" && cat package.json | grep -A5 '"scripts"'
-RUN echo "=== Directory contents ===" && ls -la
-
-# Build the backend using local CLI
-RUN pnpm run build
+# Build using the working global CLI (2.8.0 - stable version)
+RUN medusa build
 
 # Expose port
 EXPOSE 9000
 
-# Start the backend using local CLI
-CMD ["pnpm", "run", "start"]
+# Start using the working global CLI
+CMD ["medusa", "start"]
