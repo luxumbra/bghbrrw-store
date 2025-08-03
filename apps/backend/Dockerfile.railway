@@ -1,21 +1,33 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+# Copy only backend files
+COPY apps/backend/package.json ./
+COPY apps/backend/src ./src
+COPY apps/backend/medusa-config.js ./
+COPY apps/backend/tsconfig.json ./
+
+# Install pnpm and dependencies (backend only)
+RUN npm install -g pnpm
+RUN pnpm install --frozen-lockfile=false
+
+# Build the backend
+RUN pnpm run build
+
+# Production stage
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy package.json
-COPY apps/backend/package.json ./
+# Copy built application from builder stage
+COPY --from=builder /app/.medusa ./.medusa
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/medusa-config.js ./
 
-# Install pnpm and dependencies
+# Install production dependencies only
 RUN npm install -g pnpm
-RUN pnpm install --frozen-lockfile=false --prod
-
-COPY apps/backend/pnpm-lock.yaml ./
-
-# Copy built application (.medusa directory)
-COPY apps/backend/.medusa ./.medusa
-
-# Copy any other necessary files (like medusa-config.js if needed)
-COPY apps/backend/medusa-config.js ./
+RUN pnpm install --prod --frozen-lockfile=false
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs
@@ -23,6 +35,4 @@ RUN adduser -S medusa -u 1001
 USER medusa
 
 EXPOSE 9000
-
-# Start the server from .medusa/server
 CMD ["node", ".medusa/server/index.js"]
