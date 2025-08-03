@@ -20,6 +20,10 @@ RUN npm install -g @medusajs/cli@2.8.8
 # Copy backend source code
 COPY . .
 
+# Debug: Check package.json content
+RUN cat package.json | head -20
+RUN ls -la
+
 # Build the backend
 RUN npx medusa build
 
@@ -27,4 +31,4 @@ RUN npx medusa build
 EXPOSE 9000
 
 # Start the backend
-CMD ["pnpm", "run", "start"]
+CMD ["npx", "medusa", "start"]
