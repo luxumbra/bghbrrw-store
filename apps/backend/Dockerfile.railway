@@ -1,24 +1,21 @@
 # Railway-specific Dockerfile for backend only
 FROM node:20-alpine
 
-# Install pnpm properly with correct PATH
+# Install pnpm
 RUN npm install -g pnpm@latest
-ENV PATH="/usr/local/bin:$PATH"
 
 WORKDIR /app
 
-# Copy package files from the monorepo root (2 levels up)
-COPY ../../package.json ../../pnpm-lock.yaml ./
-COPY package.json ./apps/backend/
+# Copy backend package.json
+COPY package.json ./
 
-# Install dependencies (this installs medusa CLI)
-RUN pnpm install --frozen-lockfile
+# Install backend dependencies (no lockfile since it's not a workspace)
+RUN pnpm install
 
 # Copy backend source code
-COPY . ./apps/backend/
+COPY . .
 
-# Build backend
-WORKDIR /app/apps/backend
+# Build the backend
 RUN pnpm run build
 
 # Expose port
