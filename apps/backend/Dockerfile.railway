@@ -12,10 +12,8 @@ COPY package.json ./
 # Install backend dependencies and ensure medusa CLI is available
 RUN pnpm install
 
-# Verify medusa CLI is installed and accessible
+# Verify medusa CLI is installed locally (avoid global CLI with bugs)
 RUN pnpm list @medusajs/cli
-RUN npx medusa --version || echo "Medusa CLI not found, installing globally"
-RUN npm install -g @medusajs/cli@2.8.8
 
 # Copy backend source code
 COPY . .
@@ -24,11 +22,11 @@ COPY . .
 RUN cat package.json | head -20
 RUN ls -la
 
-# Build the backend
-RUN npx medusa build
+# Build the backend using local CLI
+RUN pnpm run build
 
 # Expose port
 EXPOSE 9000
 
-# Start the backend
-CMD ["npx", "medusa", "start"]
+# Start the backend using local CLI
+CMD ["pnpm", "run", "start"]
