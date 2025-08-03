@@ -7,17 +7,17 @@ ENV PATH="/usr/local/bin:$PATH"
 
 WORKDIR /app
 
-# Copy package files for better caching
-COPY package.json pnpm-lock.yaml ./
-COPY apps/backend/package.json ./apps/backend/
+# Copy package files from the monorepo root (2 levels up)
+COPY ../../package.json ../../pnpm-lock.yaml ./
+COPY package.json ./apps/backend/
 
-# Install dependencies
+# Install dependencies (this installs medusa CLI)
 RUN pnpm install --frozen-lockfile
 
-# Copy source code
-COPY . .
+# Copy backend source code
+COPY . ./apps/backend/
 
-# Build backend only
+# Build backend
 WORKDIR /app/apps/backend
 RUN pnpm run build
 
