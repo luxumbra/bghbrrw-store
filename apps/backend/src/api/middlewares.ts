@@ -1,4 +1,4 @@
-import { defineMiddlewares } from "@medusajs/framework/http"
+import { defineMiddlewares, authenticate } from "@medusajs/framework/http"
 import { z } from "zod"
 import { PostStoreReviewSchema } from "./store/reviews/route"
 import { GetStoreReviewsSchema } from "./store/products/[id]/reviews/route"
@@ -10,7 +10,7 @@ export default defineMiddlewares({
     {
       matcher: "/store/reviews",
       method: "POST",
-      middlewares: ["authenticate:customer:bearer"]
+      middlewares: [authenticate("customer", ["bearer"])]
     },
     {
       matcher: "/store/products/:id/reviews", 

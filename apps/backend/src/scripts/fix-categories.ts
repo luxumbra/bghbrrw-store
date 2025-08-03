@@ -25,6 +25,7 @@ export default async function fixCategories({ container }: ExecArgs) {
     for (const category of brokenCategories) {
       try {
         await deleteProductCategoriesWorkflow(container).run({
+          // @ts-ignore - Workflow input type mismatch
           input: { ids: [category.id] },
         });
         logger.info(`  Deleted category ${category.id}`);

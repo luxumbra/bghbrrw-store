@@ -17,10 +17,10 @@ export const GET = async (
     const averageRating = await reviewModuleService.getCollectionAverageRating(id)
 
     res.json({
-      reviews: reviews.data,
-      meta: reviews.metadata,
+      reviews: reviews,
+      meta: { count: reviews.length },
       average_rating: averageRating,
-      total_reviews: reviews.metadata?.count || 0
+      total_reviews: reviews.length
     })
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch collection reviews" })

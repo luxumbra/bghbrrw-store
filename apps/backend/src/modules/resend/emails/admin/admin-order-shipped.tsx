@@ -305,7 +305,6 @@ const mockAdminOrderShipped: AdminOrderShippedEmailProps = {
                 type: "standard",
                 service_zones: [],
               },
-              metadata: {},
               geo_zones: [],
               shipping_options: [],
             },

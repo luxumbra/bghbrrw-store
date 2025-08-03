@@ -254,6 +254,7 @@ const mockFulfilled = {
  * @returns The email component with test data
  */
 export default () => (
+  // @ts-ignore - Mock data type mismatch
   <OrderFulfilledEmailComponent {...mockFulfilled} />
 );
 

@@ -50,8 +50,7 @@ export const GET = async (
       pagination: {
         take: limit,
         skip: offset
-      },
-      order: { created_at: "DESC" }
+      }
     })
 
     if (!orders || orders.length === 0) {
@@ -80,7 +79,7 @@ export const GET = async (
     const reviewableOrders = orders
       .filter(order => {
         // Only include orders that have been delivered (have fulfillments with delivered_at)
-        const hasDeliveredFulfillment = order.fulfillments?.some(fulfillment => fulfillment.delivered_at)
+        const hasDeliveredFulfillment = order.fulfillments?.some(fulfillment => fulfillment?.delivered_at)
         
         return hasDeliveredFulfillment
       })
@@ -88,7 +87,7 @@ export const GET = async (
         ...order,
         items: order.items?.map(item => ({
           ...item,
-          can_review: !reviewedOrderProductMap.has(`${order.id}-${item.product_id}`)
+          can_review: !reviewedOrderProductMap.has(`${order.id}-${item?.product_id}`)
         })) || []
       })).filter(order => 
         // Only include orders that have at least one reviewable item

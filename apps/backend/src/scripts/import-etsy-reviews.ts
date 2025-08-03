@@ -35,7 +35,7 @@ export default async function importEtsyReviews({ container }: ExecArgs) {
 
     // Read mapping configuration if it exists
     const mappingPath = path.join(process.cwd(), "../../etsy/review-mapping.json")
-    let mappingConfig = null
+    let mappingConfig: any = null
     try {
       if (fs.existsSync(mappingPath)) {
         mappingConfig = JSON.parse(fs.readFileSync(mappingPath, "utf8"))
@@ -70,7 +70,7 @@ export default async function importEtsyReviews({ container }: ExecArgs) {
     }
 
     // Map reviews to products more intelligently
-    const importedReviews = []
+    const importedReviews: any[] = []
 
     // Create a mapping strategy - we'll look for wood/lighting related products first
     const getMatchingProduct = (etsyReview: EtsyReview, products: any[]) => {
@@ -135,7 +135,7 @@ export default async function importEtsyReviews({ container }: ExecArgs) {
         existing.content === etsyReview.message &&
         existing.first_name === firstName &&
         existing.last_name === lastName &&
-        existing.rating === etsyReview.star_rating
+        Number(existing.rating) === etsyReview.star_rating
       )
 
       if (isDuplicate) {
@@ -157,7 +157,7 @@ export default async function importEtsyReviews({ container }: ExecArgs) {
         content: etsyReview.message,
         first_name: firstName,
         last_name: lastName,
-        status: "approved", // Import as approved since these are real reviews
+        status: "approved" as "pending" | "approved" | "rejected", // Import as approved since these are real reviews
         created_at: reviewDate,
         updated_at: reviewDate,
       }

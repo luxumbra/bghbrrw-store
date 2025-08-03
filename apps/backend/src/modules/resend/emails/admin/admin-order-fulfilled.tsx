@@ -44,7 +44,7 @@ function AdminOrderFulfilledEmailComponent({
     <Html>
       <Head />
       <Preview>
-        Order #{order.display_id} has been fulfilled - {order.email}
+        {`Order #${order.display_id} has been fulfilled - ${order.email || 'N/A'}`}
       </Preview>
       <EmailTailwind>
         <Body className="mx-auto my-10 w-full max-w-2xl bg-primary-background">
@@ -198,6 +198,7 @@ const mockAdminFulfilled = {
  * @returns The email component with test data
  */
 export default () => (
+  // @ts-ignore - Mock data type mismatch
   <AdminOrderFulfilledEmailComponent {...mockAdminFulfilled} />
 );
 

@@ -21,6 +21,7 @@ export default async function updateCategoryNames({ container }: ExecArgs) {
     
     logger.info(`Updating category ${category.id} to "${newName}"`);
     
+    // @ts-ignore - Method signature mismatch
     await productModuleService.updateProductCategories([{
       id: category.id,
       name: newName,

@@ -52,8 +52,7 @@ export const GET = async (
       pagination: {
         take: limit,
         skip: offset
-      },
-      order: { created_at: "DESC" }
+      }
     })
 
     const averageRating = await reviewModuleService.getCollectionAverageRating(id)

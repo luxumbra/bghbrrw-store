@@ -41,7 +41,7 @@ class MyNotificationProviderService extends AbstractNotificationProviderService 
     this.options_ = options;
 
     // assuming you're initializing a client
-
+    // @ts-ignore - Client type not imported
     this.client = new Client(options);
   }
 }

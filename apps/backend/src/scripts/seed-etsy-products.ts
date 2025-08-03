@@ -76,7 +76,7 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
   const shippingProfile = shippingProfiles[0];
 
   // Get stock location
-  const stockLocations = await stockLocationModuleService.listStockLocations();
+  const stockLocations = await stockLocationModuleService.listStockLocations({});
   const stockLocation = stockLocations[0];
 
   if (!stockLocation) {
@@ -126,12 +126,12 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
   // Check for existing products with matching SKUs
   logger.info("Checking for existing products with matching SKUs...");
   const allExistingProducts = await productModuleService.listProducts({}, { relations: ["variants"] });
-  const existingProductsBySku = new Map();
+  const existingProductsBySku = new Map<string, any>();
 
   // Map existing products by their SKUs
   allExistingProducts.forEach(product => {
     if (product.variants) {
-      product.variants.forEach(variant => {
+      product.variants.forEach((variant: any) => {
         if (variant.sku) {
           existingProductsBySku.set(variant.sku, product);
         }
@@ -174,8 +174,8 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
     const priceAmount = parseFloat(etsyProduct.PRICE);
 
     // Handle variations
-    const options = [];
-    const variants = [];
+    const options: any[] = [];
+    const variants: any[] = [];
 
     if (etsyProduct["VARIATION 1 TYPE"] && etsyProduct["VARIATION 1 VALUES"]) {
       const variation1Values = etsyProduct["VARIATION 1 VALUES"].split(",").map(v => v.trim());
@@ -235,7 +235,7 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
       });
 
       // Rebuild variants with both variations
-      const newVariants = [];
+      const newVariants: any[] = [];
       const variation1Values = etsyProduct["VARIATION 1 VALUES"].split(",").map(v => v.trim());
 
       let combinationIndex = 0;
@@ -286,11 +286,11 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
   });
 
   // Separate new products from updates
-  const newProducts = [];
-  const productUpdates = [];
+  const newProducts: any[] = [];
+  const productUpdates: any[] = [];
 
   // Also map existing products by handle for products without SKUs
-  const existingProductsByHandle = new Map();
+  const existingProductsByHandle = new Map<string, any>();
   allExistingProducts.forEach(product => {
     existingProductsByHandle.set(product.handle, product);
   });
@@ -305,7 +305,7 @@ export default async function seedEtsyProducts({ container }: ExecArgs) {
 
     if (hasExistingProductBySku || hasExistingProductByHandle) {
       // Find the existing product to update
-      let existingProduct = null;
+      let existingProduct: any = null;
 
       if (hasExistingProductBySku) {
         const firstVariantSku = productData.variants[0]?.sku;

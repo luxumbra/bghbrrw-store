@@ -49,13 +49,13 @@ export const POST = async (
     const order = orders[0]
 
     // Check if order has been delivered
-    const hasDeliveredFulfillment = order.fulfillments?.some(fulfillment => fulfillment.delivered_at)
+    const hasDeliveredFulfillment = order.fulfillments?.some(fulfillment => fulfillment?.delivered_at)
     if (!hasDeliveredFulfillment) {
       return res.status(400).json({ error: "Only delivered orders can be reviewed" })
     }
 
     // Check if customer purchased this product in this order
-    const productInOrder = order.items?.some(item => item.product_id === input.product_id)
+    const productInOrder = order.items?.some(item => item?.product_id === input.product_id)
     if (!productInOrder) {
       return res.status(400).json({ error: "Product not found in this order" })
     }
@@ -95,15 +95,15 @@ export const POST = async (
       order_id: order_id,
       customer_id: customerId,
       collection_id: collectionId,
-      status: "pending"
+      status: "pending" as "pending" | "approved" | "rejected"
     }
 
     // Create review using module service
     const reviewModuleService: ProductReviewModuleService = req.scope.resolve(PRODUCT_REVIEW_MODULE)
-    const createdReview = await reviewModuleService.createReviews([reviewData])
+    const createdReview = await reviewModuleService.createReviews(reviewData)
 
     res.status(201).json({
-      review: createdReview[0],
+      review: createdReview,
       message: "Review submitted successfully and is pending approval"
     })
 
