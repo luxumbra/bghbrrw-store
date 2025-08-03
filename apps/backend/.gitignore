@@ -1,6 +1,8 @@
 /dist
 .env
+.env.*
 .env.backup
+!.env.example
 
 .DS_Store
 /uploads
