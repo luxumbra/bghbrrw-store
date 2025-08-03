@@ -6,21 +6,19 @@ RUN npm install -g pnpm@latest
 
 WORKDIR /app
 
-# Copy backend package.json
-COPY package.json ./
+# Copy backend package.json specifically
+COPY ./package.json ./package.json
 
-# Install backend dependencies and ensure medusa CLI is available
+# Install backend dependencies only
 RUN pnpm install
-
-# Verify medusa CLI is installed locally (avoid global CLI with bugs)
-RUN pnpm list @medusajs/cli
 
 # Copy backend source code
 COPY . .
 
-# Debug: Check package.json content
-RUN cat package.json | head -20
-RUN ls -la
+# Debug: Verify we have the right package.json
+RUN echo "=== Package.json contents ===" && cat package.json | head -10
+RUN echo "=== Checking for backend scripts ===" && cat package.json | grep -A5 '"scripts"'
+RUN echo "=== Directory contents ===" && ls -la
 
 # Build the backend using local CLI
 RUN pnpm run build
