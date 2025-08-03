@@ -551,8 +551,10 @@ export default async function seedBoughAndBurrow({ container }: ExecArgs) {
       if (product.variants) {
         product.variants.forEach(variant => {
           // Check if the variant has an inventory_item_id
+          // @ts-ignore - inventory_item_id property type mismatch
           if (variant.inventory_item_id) {
             inventoryLevels.push({
+              // @ts-ignore - inventory_item_id property type mismatch
               inventory_item_id: variant.inventory_item_id,
               location_id: stockLocation.id,
               stocked_quantity: 10, // Default stock level

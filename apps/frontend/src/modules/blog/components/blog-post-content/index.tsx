@@ -1,7 +1,7 @@
 import Image from "next/image"
 import { format } from "date-fns"
 import { PortableText } from "@portabletext/react"
-import { BlogPost } from "@/types/sanity"
+import type { BlogPost } from "@/types/sanity"
 import { urlFor } from "@/sanity/lib/client"
 import { portableTextComponents } from "@/modules/content/components/portable-text"
 import { Icon } from "@iconify/react"

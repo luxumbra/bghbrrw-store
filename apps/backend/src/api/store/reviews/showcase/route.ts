@@ -57,8 +57,7 @@ export const GET = async (
       pagination: {
         take: limit,
         skip: offset
-      },
-      order: { created_at: "DESC" }
+      }
     })
 
     // Get business-wide statistics

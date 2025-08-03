@@ -22,8 +22,9 @@ export const updateReviewStep = createStep(
 
     // Store original values for compensation
     const originalReview = await reviewModuleService.retrieveReview(input.id)
-    
-    const updatedReview = await reviewModuleService.updateReviews(input.id, {
+
+    const updatedReview = await reviewModuleService.updateReviews({
+      id: input.id,
       status: input.status,
       title: input.title,
       content: input.content,
@@ -48,7 +49,8 @@ export const updateReviewStep = createStep(
     )
 
     // Revert to original values
-    await reviewModuleService.updateReviews(compensationData.id, {
+    await reviewModuleService.updateReviews({
+      id: compensationData.id,
       status: compensationData.originalStatus,
       title: compensationData.originalTitle,
       content: compensationData.originalContent,

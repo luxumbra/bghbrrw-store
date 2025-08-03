@@ -87,13 +87,20 @@ function AdminOrderDeliveredEmailComponent({
               </Text>
               <Text className="mt-4 text-center text-secondary">
                 The order was delivered on{" "}
-                {fulfillment.created_at.toLocaleDateString("en-GB", {
+                {fulfillment.created_at ? fulfillment.created_at.toLocaleDateString("en-GB", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                }) : new Date().toLocaleDateString("en-GB", {
                   day: "numeric",
                   month: "long",
                   year: "numeric",
                 })}{" "}
                 at{" "}
-                {fulfillment.created_at.toLocaleTimeString("en-GB", {
+                {fulfillment.created_at ? fulfillment.created_at.toLocaleTimeString("en-GB", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }) : new Date().toLocaleTimeString("en-GB", {
                   hour: "2-digit",
                   minute: "2-digit",
                 })}

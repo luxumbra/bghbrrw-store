@@ -10,9 +10,9 @@ export default async function testReviews({ container }: ExecArgs) {
     
     const reviews = await reviewModuleService.listReviews({}, { take: 5 })
     
-    console.log(`Found ${reviews.data?.length || 0} reviews`)
-    console.log("Sample review:", reviews.data?.[0])
-    console.log("Metadata:", reviews.metadata)
+    console.log(`Found ${reviews.length || 0} reviews`)
+    console.log("Sample review:", reviews[0])
+    console.log("Reviews array:", reviews)
     
   } catch (error) {
     console.error("Error testing reviews:", error)

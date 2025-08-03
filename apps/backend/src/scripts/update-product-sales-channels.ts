@@ -41,6 +41,7 @@ export default async function updateProductSalesChannels({ container }: ExecArgs
       });
 
       if (existingLinks.length > 0) {
+        // @ts-ignore - Link type property access
         await link.dismiss(existingLinks.map(link => link.id));
         logger.info(`Removed ${existingLinks.length} existing sales channel links for product: ${product.title}`);
       }

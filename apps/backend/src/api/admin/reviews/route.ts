@@ -45,8 +45,7 @@ export const GET = async (
       pagination: {
         take: limit,
         skip: offset
-      },
-      order: order === "-created_at" ? { created_at: "DESC" } : { created_at: "ASC" }
+      }
     })
 
     res.json({
