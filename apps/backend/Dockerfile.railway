@@ -3,10 +3,10 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy only backend files
-COPY apps/backend/package.json ./
-COPY apps/backend/src ./src
-COPY apps/backend/medusa-config.js ./
-COPY apps/backend/tsconfig.json ./
+COPY package.json ./
+COPY src ./src
+COPY medusa-config.js ./
+COPY tsconfig.json ./
 
 # Install pnpm and dependencies (backend only)
 RUN npm install -g pnpm
