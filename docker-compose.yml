@@ -19,7 +19,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: apps/backend/Dockerfile
+      dockerfile: apps/backend/Dockerfile.local
       target: development
     container_name: boughandburrow-backend
     ports:
@@ -31,8 +31,8 @@ services:
     env_file:
       - apps/backend/.env
     environment:
-      # Override specific values for Docker networking  
-      - REDIS_URL=redis://redis:6379
+      # Override specific values for Docker networking
+      - REDIS_URL=${REDIS_URL}
       # Stripe configuration
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
@@ -48,7 +48,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: apps/frontend/Dockerfile
+      dockerfile: apps/frontend/Dockerfile.local
       target: development
     container_name: boughandburrow-frontend
     ports:
