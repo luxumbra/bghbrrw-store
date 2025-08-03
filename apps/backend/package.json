@@ -63,6 +63,7 @@
     "vite": "^5.2.11",
     "yalc": "^1.0.0-pre.53"
   },
+  "packageManager": "pnpm@10.11.0",
   "engines": {
     "node": ">=20"
   }
