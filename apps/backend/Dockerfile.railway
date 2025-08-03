@@ -1,25 +1,28 @@
-# Railway-specific Dockerfile for backend only
 FROM node:20-alpine
-
-# Install pnpm and medusa CLI
-RUN npm install -g pnpm@latest @medusajs/cli@2.8.0
 
 WORKDIR /app
 
-# Copy backend package.json only
-COPY package.json ./
+# Copy package.json
+COPY apps/backend/package.json ./
 
-# Install backend dependencies
-RUN pnpm install
+# Install pnpm and dependencies
+RUN npm install -g pnpm
+RUN pnpm install --frozen-lockfile=false --prod
 
-# Copy backend source code
-COPY . .
+COPY apps/backend/pnpm-lock.yaml ./
 
-# Build using the working global CLI (2.8.0 - stable version)
-RUN medusa build
+# Copy built application (.medusa directory)
+COPY apps/backend/.medusa ./.medusa
 
-# Expose port
+# Copy any other necessary files (like medusa-config.js if needed)
+COPY apps/backend/medusa-config.js ./
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S medusa -u 1001
+USER medusa
+
 EXPOSE 9000
 
-# Start using the working global CLI
-CMD ["medusa", "start"]
+# Start the server from .medusa/server
+CMD ["node", ".medusa/server/index.js"]
