@@ -19,7 +19,11 @@ module.exports = defineConfig({
     },
   },
   admin: {
-    disable: process.env.DISABLE_MEDUSA_ADMIN === "true",
+    // Admin is always enabled in development
+    // For production, use environment variables in your deployment config
+    disable: process.env.NODE_ENV === 'production' 
+      ? process.env.DISABLE_MEDUSA_ADMIN === 'true'
+      : false,
     backendUrl: process.env.MEDUSA_BACKEND_URL,
   },
   modules: [

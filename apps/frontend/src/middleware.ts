@@ -1,9 +1,13 @@
 import { HttpTypes } from "@medusajs/types"
 import { NextRequest, NextResponse } from "next/server"
+import { logger } from "@/lib/logger"
 
 // Use the internal Docker URL for middleware (server-side requests)
-const BACKEND_URL = process.env.MEDUSA_BACKEND_URL || process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
-const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY || process.env.MEDUSA_PUBLISHABLE_KEY
+const BACKEND_URL =
+  process.env.MEDUSA_BACKEND_URL || process.env.NEXT_PUBLIC_MEDUSA_BACKEND_URL
+const PUBLISHABLE_API_KEY =
+  process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY ||
+  process.env.MEDUSA_PUBLISHABLE_KEY
 const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "gb"
 
 const regionMapCache = {
@@ -13,8 +17,7 @@ const regionMapCache = {
 
 async function getRegionMap(cacheId: string) {
   const { regionMap, regionMapUpdated } = regionMapCache
-  console.log("Middleware.ts: BACKEND_URL", BACKEND_URL)
-  console.log("Middleware.ts: PUBLISHABLE_API_KEY", PUBLISHABLE_API_KEY)
+  logger.debug("Initializing middleware with BACKEND_URL", { hasBackendUrl: !!BACKEND_URL })
   if (!BACKEND_URL) {
     throw new Error(
       "Middleware.ts: Error fetching regions. Did you set up regions in your Medusa Admin and define NEXT_PUBLIC_MEDUSA_BACKEND_URL or MEDUSA_BACKEND_URL environment variable?"
@@ -25,41 +28,64 @@ async function getRegionMap(cacheId: string) {
     !regionMap.keys().next().value ||
     regionMapUpdated < Date.now() - 3600 * 1000
   ) {
-    // Fetch regions from Medusa. We can't use the JS client here because middleware is running on Edge and the client needs a Node environment.
-    console.log("Middleware.ts: Fetching regions from:", BACKEND_URL)
-    const { regions } = await fetch(`${BACKEND_URL}/store/regions`, {
-      headers: {
-        "x-publishable-api-key": PUBLISHABLE_API_KEY!,
-      },
-      // next: {
-      //   revalidate: 3600,
-      //   tags: [`regions-${cacheId}`],
-      // },
-      // cache: "force-cache",
-    }).then(async (response) => {
-      const json = await response.json()
+    // Fetch regions from Medusa with timeout and error handling
+    logger.debug("Fetching regions from Medusa API")
 
-      if (!response.ok) {
-        throw new Error(json.message)
+    try {
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 5000) // 5 second timeout
+
+      const { regions } = await fetch(`${BACKEND_URL}/store/regions`, {
+        headers: {
+          "x-publishable-api-key": PUBLISHABLE_API_KEY!,
+        },
+        signal: controller.signal,
+      }).then(async (response) => {
+        clearTimeout(timeoutId)
+        const json = await response.json()
+
+        if (!response.ok) {
+          throw new Error(
+            `Region fetch failed: ${response.status} ${
+              json.message || "Unknown error"
+            }`
+          )
+        }
+
+        return json
+      })
+
+      if (!regions?.length) {
+        logger.warn("No regions found. Using default region")
+        // Set a minimal default region to prevent repeated API calls
+        regionMapCache.regionMap.set(DEFAULT_REGION, {
+          iso_2: DEFAULT_REGION,
+        } as any)
+        regionMapCache.regionMapUpdated = Date.now()
+        return regionMapCache.regionMap
       }
 
-      return json
-    })
-
-    if (!regions?.length) {
-      throw new Error(
-        "No regions found. Please set up regions in your Medusa Admin."
-      )
-    }
-
-    // Create a map of country codes to regions.
-    regions.forEach((region: HttpTypes.StoreRegion) => {
-      region.countries?.forEach((c) => {
-        regionMapCache.regionMap.set(c.iso_2 ?? "", region)
+      // Create a map of country codes to regions.
+      regions.forEach((region: HttpTypes.StoreRegion) => {
+        region.countries?.forEach((c) => {
+          regionMapCache.regionMap.set(c.iso_2 ?? "", region)
+        })
       })
-    })
 
-    regionMapCache.regionMapUpdated = Date.now()
+      regionMapCache.regionMapUpdated = Date.now()
+      logger.info(`Successfully fetched and cached ${regions.length} regions`)
+    } catch (error) {
+      logger.error("Failed to fetch regions", error)
+      // Use cached data if available, or set default to prevent infinite failures
+      if (!regionMap.keys().next().value) {
+        logger.debug("Setting fallback default region", { defaultRegion: DEFAULT_REGION })
+        regionMapCache.regionMap.set(DEFAULT_REGION, {
+          iso_2: DEFAULT_REGION,
+        } as any)
+      }
+      // Update timestamp to prevent immediate retry (wait 10 minutes on failure)
+      regionMapCache.regionMapUpdated = Date.now() - 2400 * 1000 // This gives 40 minutes before retry
+    }
   }
 
   return regionMapCache.regionMap
@@ -148,21 +174,37 @@ export async function middleware(request: NextRequest) {
 
   // If no country code is set, we redirect to the relevant region.
   if (!urlHasCountryCode && countryCode) {
-    console.log("Middleware.ts: Redirecting to country code:", countryCode)
+    logger.debug("Redirecting to country code", { countryCode })
 
     redirectUrl = `${request.nextUrl.origin}/${countryCode}${redirectPath}${queryString}`
     response = NextResponse.redirect(`${redirectUrl}`, 307)
+    response.cookies.set("_medusa_cache_id", cacheId, {
+      maxAge: 60 * 60 * 24,
+    })
+    return response
   }
-  console.log(
-    "Middleware.ts: No country code found, redirecting to default region:",
-    DEFAULT_REGION
-  )
 
-  return response
+  // Only redirect to default if we don't have any country code and haven't already processed
+  if (!urlHasCountryCode && !countryCode && DEFAULT_REGION) {
+    logger.debug("No country code found, redirecting to default region", { defaultRegion: DEFAULT_REGION })
+    redirectUrl = `${request.nextUrl.origin}/${DEFAULT_REGION}${redirectPath}${queryString}`
+    response = NextResponse.redirect(`${redirectUrl}`, 307)
+    response.cookies.set("_medusa_cache_id", cacheId, {
+      maxAge: 60 * 60 * 24,
+    })
+    return response
+  }
+
+  return NextResponse.next()
 }
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|images|assets|png|svg|jpg|jpeg|gif|webp).*)",
+    // Only run middleware on actual pages, exclude:
+    // - API routes (/api/*)
+    // - Next.js internals (_next/*)
+    // - Static assets (images, fonts, etc.)
+    // - Common files (robots.txt, sitemap.xml, etc.)
+    "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|sw.js|workbox|images|assets|static|public|.*\\..*\\..*$).*)",
   ],
 }

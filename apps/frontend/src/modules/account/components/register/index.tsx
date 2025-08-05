@@ -25,7 +25,7 @@ const Register = ({ setCurrentView }: Props) => {
       </h1>
       <p className="text-center text-base-regular text-ui-fg-base mb-4">
         Create your Medusa Store Member profile, and get access to an enhanced
-        shopping experience.
+        shopping experience--opt-in newsletter, discounts, and more.
       </p>
       <form className="w-full flex flex-col" action={formAction}>
         <div className="flex flex-col w-full gap-y-2">
