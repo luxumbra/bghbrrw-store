@@ -108,7 +108,7 @@ export default function BlogPostContent({
         </div>
       )}
 
-      <div className="leading-relaxed prose prose-xl prose-invert max-w-none">
+      <div className="leading-relaxed prose prose-xl prose-invert max-w-none prose-h2:text-3xl prose-h3:text-2xl">
         {post.body && (
           <PortableText value={post.body} components={portableTextComponents} />
         )}

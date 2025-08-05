@@ -1,8 +1,0 @@
-[build]
-builder = "DOCKERFILE"
-dockerfile = "apps/backend/Dockerfile"
-
-[deploy]
-healthcheckPath = "/health"
-restartPolicyRetries = 10
-restartPolicyType = "ON_FAILURE"
