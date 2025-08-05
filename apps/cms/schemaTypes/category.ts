@@ -9,7 +9,7 @@ export default defineType({
       name: 'title',
       title: 'Title',
       type: 'string',
-      validation: Rule => Rule.required()
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'slug',
@@ -19,7 +19,7 @@ export default defineType({
         source: 'title',
         maxLength: 96,
       },
-      validation: Rule => Rule.required()
+      validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'description',
@@ -32,15 +32,15 @@ export default defineType({
       type: 'string',
       options: {
         list: [
-          {title: 'Blue', value: '#3B82F6'},
-          {title: 'Green', value: '#10B981'},
-          {title: 'Purple', value: '#8B5CF6'},
-          {title: 'Red', value: '#EF4444'},
-          {title: 'Yellow', value: '#F59E0B'},
-          {title: 'Pink', value: '#EC4899'},
-          {title: 'Gray', value: '#6B7280'},
+          {title: 'Forest Green', value: '#2F5233'},
+          {title: 'Bark Brown', value: '#5D4037'},
+          {title: 'Stone Gray', value: '#455A64'},
+          {title: 'Moss Green', value: '#558B2F'},
+          {title: 'Clay Red', value: '#8D4A2B'},
+          {title: 'Sage Green', value: '#689F84'},
+          {title: 'Charcoal', value: '#37474F'},
         ],
-        layout: 'radio'
+        layout: 'radio',
       },
     }),
   ],

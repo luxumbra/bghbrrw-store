@@ -1,13 +1,13 @@
-import { Metadata } from 'next'
-import { sanityFetch } from '@/sanity/lib/client'
-import { blogPostsQuery, categoriesQuery } from '@/sanity/lib/queries'
-import { BlogPost, Category } from '@/types/sanity'
 import BlogPostCard from '@/modules/blog/components/blog-post-card'
 import CategoryFilter from '@/modules/blog/components/category-filter'
+import { sanityFetch } from '@/sanity/lib/client'
+import { blogPostsQuery, categoriesQuery } from '@/sanity/lib/queries'
+import type { BlogPost, Category } from '@/types/sanity'
+import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Blog - Bough & Burrow',
-  description: 'Discover the latest news, tips, and insights from Bough & Burrow.',
+  title: 'Blog',
+    description: 'Discover the latest news, tips, and insights from Bough & Burrow.',
 }
 
 interface BlogPageProps {
@@ -18,6 +18,7 @@ interface BlogPageProps {
     category?: string
   }
 }
+
 
 export default async function BlogPage({ params, searchParams }: BlogPageProps) {
   let blogPosts: BlogPost[] = []

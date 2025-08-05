@@ -1,4 +1,4 @@
-import { EB_Garamond, Quattrocento_Sans } from "next/font/google"
+import { EB_Garamond, Lato, Quattrocento_Sans } from "next/font/google"
 
 const ebGaramond = EB_Garamond({
   subsets: ["latin"],
@@ -12,4 +12,11 @@ const quattrocentoSans = Quattrocento_Sans({
   variable: "--font-quattrocento-sans",
 })
 
-export { ebGaramond, quattrocentoSans }
+const lato = Lato({
+  weight: ["100", "300", "400", "700"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-lato",
+})
+
+export { ebGaramond, lato, quattrocentoSans }

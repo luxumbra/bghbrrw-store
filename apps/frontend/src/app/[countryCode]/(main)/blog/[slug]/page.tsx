@@ -70,22 +70,22 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const categoryIds = post.categories.map(cat => cat._id)
   const relatedPosts = await sanityFetch<BlogPost[]>({
     query: relatedBlogPostsQuery,
-    params: { 
+    params: {
       currentPostId: post._id,
-      categoryIds 
+      categoryIds
     },
     tags: ['blogPost'],
   })
 
   return (
-    <div className="content-container py-16">
+    <div className="py-16 content-container">
       <BlogPostContent post={post} countryCode={params.countryCode} />
-      
+
       {relatedPosts.length > 0 && (
-        <div className="mt-16 pt-16 border-t">
-          <RelatedPosts 
-            posts={relatedPosts} 
-            countryCode={params.countryCode} 
+        <div className="pt-16 mt-16 border-t">
+          <RelatedPosts
+            posts={relatedPosts}
+            countryCode={params.countryCode}
           />
         </div>
       )}

@@ -1,6 +1,9 @@
 import { Modules } from "@medusajs/framework/utils";
 import type { SubscriberArgs, SubscriberConfig } from "@medusajs/framework";
 
+const MEDUSA_BACKEND_URL = process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+const MEDUSA_FRONTEND_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000"
+
 export default async function resetPasswordTokenHandler({
   event: {
     data: { entity_id: email, token, actor_type },
@@ -12,8 +15,8 @@ export default async function resetPasswordTokenHandler({
   // Customise these URLs for your frontend/admin
   const urlPrefix =
     actor_type === "customer"
-      ? "http://localhost:8000"
-      : "http://localhost:9000/app";
+      ? MEDUSA_FRONTEND_URL
+      : `${MEDUSA_BACKEND_URL}/app`;
 
   await notificationModuleService.createNotifications({
     to: email,
