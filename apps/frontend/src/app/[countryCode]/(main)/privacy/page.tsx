@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (!page) {
     return {
-      title: 'Privacy Policy - Bough & Burrow',
+      title: 'Privacy Policy',
       description: 'Read our privacy policy to understand how we handle your data.',
     }
   }
@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const { seo, title } = page
 
   return {
-    title: seo?.metaTitle || `${title} - Bough & Burrow`,
+    title: seo?.metaTitle || `${title}`,
     description: seo?.metaDescription || 'Read our privacy policy to understand how we handle your data.',
     keywords: seo?.keywords,
   }
@@ -44,17 +44,17 @@ export default async function PrivacyPage() {
 
   if (!page) {
     return (
-      <div className="content-container py-16">
+      <div className="py-16 content-container">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h1 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl">
             Privacy Policy
           </h1>
-          <p className="text-gray-600 mb-8">
+          <p className="mb-8 text-gray-600">
             This page is not yet available. Please create a "Privacy Policy" page in Sanity Studio.
           </p>
-          <a 
-            href="http://localhost:3333" 
-            target="_blank" 
+          <a
+            href="http://localhost:3333"
+            target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline"
           >

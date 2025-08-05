@@ -1,8 +1,7 @@
-import { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 import { sanityFetch } from '@/sanity/lib/client'
 import { contentPageByTypeQuery } from '@/sanity/lib/queries'
-import { ContentPage } from '@/types/sanity'
+import type { ContentPage } from '@/types/sanity'
 import ContentPageTemplate from '@/modules/content/templates/content-page-template'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -14,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (!page) {
     return {
-      title: 'Shipping & Returns - Bough & Burrow',
+      title: 'Shipping & Returns',
       description: 'Read our shipping and returns policy to understand how we handle processing times, shipping and returns.',
     }
   }
@@ -22,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const { seo, title } = page
 
   return {
-    title: seo?.metaTitle || `${title} - Bough & Burrow`,
+    title: seo?.metaTitle || `${title}`,
     description: seo?.metaDescription || 'Read our privacy policy to understand how we handle your data.',
     keywords: seo?.keywords,
   }

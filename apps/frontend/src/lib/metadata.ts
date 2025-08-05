@@ -1,15 +1,10 @@
-import { ebGaramond, quattrocentoSans } from "@lib/fonts"
-import { getBaseURL } from "@lib/util/env"
+// an object that contains metadata for the page
 import type { Metadata } from "next"
-import "@styles/globals.css"
-import "@styles/theme.css"
+import { getBaseURL } from "@lib/util/env"
 
 export const metadata: Metadata = {
     metadataBase: new URL(getBaseURL()),
-    title: {
-        default: "Bough & Burrow Shop",
-        template: "%s | Bough & Burrow",
-    },
+    title: "Bough & Burrow Shop",
     description: "A shop for Bough & Burrow, a small business that sells handmade products.",
     twitter: {
         card: "summary_large_image",
@@ -25,18 +20,4 @@ export const metadata: Metadata = {
         initialScale: 1,
         maximumScale: 1,
     },
-
-}
-
-export default function RootLayout(props: { children: React.ReactNode }) {
-  return (
-    <html
-      lang="en"
-      className={`${quattrocentoSans.variable} ${ebGaramond.variable}`}
-    >
-      <body data-mode="light">
-        <main className="relative">{props.children}</main>
-      </body>
-    </html>
-  )
 }

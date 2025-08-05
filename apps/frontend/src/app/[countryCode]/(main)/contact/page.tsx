@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (!page) {
     return {
-      title: 'Contact Us - Bough & Burrow',
+      title: 'Contact Us',
       description: 'Get in touch with Bough & Burrow.',
     }
   }
@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const { seo, title } = page
 
   return {
-    title: seo?.metaTitle || `${title} - Bough & Burrow`,
+    title: seo?.metaTitle || `${title}`,
     description: seo?.metaDescription || 'Get in touch with Bough & Burrow.',
     keywords: seo?.keywords,
   }
