@@ -1,4 +1,4 @@
-import { ebGaramond, quattrocentoSans } from "@lib/fonts"
+import { ebGaramond, quattrocentoSans, lato } from "@lib/fonts"
 import { getBaseURL } from "@lib/util/env"
 import type { Metadata } from "next"
 import "@styles/globals.css"
@@ -32,7 +32,7 @@ export default function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${quattrocentoSans.variable} ${ebGaramond.variable}`}
+      className={`${lato.variable} ${quattrocentoSans.variable} ${ebGaramond.variable}`}
     >
       <body data-mode="light">
         <main className="relative">{props.children}</main>

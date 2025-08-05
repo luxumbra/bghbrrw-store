@@ -37,7 +37,7 @@ export default async function OrderCompletedTemplate({
             <span>Your order was placed successfully.</span>
           </Heading>
           <OrderDetails order={order} />
-          <Heading level="h2" className="flex flex-row text-3xl-regular">
+          <Heading level="h2" className="flex flex-row text-3xl-regular font-heading-sans">
             Summary
           </Heading>
           <Items order={order} />

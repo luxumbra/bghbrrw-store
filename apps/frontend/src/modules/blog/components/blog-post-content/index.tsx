@@ -5,6 +5,7 @@ import type { BlogPost } from "@/types/sanity"
 import { urlFor } from "@/sanity/lib/client"
 import { portableTextComponents } from "@/modules/content/components/portable-text"
 import { Icon } from "@iconify/react"
+import Link from "next/link"
 
 interface BlogPostContentProps {
   post: BlogPost
@@ -20,21 +21,21 @@ export default function BlogPostContent({
   return (
     <article className="max-w-4xl mx-auto prose prose-xl prose-invert">
       <header className="mb-8">
-              <div className="flex items-center justify-between gap-2 mb-4">
-                  <div className="flex items-center justify-start gap-2">
-          {post.categories.map((category) => (
-            <span
-              key={category.slug.current}
-              className="inline-block px-3 py-1 text-sm font-medium rounded-full"
-              style={{
-                backgroundColor: category.color || "#333",
-                color: "#fff",
-              }}
-            >
-              {category.title}
-            </span>
-          ))}
-                      </div>
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <div className="flex items-center justify-start gap-2">
+            {post.categories.map((category) => (
+              <span
+                key={category.slug.current}
+                className="inline-block px-3 py-1 text-sm font-medium rounded-full"
+                style={{
+                  backgroundColor: category.color || "#333",
+                  color: "#fff",
+                }}
+              >
+                {category.title}
+              </span>
+            ))}
+          </div>
           <div className="flex items-center justify-end gap-2">
             {post.author.image && (
               <div className="relative w-6 h-6">
@@ -60,10 +61,14 @@ export default function BlogPostContent({
             </div>
           </div>
         </div>
+              <div className="fixed z-50 w-auto h-16 left-20 top-32">
+                  <Link href={`/${countryCode}/blog`} className="inline-flex items-center justify-start gap-2 font-light no-underline text-body-color">
+                    <Icon icon="mdi:arrow-left" className="size-5" /> Back to posts
+                  </Link>
+            </div>
+        <h1 className="text-3xl font-normal text-copy-color xl:text-5xl">{post.title}</h1>
 
-        <h1 className="font-normal text-copy-color">{post.title}</h1>
-
-        <p className="mb-6 text-xl leading-normal font-body font-extralight xl:text-3xl">
+        <p className="mb-6 text-xl font-light leading-normal font-body xl:text-3xl">
           {post.excerpt}
         </p>
 
@@ -103,7 +108,7 @@ export default function BlogPostContent({
         </div>
       )}
 
-      <div className="prose prose-lg prose-invert max-w-none">
+      <div className="leading-relaxed prose prose-xl prose-invert max-w-none">
         {post.body && (
           <PortableText value={post.body} components={portableTextComponents} />
         )}

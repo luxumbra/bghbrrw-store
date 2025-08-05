@@ -44,7 +44,7 @@ const Addresses = ({
       <div className="flex flex-row items-center justify-between mb-6">
         <Heading
           level="h2"
-          className="flex flex-row items-baseline text-3xl-regular gap-x-2"
+          className="flex flex-row items-baseline text-3xl-regular font-heading-sans gap-x-2"
         >
           Shipping Address
           {!isOpen && <CheckCircleSolid />}
@@ -75,7 +75,7 @@ const Addresses = ({
               <div>
                 <Heading
                   level="h2"
-                  className="pt-8 pb-6 text-3xl-regular gap-x-4"
+                  className="pt-8 pb-6 text-3xl-regular font-heading-sans gap-x-4"
                 >
                   Billing address
                 </Heading>

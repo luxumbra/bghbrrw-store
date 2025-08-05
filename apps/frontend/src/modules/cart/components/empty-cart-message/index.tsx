@@ -7,7 +7,7 @@ const EmptyCartMessage = () => {
     <div className="py-48 px-2 flex flex-col justify-center items-start" data-testid="empty-cart-message">
       <Heading
         level="h1"
-        className="flex flex-row text-3xl-regular gap-x-2 items-baseline"
+        className="flex flex-row text-3xl-regular font-heading-sans gap-x-2 items-baseline"
       >
         Cart
       </Heading>
