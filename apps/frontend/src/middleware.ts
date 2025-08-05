@@ -17,7 +17,9 @@ const regionMapCache = {
 
 async function getRegionMap(cacheId: string) {
   const { regionMap, regionMapUpdated } = regionMapCache
-  logger.debug("Initializing middleware with BACKEND_URL", { hasBackendUrl: !!BACKEND_URL })
+  logger.debug("Initializing middleware with BACKEND_URL", {
+    hasBackendUrl: !!BACKEND_URL,
+  })
   if (!BACKEND_URL) {
     throw new Error(
       "Middleware.ts: Error fetching regions. Did you set up regions in your Medusa Admin and define NEXT_PUBLIC_MEDUSA_BACKEND_URL or MEDUSA_BACKEND_URL environment variable?"
@@ -78,7 +80,9 @@ async function getRegionMap(cacheId: string) {
       logger.error("Failed to fetch regions", error)
       // Use cached data if available, or set default to prevent infinite failures
       if (!regionMap.keys().next().value) {
-        logger.debug("Setting fallback default region", { defaultRegion: DEFAULT_REGION })
+        logger.debug("Setting fallback default region", {
+          defaultRegion: DEFAULT_REGION,
+        })
         regionMapCache.regionMap.set(DEFAULT_REGION, {
           iso_2: DEFAULT_REGION,
         } as any)
@@ -145,8 +149,9 @@ export async function middleware(request: NextRequest) {
 
   const countryCode = regionMap && (await getCountryCode(request, regionMap))
 
-  const urlHasCountryCode =
-    countryCode && request.nextUrl.pathname.split("/")[1].includes(countryCode)
+  const pathSegments = request.nextUrl.pathname.split("/")
+  const urlCountryCode = pathSegments[1]?.toLowerCase()
+  const urlHasCountryCode = countryCode && urlCountryCode === countryCode
 
   // if one of the country codes is in the url and the cache id is set, return next
   if (urlHasCountryCode && cacheIdCookie) {
@@ -155,11 +160,11 @@ export async function middleware(request: NextRequest) {
 
   // if one of the country codes is in the url and the cache id is not set, set the cache id and redirect
   if (urlHasCountryCode && !cacheIdCookie) {
-    response.cookies.set("_medusa_cache_id", cacheId, {
+    const nextResponse = NextResponse.next()
+    nextResponse.cookies.set("_medusa_cache_id", cacheId, {
       maxAge: 60 * 60 * 24,
     })
-
-    return response
+    return nextResponse
   }
 
   // check if the url is a static asset
@@ -186,7 +191,9 @@ export async function middleware(request: NextRequest) {
 
   // Only redirect to default if we don't have any country code and haven't already processed
   if (!urlHasCountryCode && !countryCode && DEFAULT_REGION) {
-    logger.debug("No country code found, redirecting to default region", { defaultRegion: DEFAULT_REGION })
+    logger.debug("No country code found, redirecting to default region", {
+      defaultRegion: DEFAULT_REGION,
+    })
     redirectUrl = `${request.nextUrl.origin}/${DEFAULT_REGION}${redirectPath}${queryString}`
     response = NextResponse.redirect(`${redirectUrl}`, 307)
     response.cookies.set("_medusa_cache_id", cacheId, {
