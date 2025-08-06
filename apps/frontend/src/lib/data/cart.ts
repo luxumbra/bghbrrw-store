@@ -321,7 +321,9 @@ export async function applyUrlDiscountToCart(
       // We need a region - let's try to get the default one
       try {
         const { getRegion } = await import("./regions")
-        const region = await getRegion("gb") // Default to GB, adjust if needed
+        // Try to get default region from environment or fallback to "gb"
+        const defaultRegion = process.env.DEFAULT_REGION || "gb"
+        const region = await getRegion(defaultRegion)
         
         if (!region) {
           return {
@@ -459,6 +461,8 @@ export async function applyUrlDiscountToCart(
         } else {
           errorMessage = "Cart not found. Please add items to your cart first."
         }
+      } else if (message.includes("fetch")) {
+        errorMessage = "Unable to connect to server. Please check your internet connection and try again."
       } else {
         errorMessage = error.message
       }
