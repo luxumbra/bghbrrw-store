@@ -12,11 +12,23 @@ export default async function resetPasswordTokenHandler({
 }: SubscriberArgs<{ entity_id: string; token: string; actor_type: string }>) {
   const notificationModuleService = container.resolve(Modules.NOTIFICATION);
 
-  // Customise these URLs for your frontend/admin
-  const urlPrefix =
-    actor_type === "customer"
-      ? MEDUSA_FRONTEND_URL
-      : `${MEDUSA_BACKEND_URL}/app`;
+  console.log('=== PASSWORD RESET DEBUG ===')
+  console.log('Raw env var MEDUSA_BACKEND_URL:', process.env.MEDUSA_BACKEND_URL)
+  console.log('Raw env var NEXT_PUBLIC_BASE_URL:', process.env.NEXT_PUBLIC_BASE_URL)
+  console.log('actor_type:', actor_type)
+
+  const MEDUSA_BACKEND_URL = process.env.MEDUSA_BACKEND_URL || "http://localhost:9000"
+  const MEDUSA_FRONTEND_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000"
+
+  console.log('Final MEDUSA_BACKEND_URL:', MEDUSA_BACKEND_URL)
+  console.log('Final MEDUSA_FRONTEND_URL:', MEDUSA_FRONTEND_URL)
+
+  const urlPrefix = actor_type === "customer"
+    ? MEDUSA_FRONTEND_URL
+    : `${MEDUSA_BACKEND_URL}/app`;
+
+  console.log('Final URL being sent:', `${urlPrefix}/reset-password?token=${token}&email=${email}`)
+  console.log('==============================')
 
   await notificationModuleService.createNotifications({
     to: email,
