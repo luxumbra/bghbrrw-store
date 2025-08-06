@@ -275,6 +275,225 @@ export async function applyPromotions(codes: string[]) {
     .catch(medusaError)
 }
 
+// Type definitions for discount application results
+export interface DiscountApplicationResult {
+  success: boolean
+  error?: string
+  cart?: HttpTypes.StoreCart
+  alreadyApplied?: boolean
+}
+
+/**
+ * Enhanced function to apply a URL-based discount code to the cart
+ * Provides better error handling and type safety for URL discount scenarios
+ * @param discountCode - The discount code to apply (will be normalized)
+ * @returns Promise with success status, error message, and updated cart
+ */
+export async function applyUrlDiscountToCart(
+  discountCode: string
+): Promise<DiscountApplicationResult> {
+  try {
+    // Normalize the discount code
+    const normalizedCode = discountCode.trim().toUpperCase()
+    
+    if (!normalizedCode) {
+      return {
+        success: false,
+        error: "Discount code is required"
+      }
+    }
+    
+    // Check storage capability first to provide better error messages
+    const canStoreData = await checkStorageCapability()
+    
+    if (!canStoreData) {
+      return {
+        success: false,
+        error: "Unable to apply discount codes in private browsing mode. Please use a regular browser window or enable cookies to use discount codes."
+      }
+    }
+    
+    // Get current cart or create one to validate the discount
+    let currentCart = await retrieveCart()
+    
+    if (!currentCart) {
+      // Try to create a cart to validate the discount code
+      // We need a region - let's try to get the default one
+      try {
+        const { getRegion } = await import("./regions")
+        const region = await getRegion("gb") // Default to GB, adjust if needed
+        
+        if (!region) {
+          return {
+            success: false,
+            error: "Unable to validate discount code. Please try again later."
+          }
+        }
+
+        const headers = {
+          ...(await getAuthHeaders()),
+        }
+
+        const cartResp = await sdk.store.cart.create(
+          { region_id: region.id },
+          {},
+          headers
+        )
+        currentCart = cartResp.cart
+
+        await setCartId(currentCart.id)
+        
+        const cartCacheTag = await getCacheTag("carts")
+        revalidateTag(cartCacheTag)
+        
+      } catch (error) {
+        // If we can't create a cart, it's likely a storage issue
+        console.log('🚨 Cannot create cart for discount validation:', error)
+        return {
+          success: false,
+          error: "Unable to apply discount codes in private browsing mode. Please use a regular browser window or enable cookies to use discount codes."
+        }
+      }
+    }
+    
+    // Check if the discount is already applied
+    const existingPromotions = currentCart.promotions || []
+    const isAlreadyApplied = existingPromotions.some(
+      promotion => promotion.code === normalizedCode
+    )
+    
+    if (isAlreadyApplied) {
+      return {
+        success: true,
+        cart: currentCart,
+        alreadyApplied: true
+      }
+    }
+    
+    // Apply the promotion and get the updated cart in one operation
+    let updatedCart: HttpTypes.StoreCart | null = null
+    
+    try {
+      // Use the cart update directly instead of the applyPromotions wrapper
+      // to avoid double cache invalidation and get the updated cart back
+      const cartId = await getCartId()
+      if (!cartId) {
+        return {
+          success: false,
+          error: "No cart found"
+        }
+      }
+
+      const headers = {
+        ...(await getAuthHeaders()),
+      }
+
+      const result = await sdk.store.cart
+        .update(cartId, { promo_codes: [normalizedCode] }, {}, headers)
+      
+      updatedCart = result.cart
+      
+      // Only revalidate cache once, after we have the result
+      const cartCacheTag = await getCacheTag("carts")
+      revalidateTag(cartCacheTag)
+      
+    } catch (updateError) {
+      // If the direct update fails, fall back to the original method
+      console.log('🔄 Direct cart update failed, falling back to applyPromotions')
+      await applyPromotions([normalizedCode])
+      updatedCart = await retrieveCart()
+    }
+    
+    if (!updatedCart) {
+      return {
+        success: false,
+        error: "Could not verify cart after applying discount"
+      }
+    }
+    
+    // Check if the promotion was actually applied by looking at the cart promotions
+    const appliedPromotions = updatedCart.promotions || []
+    const discountWasApplied = appliedPromotions.some(
+      promotion => promotion.code === normalizedCode
+    )
+    
+    if (!discountWasApplied) {
+      console.log('🚨 Discount was not applied to cart. Available promotions:', appliedPromotions)
+      return {
+        success: false,
+        error: "This discount code is not valid or has expired",
+        cart: updatedCart
+      }
+    }
+    
+    console.log('✅ Discount successfully applied to cart:', appliedPromotions)
+    return {
+      success: true,
+      cart: updatedCart
+    }
+    
+  } catch (error) {
+    // Enhanced error handling for common Medusa promotion errors
+    console.log('🚨 applyUrlDiscountToCart - Error caught:', error)
+    let errorMessage = "Failed to apply discount code"
+    
+    if (error instanceof Error) {
+      console.log('🚨 Error message:', error.message)
+      const message = error.message.toLowerCase()
+      
+      if (message.includes("promotion") && message.includes("not found")) {
+        errorMessage = "This discount code doesn't exist or has expired"
+      } else if (message.includes("not eligible") || message.includes("requirements")) {
+        errorMessage = "Your cart doesn't meet the requirements for this discount"
+      } else if (message.includes("expired")) {
+        errorMessage = "This discount code has expired"
+      } else if (message.includes("usage limit")) {
+        errorMessage = "This discount code has reached its usage limit"
+      } else if (message.includes("promo_codes")) {
+        errorMessage = "This discount code is not valid"
+      } else if (message.includes("no existing cart") || message.includes("cart") && (message.includes("not found") || message.includes("missing"))) {
+        // Check if this is a storage/cookie issue
+        const canStoreData = await checkStorageCapability()
+        if (!canStoreData) {
+          errorMessage = "Unable to apply discount codes in private browsing mode. Please use a regular browser window or enable cookies to use discount codes."
+        } else {
+          errorMessage = "Cart not found. Please add items to your cart first."
+        }
+      } else {
+        errorMessage = error.message
+      }
+    }
+    
+    console.log('🚨 Final error message:', errorMessage)
+    
+    return {
+      success: false,
+      error: errorMessage
+    }
+  }
+}
+
+/**
+ * Get all promotion codes currently applied to the cart
+ * @returns Array of promotion codes currently applied
+ */
+export async function getAppliedPromotionCodes(): Promise<string[]> {
+  try {
+    const cart = await retrieveCart()
+    if (!cart || !cart.promotions) {
+      return []
+    }
+    
+    return cart.promotions
+      .filter(promotion => promotion.code)
+      .map(promotion => promotion.code!)
+      
+  } catch (error) {
+    console.error("Failed to retrieve applied promotion codes:", error)
+    return []
+  }
+}
+
 export async function applyGiftCard(code: string) {
   //   const cartId = getCartId()
   //   if (!cartId) return "No cartId cookie found"
@@ -467,4 +686,42 @@ export async function listCartOptions() {
     headers,
     cache: "force-cache",
   })
+}
+
+/**
+ * Check if we can store data (cookies, localStorage) - useful for detecting incognito mode
+ * @returns Promise<boolean> - true if storage is available, false otherwise
+ */
+async function checkStorageCapability(): Promise<boolean> {
+  if (typeof window === 'undefined') {
+    // Server-side, assume storage is available
+    return true
+  }
+
+  try {
+    // Test cookie storage
+    const testCookieName = '_test_storage_capability'
+    document.cookie = `${testCookieName}=test; path=/; max-age=1`
+    const cookieSet = document.cookie.includes(testCookieName)
+    
+    // Clean up test cookie
+    if (cookieSet) {
+      document.cookie = `${testCookieName}=; path=/; max-age=0`
+    }
+
+    // Test localStorage (also often restricted in incognito)
+    try {
+      const testKey = '_test_local_storage'
+      localStorage.setItem(testKey, 'test')
+      localStorage.removeItem(testKey)
+      return cookieSet // Both cookie and localStorage should work
+    } catch (localStorageError) {
+      // localStorage failed, but cookies might still work
+      return cookieSet
+    }
+    
+  } catch (error) {
+    console.log('🚨 Storage capability check failed:', error)
+    return false
+  }
 }
