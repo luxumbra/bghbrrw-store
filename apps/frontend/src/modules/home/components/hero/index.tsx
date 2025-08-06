@@ -17,7 +17,7 @@ const Hero = () => {
           </Heading>
           <Heading
             level="h2"
-            className="text-lg font-normal leading-10 tracking-widest lg:text-2xl"
+            className="text-2xl font-normal leading-10 tracking-widest text-shadow-md/70 text-shadow-black lg:text-2xl"
           >
             Hand-crafted | Sustainable | Nature-Inspired
           </Heading>

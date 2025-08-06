@@ -1,4 +1,4 @@
-import { ProductReview } from "@/types/global"
+import type { ProductReview } from "@/types/global"
 import StarRating from "./star-rating"
 
 interface ReviewItemProps {
@@ -23,7 +23,7 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
     <div className="pb-6 mb-6 border-b border-zinc-800 last:border-b-0 last:pb-0 last:mb-0">
       <div className="flex items-start gap-4">
         {/* Avatar */}
-        <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 text-sm font-medium text-white bg-gray-600 rounded-full">
+        <div className="flex items-center justify-center flex-shrink-0 w-10 h-10 text-sm font-medium rounded-full text-copy-color bg-secondary">
           {getInitials(review.first_name, review.last_name)}
         </div>
 
@@ -31,7 +31,7 @@ const ReviewItem = ({ review }: ReviewItemProps) => {
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-2">
             <StarRating value={review.rating} readonly size="sm" />
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-copy-color/60">
               {formatDate(review.created_at)}
             </span>
           </div>

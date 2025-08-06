@@ -1,14 +1,14 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ReviewsResponse } from "@/types/global"
 import StarRating from "@/modules/products/components/product-reviews/star-rating"
 import LocalizedClientLink from "@/modules/common/components/localized-client-link"
 
 interface BusinessRatingWidgetProps {
   size?: "small" | "large"
   showLink?: boolean
-  className?: string
+    className?: string
+    alignment?: "left" | "center" | "right"
 }
 
 interface BusinessStats {
@@ -19,10 +19,16 @@ interface BusinessStats {
 const BusinessRatingWidget = ({
   size = "small",
   showLink = true,
-  className = ""
+    className = "",
+  alignment = "center"
 }: BusinessRatingWidgetProps) => {
   const [businessStats, setBusinessStats] = useState<BusinessStats | null>(null)
   const [loading, setLoading] = useState(true)
+    const alignmentClasses = {
+      left: "justify-start",
+      center: "justify-center",
+      right: "justify-end",
+    }
 
   useEffect(() => {
     const loadBusinessStats = async () => {
@@ -69,8 +75,8 @@ const BusinessRatingWidget = ({
   const reviewTextSize = isLarge ? "text-base" : "text-sm"
 
   return (
-    <div className={`flex flex-col items-center lg:items-start gap-2 ${className}`}>
-      <div className="flex items-center gap-3">
+    <div className={`flex flex-col ${alignmentClasses[alignment]} lg:items-start gap-2 ${className}`}>
+      <div className={`flex items-center gap-3`}>
         <StarRating value={overall_rating} readonly size={starSize} />
         <span className={`font-semibold text-zinc-300 ${ratingTextSize}`}>
           {overall_rating}

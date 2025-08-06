@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ProductReview, ReviewsResponse } from "@/types/global"
+import type { ProductReview, ReviewsResponse } from "@/types/global"
 import BusinessRatingWidget from "@/modules/common/components/business-rating-widget"
 import ReviewItem from "@/modules/products/components/product-reviews/review-item"
 
@@ -49,13 +49,13 @@ const ReviewsPageClient = () => {
 
   if (loading) {
     return (
-      <div className="content-container py-16">
+      <div className="py-16 content-container">
         <div className="max-w-4xl mx-auto">
           {/* Hero Section Loading */}
-          <div className="text-center mb-16 animate-pulse">
-            <div className="h-10 bg-gray-200 rounded w-64 mx-auto mb-4"></div>
-            <div className="h-6 bg-gray-200 rounded w-48 mx-auto mb-8"></div>
-            <div className="h-20 bg-gray-200 rounded w-80 mx-auto"></div>
+          <div className="mb-16 text-center animate-pulse">
+            <div className="w-64 h-10 mx-auto mb-4 bg-gray-200 rounded"></div>
+            <div className="w-48 h-6 mx-auto mb-8 bg-gray-200 rounded"></div>
+            <div className="h-20 mx-auto bg-gray-200 rounded w-80"></div>
           </div>
 
           {/* Reviews Loading */}
@@ -65,9 +65,9 @@ const ReviewsPageClient = () => {
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
                   <div className="flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
-                    <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                    <div className="w-24 h-4 mb-2 bg-gray-200 rounded"></div>
+                    <div className="w-full h-3 mb-2 bg-gray-200 rounded"></div>
+                    <div className="w-3/4 h-3 bg-gray-200 rounded"></div>
                   </div>
                 </div>
               </div>
@@ -81,18 +81,18 @@ const ReviewsPageClient = () => {
   const hasReviews = reviewsData && reviewsData.reviews.length > 0
 
   return (
-    <div className="content-container py-16">
+    <div className="py-16 content-container">
       <div className="max-w-4xl mx-auto">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <div className="mb-16 text-center">
+          <h1 className="mb-4">
             Customer Reviews
           </h1>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Read what our customers say about their handcrafted Bough & Burrow products. 
+          <p className="max-w-2xl mx-auto mb-8 text-base lg:text-lg">
+            Read what our customers say about their handcrafted Bough & Burrow products.
             Every review is from a verified purchase.
           </p>
-          
+
           {/* Business Rating Display */}
           <div className="flex justify-center">
             <BusinessRatingWidget size="large" showLink={false} />
@@ -106,7 +106,7 @@ const ReviewsPageClient = () => {
               {reviewsData.reviews
                 .filter((review) => review && review.id)
                 .map((review) => (
-                  <div key={review.id} className="p-6 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
+                  <div key={review.id} className="p-6 transition-colors rounded-lg bg-zinc-800">
                     <ReviewItem review={review} />
                   </div>
                 ))}
@@ -118,7 +118,7 @@ const ReviewsPageClient = () => {
                 <button
                   onClick={handleLoadMore}
                   disabled={loadingMore}
-                  className="px-8 py-3 bg-gray-900 text-white rounded-md hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="px-8 py-3 text-white transition-colors bg-gray-900 rounded-md hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loadingMore ? "Loading..." : "Load More Reviews"}
                 </button>
@@ -126,8 +126,8 @@ const ReviewsPageClient = () => {
             )}
           </div>
         ) : (
-          <div className="text-center py-16">
-            <p className="text-gray-600 text-lg">
+          <div className="py-16 text-center">
+            <p className="text-lg text-gray-600">
               No reviews yet. Be the first to leave a review after your purchase!
             </p>
           </div>

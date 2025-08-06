@@ -21,12 +21,12 @@ export default function BlogPostContent({
   return (
     <article className="max-w-4xl mx-auto prose prose-xl prose-invert">
       <header className="mb-8">
-        <div className="flex items-center justify-between gap-2 mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-4 lg:flex-nowrap">
           <div className="flex items-center justify-start gap-2">
             {post.categories.map((category) => (
               <span
                 key={category.slug.current}
-                className="inline-block px-3 py-1 text-sm font-medium rounded-full"
+                className="inline-block px-3 py-1 text-xs font-medium rounded-full lgtext-sm"
                 style={{
                   backgroundColor: category.color || "#333",
                   color: "#fff",
@@ -50,10 +50,10 @@ export default function BlogPostContent({
                 />
               </div>
             )}
-            <p className="inline-flex gap-1 text-sm text-gray-400">
+            <p className="inline-flex gap-1 text-xs text-gray-400 lg:text-sm">
               Written by: {post.author.name}
             </p>
-            <div className="inline-flex items-center gap-1 pl-2 text-sm text-gray-400 border-l-2 border-gray-600">
+            <div className="inline-flex items-center gap-1 pl-2 text-xs text-gray-400 border-l-2 lg:text-sm border-zinc-700">
               <Icon icon="mdi:calendar-outline" className="size-5" />
               <time dateTime={post.publishedAt} className="">
                 {format(publishedDate, "MMMM d, yyyy")}
@@ -61,12 +61,17 @@ export default function BlogPostContent({
             </div>
           </div>
         </div>
-              <div className="fixed z-50 w-auto h-16 left-20 top-32">
-                  <Link href={`/${countryCode}/blog`} className="inline-flex items-center justify-start gap-2 font-light no-underline text-body-color">
-                    <Icon icon="mdi:arrow-left" className="size-5" /> Back to posts
-                  </Link>
-            </div>
-        <h1 className="text-3xl font-normal text-copy-color xl:text-5xl">{post.title}</h1>
+        <div className="fixed z-50 w-auto h-16 left-4 lg:left-20 top-20 lg:top-32">
+          <Link
+            href={`/${countryCode}/blog`}
+            className="inline-flex items-center justify-start gap-2 text-base font-light no-underline text-body-color lg:text-lg"
+          >
+            <Icon icon="mdi:arrow-left" className="size-5" /> Back to posts
+          </Link>
+        </div>
+        <h1 className="text-3xl font-normal text-copy-color xl:text-5xl">
+          {post.title}
+        </h1>
 
         <p className="mb-6 text-xl font-light leading-normal font-body xl:text-3xl">
           {post.excerpt}
@@ -108,7 +113,7 @@ export default function BlogPostContent({
         </div>
       )}
 
-      <div className="leading-relaxed prose prose-xl prose-invert max-w-none prose-h2:text-3xl prose-h3:text-2xl">
+      <div className="leading-relaxed prose prose-lg post-content lg:prose-xl prose-invert max-w-none ">
         {post.body && (
           <PortableText value={post.body} components={portableTextComponents} />
         )}
@@ -116,7 +121,7 @@ export default function BlogPostContent({
 
       {post.author.bio && (
         <div className="p-6 mt-12 rounded-lg shadow-inner bg-zinc-800 shadow-black">
-          <h3 className="mb-3 text-lg font-semibold">About the Author</h3>
+          <h3 className="mt-3 mb-1 text-lg font-semibold lg:mb-3 lg:mt-7">About the Author</h3>
           <div className="flex gap-4">
             {post.author.image && (
               <div className="relative flex-shrink-0 w-16 h-16">
@@ -132,8 +137,8 @@ export default function BlogPostContent({
               </div>
             )}
             <div>
-              <h4 className="mb-2 font-medium">{post.author.name}</h4>
-              <div className="prose-sm prose prose-invert">
+              <h4 className="mb-1 font-medium lg:mb-2">{post.author.name}</h4>
+              <div className="prose-sm prose prose-invert prose-zinc">
                 <PortableText
                   value={post.author.bio}
                   components={portableTextComponents}
@@ -146,9 +151,9 @@ export default function BlogPostContent({
                       href={post.author.website}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:underline"
+                      className="inline-flex items-center gap-1 text-sm hover:underline"
                     >
-                      Website
+                      Website <Icon icon={"mdi:open-in-new"} className="size-5" />
                     </a>
                   )}
                   {post.author.socialLinks?.twitter && (

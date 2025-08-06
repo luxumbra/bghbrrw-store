@@ -22,7 +22,7 @@ export default async function Footer() {
           <div>
             <LocalizedClientLink
               href="/"
-              className="uppercase txt-compact-xlarge-plus text-ui-fg-subtle hover:text-ui-fg-base"
+              className="text-2xl uppercase lg:text-2xl font-heading hover:text-ui-fg-base"
             >
               {companyInfo.name}
             </LocalizedClientLink>
@@ -45,16 +45,16 @@ export default async function Footer() {
                 </div>
               </div>
             )}
-            <BusinessRatingWidget size="small" showLink={true} />
+            <BusinessRatingWidget size="small" showLink={true} alignment="left" />
             <ul className="grid grid-cols-3">
               <li>
-                <Icon icon="mage:stripe" className="w-5 h-5" />
+                <Icon icon="mage:stripe" className="size-12 lg:size-16" />
               </li>
               <li>
-                <Icon icon="mage:visa" className="w-5 h-5" />
+                <Icon icon="mage:visa" className="size-12 lg:size-16" />
               </li>
               <li>
-                <Icon icon="lineicons:mastercard" className="w-5 h-5" />
+                <Icon icon="lineicons:mastercard" className="size-12 lg:size-16" />
               </li>
             </ul>
           </div>

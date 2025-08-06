@@ -1,8 +1,8 @@
-import { Metadata } from 'next'
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { sanityFetch } from '@/sanity/lib/client'
 import { blogPostBySlugQuery, relatedBlogPostsQuery } from '@/sanity/lib/queries'
-import { BlogPost } from '@/types/sanity'
+import type { BlogPost } from '@/types/sanity'
 import BlogPostContent from '@/modules/blog/components/blog-post-content'
 import RelatedPosts from '@/modules/blog/components/related-posts'
 
