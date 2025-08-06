@@ -275,6 +275,145 @@ export async function applyPromotions(codes: string[]) {
     .catch(medusaError)
 }
 
+// Type definitions for discount application results
+export interface DiscountApplicationResult {
+  success: boolean
+  error?: string
+  cart?: HttpTypes.StoreCart
+}
+
+/**
+ * Enhanced function to apply a URL-based discount code to the cart
+ * Provides better error handling and type safety for URL discount scenarios
+ * @param discountCode - The discount code to apply (will be normalized)
+ * @returns Promise with success status, error message, and updated cart
+ */
+export async function applyUrlDiscountToCart(
+  discountCode: string
+): Promise<DiscountApplicationResult> {
+  try {
+    // Normalize the discount code
+    const normalizedCode = discountCode.trim().toUpperCase()
+    
+    if (!normalizedCode) {
+      return {
+        success: false,
+        error: "Discount code is required"
+      }
+    }
+    
+    // Get current cart
+    const currentCart = await retrieveCart()
+    
+    if (!currentCart) {
+      return {
+        success: false,
+        error: "No cart found. Please add items to your cart first."
+      }
+    }
+    
+    // Check if the discount is already applied
+    const existingPromotions = currentCart.promotions || []
+    const isAlreadyApplied = existingPromotions.some(
+      promotion => promotion.code === normalizedCode
+    )
+    
+    if (isAlreadyApplied) {
+      return {
+        success: true,
+        cart: currentCart,
+        error: "Discount code is already applied"
+      }
+    }
+    
+    // Apply the promotion
+    await applyPromotions([normalizedCode])
+    
+    // Retrieve updated cart to verify the discount was actually applied
+    const updatedCart = await retrieveCart()
+    
+    if (!updatedCart) {
+      return {
+        success: false,
+        error: "Could not verify cart after applying discount"
+      }
+    }
+    
+    // Check if the promotion was actually applied by looking at the cart promotions
+    const appliedPromotions = updatedCart.promotions || []
+    const discountWasApplied = appliedPromotions.some(
+      promotion => promotion.code === normalizedCode
+    )
+    
+    if (!discountWasApplied) {
+      console.log('🚨 Discount was not applied to cart. Available promotions:', appliedPromotions)
+      return {
+        success: false,
+        error: "This discount code is not valid or has expired",
+        cart: updatedCart
+      }
+    }
+    
+    console.log('✅ Discount successfully applied to cart:', appliedPromotions)
+    return {
+      success: true,
+      cart: updatedCart
+    }
+    
+  } catch (error) {
+    // Enhanced error handling for common Medusa promotion errors
+    console.log('🚨 applyUrlDiscountToCart - Error caught:', error)
+    let errorMessage = "Failed to apply discount code"
+    
+    if (error instanceof Error) {
+      console.log('🚨 Error message:', error.message)
+      const message = error.message.toLowerCase()
+      
+      if (message.includes("promotion") && message.includes("not found")) {
+        errorMessage = "This discount code doesn't exist or has expired"
+      } else if (message.includes("not eligible") || message.includes("requirements")) {
+        errorMessage = "Your cart doesn't meet the requirements for this discount"
+      } else if (message.includes("expired")) {
+        errorMessage = "This discount code has expired"
+      } else if (message.includes("usage limit")) {
+        errorMessage = "This discount code has reached its usage limit"
+      } else if (message.includes("promo_codes")) {
+        errorMessage = "This discount code is not valid"
+      } else {
+        errorMessage = error.message
+      }
+    }
+    
+    console.log('🚨 Final error message:', errorMessage)
+    
+    return {
+      success: false,
+      error: errorMessage
+    }
+  }
+}
+
+/**
+ * Get all promotion codes currently applied to the cart
+ * @returns Array of promotion codes currently applied
+ */
+export async function getAppliedPromotionCodes(): Promise<string[]> {
+  try {
+    const cart = await retrieveCart()
+    if (!cart || !cart.promotions) {
+      return []
+    }
+    
+    return cart.promotions
+      .filter(promotion => promotion.code)
+      .map(promotion => promotion.code!)
+      
+  } catch (error) {
+    console.error("Failed to retrieve applied promotion codes:", error)
+    return []
+  }
+}
+
 export async function applyGiftCard(code: string) {
   //   const cartId = getCartId()
   //   if (!cartId) return "No cartId cookie found"

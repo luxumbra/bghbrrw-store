@@ -1,6 +1,6 @@
 "use client"
 
-import { Badge, Heading, Input, Label, Text, Tooltip } from "@medusajs/ui"
+import { Badge, Heading, Input, Label, Text } from "@medusajs/ui"
 import React, { useActionState } from "react"
 
 import { applyPromotions, submitPromotionForm } from "@lib/data/cart"
@@ -10,6 +10,7 @@ import { HttpTypes } from "@medusajs/types"
 import Trash from "@modules/common/icons/trash"
 import ErrorMessage from "../error-message"
 import { SubmitButton } from "../submit-button"
+import { useDiscountContext } from "../../../../context/discount-context"
 
 type DiscountCodeProps = {
   cart: HttpTypes.StoreCart & {
@@ -19,8 +20,14 @@ type DiscountCodeProps = {
 
 const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
   const [isOpen, setIsOpen] = React.useState(false)
+  const { urlDiscount, isApplied } = useDiscountContext()
 
   const { items = [], promotions = [] } = cart
+  
+  // Check if a promotion was applied from URL
+  const isPromotionFromUrl = (promotionCode: string) => {
+    return urlDiscount === promotionCode && isApplied
+  }
   const removePromotionCode = async (code: string) => {
     const validPromotions = promotions.filter(
       (promotion) => promotion.code !== code
@@ -114,11 +121,20 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                     <Text className="flex items-baseline w-4/5 pr-1 gap-x-1 txt-small-plus">
                       <span className="truncate" data-testid="discount-code">
                         <Badge
-                          color={promotion.is_automatic ? "green" : "grey"}
+                          color={promotion.is_automatic ? "green" : isPromotionFromUrl(promotion.code!) ? "blue" : "grey"}
                           size="small"
                         >
                           {promotion.code}
                         </Badge>{" "}
+                        {isPromotionFromUrl(promotion.code!) && (
+                          <Badge
+                            color="purple"
+                            size="small"
+                            className="ml-1"
+                          >
+                            From Link
+                          </Badge>
+                        )}{" "}
                         (
                         {promotion.application_method?.value !== undefined &&
                           promotion.application_method.currency_code !==
@@ -136,11 +152,13 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                             </>
                           )}
                         )
-                        {/* {promotion.is_automatic && (
-                          <Tooltip content="This promotion is automatically applied">
-                            <InformationCircleSolid className="inline text-zinc-400" />
-                          </Tooltip>
-                        )} */}
+                        {isPromotionFromUrl(promotion.code!) && (
+                          <InformationCircleSolid 
+                            className="inline text-blue-400 ml-1" 
+                            size={12} 
+                            title="This discount was applied automatically from a link"
+                          />
+                        )}
                       </span>
                     </Text>
                     {!promotion.is_automatic && (
