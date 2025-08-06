@@ -1,8 +1,8 @@
 "use client"
 
 import React, { Suspense } from "react"
-import { DiscountProvider } from "../../../context/discount-context"
-import DiscountUrlHandler from "../discount-url-handler"
+import { DiscountProvider } from "@/context/discount-context"
+import DiscountUrlHandler from "@/components/common/discount-url-handler"
 
 /**
  * Client-side wrapper for discount functionality

@@ -280,6 +280,7 @@ export interface DiscountApplicationResult {
   success: boolean
   error?: string
   cart?: HttpTypes.StoreCart
+  alreadyApplied?: boolean
 }
 
 /**
@@ -302,13 +303,56 @@ export async function applyUrlDiscountToCart(
       }
     }
     
-    // Get current cart
-    const currentCart = await retrieveCart()
+    // Check storage capability first to provide better error messages
+    const canStoreData = await checkStorageCapability()
     
-    if (!currentCart) {
+    if (!canStoreData) {
       return {
         success: false,
-        error: "No cart found. Please add items to your cart first."
+        error: "Unable to apply discount codes in private browsing mode. Please use a regular browser window or enable cookies to use discount codes."
+      }
+    }
+    
+    // Get current cart or create one to validate the discount
+    let currentCart = await retrieveCart()
+    
+    if (!currentCart) {
+      // Try to create a cart to validate the discount code
+      // We need a region - let's try to get the default one
+      try {
+        const { getRegion } = await import("./regions")
+        const region = await getRegion("gb") // Default to GB, adjust if needed
+        
+        if (!region) {
+          return {
+            success: false,
+            error: "Unable to validate discount code. Please try again later."
+          }
+        }
+
+        const headers = {
+          ...(await getAuthHeaders()),
+        }
+
+        const cartResp = await sdk.store.cart.create(
+          { region_id: region.id },
+          {},
+          headers
+        )
+        currentCart = cartResp.cart
+
+        await setCartId(currentCart.id)
+        
+        const cartCacheTag = await getCacheTag("carts")
+        revalidateTag(cartCacheTag)
+        
+      } catch (error) {
+        // If we can't create a cart, it's likely a storage issue
+        console.log('🚨 Cannot create cart for discount validation:', error)
+        return {
+          success: false,
+          error: "Unable to apply discount codes in private browsing mode. Please use a regular browser window or enable cookies to use discount codes."
+        }
       }
     }
     
@@ -322,15 +366,43 @@ export async function applyUrlDiscountToCart(
       return {
         success: true,
         cart: currentCart,
-        error: "Discount code is already applied"
+        alreadyApplied: true
       }
     }
     
-    // Apply the promotion
-    await applyPromotions([normalizedCode])
+    // Apply the promotion and get the updated cart in one operation
+    let updatedCart: HttpTypes.StoreCart | null = null
     
-    // Retrieve updated cart to verify the discount was actually applied
-    const updatedCart = await retrieveCart()
+    try {
+      // Use the cart update directly instead of the applyPromotions wrapper
+      // to avoid double cache invalidation and get the updated cart back
+      const cartId = await getCartId()
+      if (!cartId) {
+        return {
+          success: false,
+          error: "No cart found"
+        }
+      }
+
+      const headers = {
+        ...(await getAuthHeaders()),
+      }
+
+      const result = await sdk.store.cart
+        .update(cartId, { promo_codes: [normalizedCode] }, {}, headers)
+      
+      updatedCart = result.cart
+      
+      // Only revalidate cache once, after we have the result
+      const cartCacheTag = await getCacheTag("carts")
+      revalidateTag(cartCacheTag)
+      
+    } catch (updateError) {
+      // If the direct update fails, fall back to the original method
+      console.log('🔄 Direct cart update failed, falling back to applyPromotions')
+      await applyPromotions([normalizedCode])
+      updatedCart = await retrieveCart()
+    }
     
     if (!updatedCart) {
       return {
@@ -379,6 +451,14 @@ export async function applyUrlDiscountToCart(
         errorMessage = "This discount code has reached its usage limit"
       } else if (message.includes("promo_codes")) {
         errorMessage = "This discount code is not valid"
+      } else if (message.includes("no existing cart") || message.includes("cart") && (message.includes("not found") || message.includes("missing"))) {
+        // Check if this is a storage/cookie issue
+        const canStoreData = await checkStorageCapability()
+        if (!canStoreData) {
+          errorMessage = "Unable to apply discount codes in private browsing mode. Please use a regular browser window or enable cookies to use discount codes."
+        } else {
+          errorMessage = "Cart not found. Please add items to your cart first."
+        }
       } else {
         errorMessage = error.message
       }
@@ -606,4 +686,42 @@ export async function listCartOptions() {
     headers,
     cache: "force-cache",
   })
+}
+
+/**
+ * Check if we can store data (cookies, localStorage) - useful for detecting incognito mode
+ * @returns Promise<boolean> - true if storage is available, false otherwise
+ */
+async function checkStorageCapability(): Promise<boolean> {
+  if (typeof window === 'undefined') {
+    // Server-side, assume storage is available
+    return true
+  }
+
+  try {
+    // Test cookie storage
+    const testCookieName = '_test_storage_capability'
+    document.cookie = `${testCookieName}=test; path=/; max-age=1`
+    const cookieSet = document.cookie.includes(testCookieName)
+    
+    // Clean up test cookie
+    if (cookieSet) {
+      document.cookie = `${testCookieName}=; path=/; max-age=0`
+    }
+
+    // Test localStorage (also often restricted in incognito)
+    try {
+      const testKey = '_test_local_storage'
+      localStorage.setItem(testKey, 'test')
+      localStorage.removeItem(testKey)
+      return cookieSet // Both cookie and localStorage should work
+    } catch (localStorageError) {
+      // localStorage failed, but cookies might still work
+      return cookieSet
+    }
+    
+  } catch (error) {
+    console.log('🚨 Storage capability check failed:', error)
+    return false
+  }
 }

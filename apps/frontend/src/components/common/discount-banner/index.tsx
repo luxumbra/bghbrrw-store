@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useCallback, useMemo } from "react"
+import React, { useEffect, useCallback, useMemo, useState } from "react"
 import X from "@modules/common/icons/x"
 
 type BannerStatus = "pending" | "success" | "error"
@@ -9,6 +9,7 @@ interface DiscountBannerProps {
   discountCode: string
   status: BannerStatus
   error?: string | null
+  alreadyApplied?: boolean
   onDismiss: () => void
   onRetry?: () => void
   autoHide?: boolean
@@ -19,11 +20,19 @@ const DiscountBanner: React.FC<DiscountBannerProps> = ({
   discountCode,
   status,
   error,
+  alreadyApplied = false,
   onDismiss,
   onRetry,
   autoHide = true,
   autoHideDelay = 5000
 }) => {
+  // Ensure client-side only rendering to prevent hydration mismatches
+  const [isClient, setIsClient] = useState(false)
+  
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
   // Auto-dismiss timer with proper cleanup
   useEffect(() => {
     if (status === "success" && autoHide) {
@@ -59,18 +68,24 @@ const DiscountBanner: React.FC<DiscountBannerProps> = ({
   const bannerStyles = useMemo(() => {
     switch (status) {
       case "success":
-        return "bg-green-50 border-green-200 text-green-800"
+        return "bg-green-50/40 backdrop-blur-md border-green-200 text-green-800"
       case "error":
-        return "bg-red-50 border-red-200 text-red-800"
+        return "bg-red-50/40 backdrop-blur-md border-red-200 text-red-800"
       case "pending":
       default:
-        return "bg-blue-50 border-blue-200 text-blue-800"
+        return "bg-blue-50/40 backdrop-blur-md border-blue-200 text-blue-800"
     }
   }, [status])
 
   const bannerContent = useMemo(() => {
     switch (status) {
       case "success":
+        if (alreadyApplied) {
+          return {
+            icon: "ℹ️",
+            message: `Discount code '${discountCode}' is already applied to your cart.`
+          }
+        }
         return {
           icon: "🎉",
           message: `Discount code '${discountCode}' has been applied to your cart!`
@@ -87,9 +102,14 @@ const DiscountBanner: React.FC<DiscountBannerProps> = ({
           message: `Applying discount code '${discountCode}'...`
         }
     }
-  }, [status, discountCode, error])
+  }, [status, discountCode, error, alreadyApplied])
 
   const { icon, message } = bannerContent
+
+  // Prevent hydration mismatch by only rendering on client
+  if (!isClient) {
+    return null
+  }
 
   return (
     <div
