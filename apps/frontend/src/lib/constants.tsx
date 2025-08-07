@@ -33,6 +33,8 @@ export const paymentInfoMap: Record<
   // Add more payment providers here
 }
 
+export const CMS_URL = process.env.NEXT_PUBLIC_SANITY_STUDIO_URL || "http://localhost:3333"
+
 // This only checks if it is native stripe for card payments, it ignores the other stripe-based providers
 export const isStripe = (providerId?: string) => {
   return providerId?.startsWith("pp_stripe_")

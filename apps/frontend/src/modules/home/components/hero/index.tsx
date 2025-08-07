@@ -11,7 +11,7 @@ const Hero = () => {
         <span>
           <Heading
             level="h1"
-            className="text-4xl font-normal leading-10 font-heading lg:text-7xl"
+            className="text-4xl font-bold leading-10 font-heading lg:text-7xl"
           >
             Bough & Burrow
           </Heading>

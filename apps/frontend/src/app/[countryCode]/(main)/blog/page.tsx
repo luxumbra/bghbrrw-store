@@ -1,3 +1,4 @@
+import { CMS_URL } from '@/lib/constants'
 import BlogPostCard from '@/modules/blog/components/blog-post-card'
 import CategoryFilter from '@/modules/blog/components/category-filter'
 import { sanityFetch } from '@/sanity/lib/client'
@@ -85,7 +86,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
           </p>
           {blogPosts.length === 0 && (
             <p className="mt-2 text-sm text-gray-400">
-              Access Sanity Studio at <a href="http://localhost:3333" className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">http://localhost:3333</a> to create your first blog post.
+              Access Sanity Studio at <a href={CMS_URL} className="text-blue-600 hover:underline" target="_blank" rel="noopener noreferrer">{CMS_URL}</a> to create your first blog post.
             </p>
           )}
         </div>

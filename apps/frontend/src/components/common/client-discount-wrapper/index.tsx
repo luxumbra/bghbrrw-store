@@ -1,6 +1,6 @@
 "use client"
 
-import React, { Suspense } from "react"
+import React, { Suspense, useEffect, useState } from "react"
 import { DiscountProvider } from "@/context/discount-context"
 import DiscountUrlHandler from "@/components/common/discount-url-handler"
 
@@ -9,6 +9,17 @@ import DiscountUrlHandler from "@/components/common/discount-url-handler"
  * This ensures that URL detection and discount handling only runs on the client
  */
 const ClientDiscountWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  // Always render children immediately, but only add discount functionality on client
+  if (!isClient) {
+    return <>{children}</>
+  }
+
   return (
     <DiscountProvider>
       <Suspense fallback={null}>

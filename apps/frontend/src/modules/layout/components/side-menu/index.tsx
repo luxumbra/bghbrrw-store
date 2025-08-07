@@ -13,6 +13,7 @@ import { Fragment } from "react"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CountrySelect from "../country-select"
 import { HttpTypes } from "@medusajs/types"
+import { BrandHeading } from "@/modules/common/components/brand-heading"
 
 const SideMenuItems = {
   Home: "/",
@@ -35,7 +36,7 @@ const SideMenu = ({ regions }: { regions: HttpTypes.StoreRegion[] | null }) => {
               <div className="relative flex h-full">
                 <PopoverButton
                   data-testid="nav-menu-button"
-                  className="relative flex items-center h-full transition-all duration-200 ease-out focus:outline-none hover:text-ui-fg-base"
+                  className="relative flex items-center h-full transition-all duration-200 ease-out text-medium lg:text-lg focus:outline-none hover:text-ui-fg-base"
                 >
                   Menu
                 </PopoverButton>
@@ -56,6 +57,9 @@ const SideMenu = ({ regions }: { regions: HttpTypes.StoreRegion[] | null }) => {
                     data-testid="nav-menu-popup"
                     className="flex flex-col h-full bg-[rgba(3,7,18,0.5)] rounded-rounded justify-between p-6"
                   >
+                    <div className="absolute flex items-center justify-center w-full -translate-x-1/2 top-12 left-1/2">
+                      <BrandHeading size="xlarge" showLogo showText={false} />
+                    </div>
                     <div className="flex justify-end" id="xmark">
                       <button data-testid="close-menu-button" onClick={close}>
                         <XMark />

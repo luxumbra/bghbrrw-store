@@ -1,3 +1,4 @@
+import { BrandHeading } from "@/modules/common/components/brand-heading"
 import BusinessRatingWidget from "@/modules/common/components/business-rating-widget"
 import { Icon } from "@iconify/react"
 import { listCategories } from "@lib/data/categories"
@@ -7,6 +8,7 @@ import { Text, clx } from "@medusajs/ui"
 
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import MedusaCTA from "@modules/layout/components/medusa-cta"
+import Link from "next/link"
 
 export default async function Footer() {
   const { collections } = await listCollections({
@@ -20,12 +22,13 @@ export default async function Footer() {
       <div className="flex flex-col w-full content-container">
         <div className="flex flex-col items-start justify-between py-40 gap-y-6 xsmall:flex-row">
           <div>
-            <LocalizedClientLink
+            {/* <LocalizedClientLink
               href="/"
               className="text-2xl uppercase lg:text-2xl font-heading hover:text-ui-fg-base"
             >
               {companyInfo.name}
-            </LocalizedClientLink>
+            </LocalizedClientLink> */}
+                      <BrandHeading size="medium" showText />
             {companyInfo.location && (
               <div className="mt-2 text-ui-fg-subtle txt-small">
                 {/* <div className="font-medium">{companyInfo.location.name}</div> */}
@@ -54,7 +57,7 @@ export default async function Footer() {
                 <Icon icon="mage:visa" className="size-12 lg:size-16" />
               </li>
               <li>
-                <Icon icon="lineicons:mastercard" className="size-12 lg:size-16" />
+                <Icon icon="lineicons:mastercard" className="size-12 lg:size-14" />
               </li>
             </ul>
           </div>
@@ -150,7 +153,7 @@ export default async function Footer() {
               <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
                 <li>
                   <a
-                    href="https://github.com/medusajs"
+                    href="https://www.facebook.com/boughandburrow.uk/"
                     target="_blank"
                     rel="noreferrer"
                     className="hover:text-ui-fg-base"
@@ -160,7 +163,7 @@ export default async function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://docs.medusajs.com"
+                    href="https://www.instagram.com/boughandburrow.uk/"
                     target="_blank"
                     rel="noreferrer"
                     className="hover:text-ui-fg-base"
@@ -169,9 +172,9 @@ export default async function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a href={`/contact-us`} className="hover:text-ui-fg-base">
-                    Contact Us
-                  </a>
+                  <LocalizedClientLink href={`/contact`} className="hover:text-ui-fg-base">
+                    Contact
+                  </LocalizedClientLink>
                 </li>
                 <li>
                   <LocalizedClientLink

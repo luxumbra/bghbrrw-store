@@ -317,37 +317,11 @@ export async function applyUrlDiscountToCart(
     let currentCart = await retrieveCart()
     
     if (!currentCart) {
-      // Try to create a cart to validate the discount code
-      // We need a region - let's try to get the default one
+      // Try to create a cart using the existing getOrSetCart function
+      // This ensures proper customer association and region handling
       try {
-        const { getRegion } = await import("./regions")
-        // Try to get default region from environment or fallback to "gb"
         const defaultRegion = process.env.DEFAULT_REGION || "gb"
-        const region = await getRegion(defaultRegion)
-        
-        if (!region) {
-          return {
-            success: false,
-            error: "Unable to validate discount code. Please try again later."
-          }
-        }
-
-        const headers = {
-          ...(await getAuthHeaders()),
-        }
-
-        const cartResp = await sdk.store.cart.create(
-          { region_id: region.id },
-          {},
-          headers
-        )
-        currentCart = cartResp.cart
-
-        await setCartId(currentCart.id)
-        
-        const cartCacheTag = await getCacheTag("carts")
-        revalidateTag(cartCacheTag)
-        
+        currentCart = await getOrSetCart(defaultRegion)
       } catch (error) {
         // If we can't create a cart, it's likely a storage issue
         console.log('🚨 Cannot create cart for discount validation:', error)

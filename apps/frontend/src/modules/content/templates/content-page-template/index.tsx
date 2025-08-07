@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 import { PortableText } from '@portabletext/react'
-import { ContentPage } from '@/types/sanity'
+import type { ContentPage } from '@/types/sanity'
 import { portableTextComponents } from '@/modules/content/components/portable-text'
 
 interface ContentPageTemplateProps {
@@ -22,7 +22,7 @@ export default function ContentPageTemplate({ page }: ContentPageTemplateProps) 
           </p>
         </header>
 
-        <div className="prose prose-lg prose-invert max-w-none ">
+        <div className="leading-relaxed prose prose-lg post-content lg:prose-xl prose-invert max-w-none">
           <PortableText
             value={page.content}
             components={portableTextComponents}

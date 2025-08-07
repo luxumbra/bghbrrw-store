@@ -52,7 +52,7 @@ export default async function PrivacyPage() {
             This page is not yet available. Please create a "Shipping and Returns" page in Sanity Studio.
           </p>
           <a
-            href="http://localhost:3333"
+            href={CMS_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline"

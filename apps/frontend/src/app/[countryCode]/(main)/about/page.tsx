@@ -4,6 +4,7 @@ import { sanityFetch } from '@/sanity/lib/client'
 import { contentPageByTypeQuery } from '@/sanity/lib/queries'
 import { ContentPage } from '@/types/sanity'
 import ContentPageTemplate from '@/modules/content/templates/content-page-template'
+import { CMS_URL } from '@/lib/constants'
 
 export async function generateMetadata(): Promise<Metadata> {
   const page = await sanityFetch<ContentPage>({
@@ -53,7 +54,7 @@ export default async function AboutPage() {
             This page is not yet available. Please create an "About" page in Sanity Studio.
           </p>
           <a
-            href="http://localhost:3333"
+            href={CMS_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 hover:underline"
