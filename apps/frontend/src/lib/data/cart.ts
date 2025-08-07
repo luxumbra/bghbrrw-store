@@ -134,6 +134,9 @@ export async function addToCart({
     ...(await getAuthHeaders()),
   }
 
+  // Check if this cart has a pending discount code to apply
+  const pendingDiscountCode = cart.metadata?.pending_discount_code as string
+
   await sdk.store.cart
     .createLineItem(
       cart.id,
@@ -150,6 +153,34 @@ export async function addToCart({
 
       const fulfillmentCacheTag = await getCacheTag("fulfillment")
       revalidateTag(fulfillmentCacheTag)
+
+      // If there was a pending discount code, try to apply it now that we have items
+      if (pendingDiscountCode) {
+        console.log('🎯 Applying pending discount code after adding item:', pendingDiscountCode)
+        try {
+          // Apply the discount code now that we have items in cart
+          await sdk.store.cart
+            .update(cart.id, { promo_codes: [pendingDiscountCode] }, {}, headers)
+          
+          // Remove the pending code from metadata since it's now applied
+          await sdk.store.cart
+            .update(cart.id, { 
+              metadata: { 
+                ...cart.metadata,
+                pending_discount_code: null 
+              } 
+            }, {}, headers)
+          
+          console.log('✅ Pending discount code successfully applied:', pendingDiscountCode)
+          
+          // Revalidate cache again after discount application
+          revalidateTag(cartCacheTag)
+          
+        } catch (discountError) {
+          console.log('🚨 Failed to apply pending discount code:', discountError)
+          // Don't throw here - item was still added successfully
+        }
+      }
     })
     .catch(medusaError)
 }
@@ -284,9 +315,9 @@ export interface DiscountApplicationResult {
 }
 
 /**
- * Enhanced function to apply a URL-based discount code to the cart
- * Provides better error handling and type safety for URL discount scenarios
- * @param discountCode - The discount code to apply (will be normalized)
+ * Enhanced function to validate and store a URL-based discount code
+ * For empty carts, stores the code to be applied later when items are added
+ * @param discountCode - The discount code to validate (will be normalized)
  * @returns Promise with success status, error message, and updated cart
  */
 export async function applyUrlDiscountToCart(
@@ -332,11 +363,15 @@ export async function applyUrlDiscountToCart(
       }
     }
     
-    // Check if the discount is already applied
+    // Check if the discount is already applied or pending
     const existingPromotions = currentCart.promotions || []
     const isAlreadyApplied = existingPromotions.some(
       promotion => promotion.code === normalizedCode
     )
+    
+    // Check if the code is pending in metadata
+    const pendingDiscountCode = currentCart.metadata?.pending_discount_code as string
+    const isPendingApplication = pendingDiscountCode === normalizedCode
     
     if (isAlreadyApplied) {
       return {
@@ -346,12 +381,92 @@ export async function applyUrlDiscountToCart(
       }
     }
     
-    // Apply the promotion and get the updated cart in one operation
+    if (isPendingApplication) {
+      return {
+        success: true,
+        cart: currentCart,
+        alreadyApplied: false // It's pending, not yet applied
+      }
+    }
+
+    // Check if cart is empty (no line items)
+    const cartHasItems = currentCart.items && currentCart.items.length > 0
+    
+    if (!cartHasItems) {
+      // For empty carts, store the discount code to be applied later
+      // We'll validate the code exists by attempting to apply it, then remove it
+      console.log('🛒 Cart is empty, validating discount code:', normalizedCode)
+      
+      try {
+        const cartId = await getCartId()
+        if (!cartId) {
+          return {
+            success: false,
+            error: "No cart found"
+          }
+        }
+
+        const headers = {
+          ...(await getAuthHeaders()),
+        }
+
+        // Attempt to apply the discount to validate it exists
+        const result = await sdk.store.cart
+          .update(cartId, { promo_codes: [normalizedCode] }, {}, headers)
+        
+        // Check if the code was recognized (it might not be applied due to empty cart)
+        const wasCodeRecognized = result.cart
+        
+        if (!wasCodeRecognized) {
+          return {
+            success: false,
+            error: "This discount code is not valid or has expired"
+          }
+        }
+
+        // For empty carts, store the code in cart metadata to be applied later
+        const updatedCartWithCode = await sdk.store.cart
+          .update(cartId, { 
+            metadata: { 
+              ...currentCart.metadata,
+              pending_discount_code: normalizedCode 
+            } 
+          }, {}, headers)
+
+        // Revalidate cache
+        const cartCacheTag = await getCacheTag("carts")
+        revalidateTag(cartCacheTag)
+        
+        console.log('✅ Discount code validated and stored for empty cart:', normalizedCode)
+        return {
+          success: true,
+          cart: updatedCartWithCode.cart,
+          alreadyApplied: false
+        }
+        
+      } catch (validationError) {
+        console.log('🚨 Discount validation failed:', validationError)
+        // Handle specific validation errors
+        if (validationError instanceof Error) {
+          const message = validationError.message.toLowerCase()
+          if (message.includes("promotion") && message.includes("not found")) {
+            return {
+              success: false,
+              error: "This discount code doesn't exist or has expired"
+            }
+          }
+        }
+        return {
+          success: false,
+          error: "This discount code is not valid or has expired"
+        }
+      }
+    }
+    
+    // Apply the promotion for carts with items
     let updatedCart: HttpTypes.StoreCart | null = null
     
     try {
-      // Use the cart update directly instead of the applyPromotions wrapper
-      // to avoid double cache invalidation and get the updated cart back
       const cartId = await getCartId()
       if (!cartId) {
         return {
