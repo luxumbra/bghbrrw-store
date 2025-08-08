@@ -4,6 +4,7 @@ import type { Metadata } from "next"
 import "@styles/globals.css"
 import "@styles/theme.css"
 import { RegionProvider } from "@/providers/region"
+import ClientDiscountWrapper from "@/components/common/client-discount-wrapper"
 
 export const metadata: Metadata = {
   metadataBase: new URL(getBaseURL()),
@@ -24,11 +25,6 @@ export const metadata: Metadata = {
     description:
       "A shop for Bough & Burrow, a small business that sells handmade products.",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-  },
 }
 
 export default function RootLayout(props: { children: React.ReactNode }) {
@@ -39,7 +35,9 @@ export default function RootLayout(props: { children: React.ReactNode }) {
     >
       <body data-mode="light">
         <RegionProvider>
-          <main className="relative">{props.children}</main>
+          <ClientDiscountWrapper>
+            <main className="relative">{props.children}</main>
+          </ClientDiscountWrapper>
         </RegionProvider>
       </body>
     </html>

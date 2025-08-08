@@ -50,19 +50,32 @@ const DiscountUrlHandler: React.FC = () => {
 
   // Effect to handle automatic discount application
   useEffect(() => {
+    // Debug logging to track what's triggering this effect
+    console.log('🔍 [DiscountUrlHandler] Effect triggered with state:', {
+      discountCode,
+      isFromUrl,
+      isApplied,
+      isApplying,
+      error,
+      urlDiscount,
+      currentUrl: typeof window !== 'undefined' ? window.location.href : 'SSR'
+    })
+
     // Only proceed if:
     // 1. We have a discount code from URL
     // 2. It hasn't been applied yet
     // 3. We're not currently applying it
     // 4. There's no current error (unless user wants to retry)
-    if (
-      discountCode &&
+    const shouldApply = discountCode &&
       isFromUrl &&
       !isApplied &&
       !isApplying &&
       (!error || urlDiscount !== discountCode)
-    ) {
-      console.log('🚀 Attempting to apply discount:', discountCode)
+
+    console.log('🔍 [DiscountUrlHandler] Should apply discount:', shouldApply)
+
+    if (shouldApply) {
+      console.log('🚀 [DiscountUrlHandler] Attempting to apply discount:', discountCode)
       handleApplyDiscount(discountCode)
     }
   }, [

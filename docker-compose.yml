@@ -71,7 +71,7 @@ services:
   cms:
     build:
       context: .
-      dockerfile: apps/cms/Dockerfile
+      dockerfile: apps/cms/Dockerfile.local
       target: development
     container_name: boughandburrow-cms
     ports:

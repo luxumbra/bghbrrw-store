@@ -15,9 +15,4 @@ export const metadata: Metadata = {
         title: "Bough & Burrow Shop",
         description: "A shop for Bough & Burrow, a small business that sells handmade products.",
     },
-    viewport: {
-        width: "device-width",
-        initialScale: 1,
-        maximumScale: 1,
-    },
 }
