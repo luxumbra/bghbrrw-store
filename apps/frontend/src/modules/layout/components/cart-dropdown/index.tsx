@@ -16,6 +16,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Thumbnail from "@modules/products/components/thumbnail"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
+import DiscountBadge from "../discount-badge"
 
 const CartDropdown = ({
   cart: cartState,
@@ -86,6 +87,7 @@ const CartDropdown = ({
             href="/cart"
             data-testid="nav-cart-link"
           >{`Cart (${totalItems})`}</LocalizedClientLink>
+          <DiscountBadge />
         </PopoverButton>
         <Transition
           show={cartDropdownOpen}
@@ -204,9 +206,6 @@ const CartDropdown = ({
             ) : (
               <div>
                 <div className="flex flex-col items-center justify-center py-16 gap-y-4">
-                  <div className="flex items-center justify-center w-6 h-6 text-white bg-gray-900 rounded-full text-small-regular">
-                    <span>0</span>
-                  </div>
                   <span>Your shopping bag is empty.</span>
                   <div>
                     <LocalizedClientLink href="/store">
