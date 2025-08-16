@@ -33,6 +33,7 @@ services:
     environment:
       # Override specific values for Docker networking
       - REDIS_URL=${REDIS_URL}
+      - DATABASE_URL=${DATABASE_URL}
       # Stripe configuration
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
@@ -63,6 +64,9 @@ services:
       - MEDUSA_BACKEND_URL=${MEDUSA_BACKEND_URL}
       - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
       - PORT=8000
+      # Maintenance mode configuration
+      - MAINTENANCE_MODE=${MAINTENANCE_MODE:-false}
+      - MAINTENANCE_BYPASS_KEY=${MAINTENANCE_BYPASS_KEY:-bnb_admin_2024}
     volumes:
       - ./apps/frontend:/workspace/apps/frontend
       - ./apps/frontend/node_modules:/workspace/apps/frontend/node_modules
