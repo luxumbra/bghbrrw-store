@@ -1,7 +1,7 @@
 "use client"
 
 import { useSearchParams, useRouter } from "next/navigation"
-import { useCallback, useMemo, useEffect } from "react"
+import { useCallback, useMemo, useEffect, useRef } from "react"
 
 interface UseUrlDiscountReturn {
   discountCode: string | null
@@ -16,17 +16,28 @@ interface UseUrlDiscountReturn {
 export function useUrlDiscount(): UseUrlDiscountReturn {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const prevDiscountCodeRef = useRef<string | null>(null)
   
   // Memoized discount code extraction with normalization
   const discountCode = useMemo(() => {
     // Only use searchParams - avoid window.location fallback that causes infinite loops
     const code = searchParams.get('discount')
     
-    if (!code) return null
+    if (!code) {
+      prevDiscountCodeRef.current = null
+      return null
+    }
     
     // Normalize the code: trim whitespace and convert to uppercase
     const normalizedCode = code.trim().toUpperCase()
-    return normalizedCode.length > 0 ? normalizedCode : null
+    const finalCode = normalizedCode.length > 0 ? normalizedCode : null
+    
+    // Only update if the code actually changed
+    if (prevDiscountCodeRef.current !== finalCode) {
+      prevDiscountCodeRef.current = finalCode
+    }
+    
+    return finalCode
   }, [searchParams])
   
   // Stable function reference to prevent unnecessary re-renders

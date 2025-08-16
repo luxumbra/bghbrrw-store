@@ -1,7 +1,7 @@
 "use client"
 
 import { Badge } from "@medusajs/ui"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { retrieveCart } from "@lib/data/cart"
 
 /**
@@ -11,24 +11,27 @@ import { retrieveCart } from "@lib/data/cart"
 export default function DiscountBadge() {
   const [discountCode, setDiscountCode] = useState<string | null>(null)
   const [isMounted, setIsMounted] = useState(false)
+  const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const lastCheckRef = useRef<string | null>(null)
 
-  // Check for active promotions in the cart
+  // Check for active promotions in the cart with optimization
   const checkForPromotions = async () => {
     try {
       const cart = await retrieveCart()
-      if (cart?.promotions && cart.promotions.length > 0) {
-        // Get the first promotion code
-        const code = cart.promotions[0]?.code
-
-        if (code) {
-          setDiscountCode(code)
-          return
-        }
+      const currentCode = cart?.promotions?.[0]?.code || null
+      
+      // Only update state if the discount code actually changed
+      if (currentCode !== lastCheckRef.current) {
+        lastCheckRef.current = currentCode
+        setDiscountCode(currentCode)
       }
-      setDiscountCode(null)
     } catch (error) {
       console.error('Error checking for promotions:', error)
-      setDiscountCode(null)
+      // Only update state if we had a code before
+      if (lastCheckRef.current !== null) {
+        lastCheckRef.current = null
+        setDiscountCode(null)
+      }
     }
   }
 
@@ -43,13 +46,18 @@ export default function DiscountBadge() {
     // Initial check
     checkForPromotions()
 
-    // Set up interval to refresh cart data periodically
-    const interval = setInterval(() => {
+    // Set up interval with longer delay and proper cleanup
+    intervalRef.current = setInterval(() => {
       checkForPromotions()
-    }, 10000) // Check every 10 seconds
+    }, 30000) // Reduced frequency: Check every 30 seconds instead of 10
 
     // Clean up interval on unmount
-    return () => clearInterval(interval)
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
+    }
   }, [])
 
   // Don't render anything if no discount is applied or not mounted yet

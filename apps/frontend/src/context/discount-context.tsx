@@ -169,12 +169,9 @@ export function DiscountProvider({ children }: DiscountProviderProps) {
     clearError,
     reset
   }), [
-    state.urlDiscount,
-    state.isApplying,
-    state.isApplied,
-    state.error,
-    state.bannerDismissed,
-    state.alreadyApplied,
+    // Use the entire state object instead of individual properties
+    // This reduces the number of dependencies and potential re-renders
+    state,
     setUrlDiscount,
     applyUrlDiscount,
     dismissBanner,
@@ -189,12 +186,21 @@ export function DiscountProvider({ children }: DiscountProviderProps) {
   )
 }
 
-// Custom hook to use the discount context
+// Custom hook to use the discount context with optional fallback
 export function useDiscountContext(): DiscountContextValue {
   const context = useContext(DiscountContext)
 
   if (context === undefined) {
-    throw new Error("useDiscountContext must be used within a DiscountProvider")
+    // Provide a fallback context for components outside the provider
+    console.warn("useDiscountContext used outside DiscountProvider - providing fallback")
+    return {
+      ...initialState,
+      setUrlDiscount: () => {},
+      applyUrlDiscount: async () => {},
+      dismissBanner: () => {},
+      clearError: () => {},
+      reset: () => {}
+    }
   }
 
   return context

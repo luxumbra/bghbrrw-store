@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useCallback } from "react"
+import React, { useEffect, useCallback, useState, useRef } from "react"
 import { useUrlDiscount } from "@/hooks/useUrlDiscount"
 import { useDiscountContext } from "@/context/discount-context"
 import { retrieveCart } from "@lib/data/cart"
@@ -11,7 +11,25 @@ import DiscountBanner from "@/components/common/discount-banner"
  * Manages the entire flow from URL parsing to cart application with proper effect cleanup
  */
 const DiscountUrlHandler: React.FC = () => {
+  const [isMounted, setIsMounted] = useState(false)
   const { discountCode, isFromUrl, clearDiscountFromUrl } = useUrlDiscount()
+  
+  // Use ref to track previous values and prevent unnecessary re-renders
+  const prevStateRef = useRef<{
+    discountCode: string | null
+    isFromUrl: boolean
+    isApplied: boolean
+    isApplying: boolean
+    error: string | null
+    urlDiscount: string | null
+  }>()
+  
+  // Ensure this component only renders on the client side
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // Only access the discount context on the client side
   const {
     urlDiscount,
     isApplying,
@@ -48,18 +66,34 @@ const DiscountUrlHandler: React.FC = () => {
     }
   }, [isApplied, error, discountCode, isFromUrl, clearDiscountFromUrl])
 
-  // Effect to handle automatic discount application
+  // Effect to handle automatic discount application with change detection
   useEffect(() => {
-    // Debug logging to track what's triggering this effect
-    console.log('🔍 [DiscountUrlHandler] Effect triggered with state:', {
+    const currentState = {
       discountCode,
       isFromUrl,
       isApplied,
       isApplying,
       error,
-      urlDiscount,
-      currentUrl: typeof window !== 'undefined' ? window.location.href : 'SSR'
-    })
+      urlDiscount
+    }
+    
+    // Check if any relevant state has actually changed
+    const prevState = prevStateRef.current
+    const hasRelevantChange = !prevState || 
+      prevState.discountCode !== discountCode ||
+      prevState.isFromUrl !== isFromUrl ||
+      prevState.isApplied !== isApplied ||
+      prevState.isApplying !== isApplying ||
+      prevState.error !== error ||
+      prevState.urlDiscount !== urlDiscount
+    
+    // Update ref with current state
+    prevStateRef.current = currentState
+    
+    // Only proceed if there's a relevant change
+    if (!hasRelevantChange) {
+      return
+    }
 
     // Only proceed if:
     // 1. We have a discount code from URL
@@ -72,10 +106,8 @@ const DiscountUrlHandler: React.FC = () => {
       !isApplying &&
       (!error || urlDiscount !== discountCode)
 
-    console.log('🔍 [DiscountUrlHandler] Should apply discount:', shouldApply)
-
     if (shouldApply) {
-      console.log('🚀 [DiscountUrlHandler] Attempting to apply discount:', discountCode)
+      console.log('🚀 [DiscountUrlHandler] Applying discount:', discountCode)
       handleApplyDiscount(discountCode)
     }
   }, [

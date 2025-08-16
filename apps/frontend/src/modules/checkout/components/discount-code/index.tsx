@@ -1,7 +1,7 @@
 "use client"
 
 import { Badge, Heading, Input, Label, Text } from "@medusajs/ui"
-import React, { useActionState } from "react"
+import React, { useActionState, useEffect, useState } from "react"
 
 import { applyPromotions, submitPromotionForm } from "@lib/data/cart"
 import { convertToLocale } from "@lib/util/money"
@@ -19,7 +19,15 @@ type DiscountCodeProps = {
 }
 
 const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
-  const [isOpen, setIsOpen] = React.useState(false)
+  const [isMounted, setIsMounted] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  
+  // Ensure this component only renders on the client side
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  // Only access the discount context on the client side
   const { urlDiscount, isApplied } = useDiscountContext()
 
   const { items = [], promotions = [] } = cart

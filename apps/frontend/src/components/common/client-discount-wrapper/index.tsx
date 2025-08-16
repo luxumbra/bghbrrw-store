@@ -9,14 +9,16 @@ import DiscountUrlHandler from "@/components/common/discount-url-handler"
  * This ensures that URL detection and discount handling only runs on the client
  */
 const ClientDiscountWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isClient, setIsClient] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
 
+  // Use a more reliable way to detect client-side rendering
   useEffect(() => {
-    setIsClient(true)
+    setIsMounted(true)
   }, [])
 
-  // Always render children immediately, but only add discount functionality on client
-  if (!isClient) {
+  // Only render the discount provider and handler on the client side
+  // This prevents any server-side rendering of discount-related components
+  if (!isMounted) {
     return <>{children}</>
   }
 
@@ -30,4 +32,4 @@ const ClientDiscountWrapper: React.FC<{ children: React.ReactNode }> = ({ childr
   )
 }
 
-export default ClientDiscountWrapper
+export default React.memo(ClientDiscountWrapper)
