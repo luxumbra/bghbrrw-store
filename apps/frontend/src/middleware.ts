@@ -134,9 +134,39 @@ async function getCountryCode(
 }
 
 /**
- * Middleware to handle region selection and onboarding status.
+ * Middleware to handle maintenance mode, region selection and onboarding status.
  */
 export async function middleware(request: NextRequest) {
+  // Check maintenance mode first
+  const isMaintenanceMode = process.env.MAINTENANCE_MODE === 'true'
+  const bypassKey = process.env.MAINTENANCE_BYPASS_KEY
+  const requestBypass = request.nextUrl.searchParams.get('bypass')
+  
+  // Allow bypass if correct key is provided
+  const canBypass = bypassKey && requestBypass === bypassKey
+  
+  if (isMaintenanceMode && !canBypass) {
+    // Don't redirect if already on maintenance page
+    if (request.nextUrl.pathname === '/maintenance') {
+      return NextResponse.next()
+    }
+    
+    // Allow static assets, API routes, and Next.js internals
+    if (
+      request.nextUrl.pathname.startsWith('/api/') ||
+      request.nextUrl.pathname.startsWith('/_next/') ||
+      request.nextUrl.pathname.includes('.') ||
+      request.nextUrl.pathname === '/favicon.ico' ||
+      request.nextUrl.pathname === '/robots.txt' ||
+      request.nextUrl.pathname === '/sitemap.xml'
+    ) {
+      return NextResponse.next()
+    }
+    
+    // Redirect to maintenance page
+    const maintenanceUrl = new URL('/maintenance', request.url)
+    return NextResponse.redirect(maintenanceUrl)
+  }
   let redirectUrl = request.nextUrl.href
 
   let response = NextResponse.redirect(redirectUrl, 307)
