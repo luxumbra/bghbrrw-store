@@ -46,7 +46,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
 
   return (
     <Table.Row className="w-full" data-testid="product-row">
-      <Table.Cell className="!pl-0 p-4 w-24">
+      <Table.Cell className="!pl-2 p-4 w-24">
         <LocalizedClientLink
           href={`/products/${item.product_handle}`}
           className={clx("flex", {
@@ -79,7 +79,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
             <CartItemSelect
               value={item.quantity}
               onChange={(value) => changeQuantity(parseInt(value.target.value))}
-              className="h-10 p-4 w-14"
+              className="h-10 p-4 w-14 border-copy-color/50"
               data-testid="product-select-button"
             >
               {/* TODO: Update this with the v2 way of managing inventory */}
@@ -114,7 +114,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
         </Table.Cell>
       )}
 
-      <Table.Cell className="!pr-0">
+      <Table.Cell className="!pr-2">
         <span
           className={clx("!pr-0", {
             "flex flex-col items-end h-full justify-center": type === "preview",

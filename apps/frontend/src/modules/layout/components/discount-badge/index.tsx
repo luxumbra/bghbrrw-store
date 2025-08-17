@@ -66,8 +66,9 @@ export default function DiscountBadge() {
   }
 
   return (
+    <div className="fixed flex items-center justify-end w-full top-16 -z-10 content-container px-0">
     <div
-      className="group fixed flex flex-col items-center justify-end top-16 right-32 -translate-y-1/2 hover:translate-y-0 transition-all -z-10 rounded-lg rounded-t-none bg-black/80 backdrop-blur-md py-2 px-6"
+      className="group flex flex-col items-center justify-end -translate-y-1/2 hover:translate-y-0 transition-all rounded-lg rounded-t-none bg-black/80 backdrop-blur-md py-2 px-6"
       data-testid="discount-badge"
     >
       <div className="badges-wrapper">
@@ -81,6 +82,7 @@ export default function DiscountBadge() {
       <div className="message">
         <p>Discount(s) applied</p>
       </div>
+    </div>
     </div>
   )
 }

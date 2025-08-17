@@ -13,5 +13,6 @@
   --font-body: var(--font-lato), sans-serif;
   --fg-interactive: var(--color-primary);
   --bg-subtle: var(--color-zinc-600);
+  --tag-neutral-bg: var(--color-zinc-700);
 }
 }
