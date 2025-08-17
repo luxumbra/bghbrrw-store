@@ -15,14 +15,15 @@ interface BlogPageProps {
   params: Promise<{
     countryCode: string
   }>
-  searchParams: {
+  searchParams: Promise<{
     category?: string
-  }
+  }>
 }
 
 
 export default async function BlogPage({ params, searchParams }: BlogPageProps) {
   const { countryCode } = await params
+  const resolvedSearchParams = await searchParams
   let blogPosts: BlogPost[] = []
   let categories: Category[] = []
 
@@ -45,9 +46,9 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
     console.error('Failed to fetch blog data:', error)
   }
 
-  const filteredPosts = searchParams.category
+  const filteredPosts = resolvedSearchParams.category
     ? blogPosts.filter(post =>
-        post.categories.some(cat => cat.slug.current === searchParams.category)
+        post.categories.some(cat => cat.slug.current === resolvedSearchParams.category)
       )
     : blogPosts
 
@@ -62,7 +63,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
 
       <CategoryFilter
         categories={categories}
-        selectedCategory={searchParams.category}
+        selectedCategory={resolvedSearchParams.category}
       />
 
       {filteredPosts.length > 0 ? (
@@ -78,8 +79,8 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
       ) : (
         <div className="py-16 text-center">
           <p className="text-lg text-gray-500">
-            {searchParams.category
-              ? `No posts found in the "${searchParams.category}" category.`
+            {resolvedSearchParams.category
+              ? `No posts found in the "${resolvedSearchParams.category}" category.`
               : blogPosts.length === 0
                 ? 'Welcome to the blog! No posts available yet. Please add some content in Sanity Studio.'
                 : 'No blog posts found.'
