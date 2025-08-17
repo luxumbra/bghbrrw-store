@@ -46,6 +46,7 @@ export default function BlogPostContent({
                     .url()}
                   alt={post.author.name}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover my-0 rounded-full"
                 />
               </div>
@@ -101,6 +102,7 @@ export default function BlogPostContent({
           <Image
             src={urlFor(post.mainImage.asset).width(1200).height(675).url()}
             alt={post.mainImage.alt || post.title}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             fill
             className="object-cover"
             priority
@@ -132,6 +134,7 @@ export default function BlogPostContent({
                     .url()}
                   alt={post.author.name}
                   fill
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover rounded-full"
                 />
               </div>

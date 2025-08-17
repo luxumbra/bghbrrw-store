@@ -12,9 +12,9 @@ export const metadata: Metadata = {
 }
 
 interface BlogPageProps {
-  params: {
+  params: Promise<{
     countryCode: string
-  }
+  }>
   searchParams: {
     category?: string
   }
@@ -22,6 +22,7 @@ interface BlogPageProps {
 
 
 export default async function BlogPage({ params, searchParams }: BlogPageProps) {
+  const { countryCode } = await params
   let blogPosts: BlogPost[] = []
   let categories: Category[] = []
 
@@ -70,7 +71,7 @@ export default async function BlogPage({ params, searchParams }: BlogPageProps) 
             <BlogPostCard
               key={post._id}
               post={post}
-              countryCode={params.countryCode}
+              countryCode={countryCode}
             />
           ))}
         </div>

@@ -35,9 +35,9 @@ export default function RootLayout(props: { children: React.ReactNode }) {
     >
       <body data-mode="light">
         <RegionProvider>
-          <ClientDiscountWrapper>
+          {/* <ClientDiscountWrapper> */}
             <main className="relative">{props.children}</main>
-          </ClientDiscountWrapper>
+          {/* </ClientDiscountWrapper> */}
         </RegionProvider>
       </body>
     </html>

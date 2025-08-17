@@ -242,6 +242,7 @@ export const config = {
     // - Next.js internals (_next/*)
     // - Static assets (images, fonts, etc.)
     // - Common files (robots.txt, sitemap.xml, etc.)
-    "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|sw.js|workbox|images|assets|static|public|.*\\..*\\..*$).*)",
+    // - Web app manifest images
+    "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|manifest.json|web-app-manifest-.*\\.png).*)",
   ],
 }

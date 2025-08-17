@@ -18,6 +18,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  experimental: {
+    optimizePackageImports: ['@medusajs/ui', '@medusajs/icons'],
+  },
   images: {
     remotePatterns: [
       {

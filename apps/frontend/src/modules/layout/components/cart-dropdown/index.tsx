@@ -87,7 +87,7 @@ const CartDropdown = ({
             href="/cart"
             data-testid="nav-cart-link"
           >{`Cart (${totalItems})`}</LocalizedClientLink>
-          <DiscountBadge />
+          {/* <DiscountBadge /> */}
         </PopoverButton>
         <Transition
           show={cartDropdownOpen}

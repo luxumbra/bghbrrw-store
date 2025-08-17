@@ -7,16 +7,17 @@ import BlogPostContent from '@/modules/blog/components/blog-post-content'
 import RelatedPosts from '@/modules/blog/components/related-posts'
 
 interface BlogPostPageProps {
-  params: {
+  params: Promise<{
     countryCode: string
     slug: string
-  }
+  }>
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const { slug } = await params
   const post = await sanityFetch<BlogPost>({
     query: blogPostBySlugQuery,
-    params: { slug: params.slug },
+    params: { slug },
     tags: ['blogPost'],
   })
 
@@ -57,9 +58,10 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 }
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const { countryCode, slug } = await params
   const post = await sanityFetch<BlogPost>({
     query: blogPostBySlugQuery,
-    params: { slug: params.slug },
+    params: { slug },
     tags: ['blogPost'],
   })
 
@@ -79,13 +81,13 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   return (
     <div className="py-16 content-container">
-      <BlogPostContent post={post} countryCode={params.countryCode} />
+      <BlogPostContent post={post} countryCode={countryCode} />
 
       {relatedPosts.length > 0 && (
         <div className="pt-16 mt-16 border-t">
           <RelatedPosts
             posts={relatedPosts}
-            countryCode={params.countryCode}
+            countryCode={countryCode}
           />
         </div>
       )}

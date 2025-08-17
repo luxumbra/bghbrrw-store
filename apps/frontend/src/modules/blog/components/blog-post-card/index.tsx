@@ -21,9 +21,11 @@ export default function BlogPostCard({ post, countryCode }: BlogPostCardProps) {
             <Image
               src={urlFor(post.mainImage.asset).width(600).height(340).url()}
               alt={post.mainImage.alt || post.title}
-              fill
-              className="object-cover"
+              width={600}
+              height={340}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              className="object-cover"
+              priority
             />
           </div>
         )}
@@ -63,6 +65,7 @@ export default function BlogPostCard({ post, countryCode }: BlogPostCardProps) {
                       .url()}
                     alt={post.author.name}
                     fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover rounded-full"
                   />
                 </div>

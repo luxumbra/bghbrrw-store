@@ -13,7 +13,7 @@ import DiscountBanner from "@/components/common/discount-banner"
 const DiscountUrlHandler: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false)
   const { discountCode, isFromUrl, clearDiscountFromUrl } = useUrlDiscount()
-  
+
   // Use ref to track previous values and prevent unnecessary re-renders
   const prevStateRef = useRef<{
     discountCode: string | null
@@ -23,7 +23,7 @@ const DiscountUrlHandler: React.FC = () => {
     error: string | null
     urlDiscount: string | null
   }>()
-  
+
   // Ensure this component only renders on the client side
   useEffect(() => {
     setIsMounted(true)
@@ -76,20 +76,20 @@ const DiscountUrlHandler: React.FC = () => {
       error,
       urlDiscount
     }
-    
+
     // Check if any relevant state has actually changed
     const prevState = prevStateRef.current
-    const hasRelevantChange = !prevState || 
+    const hasRelevantChange = !prevState ||
       prevState.discountCode !== discountCode ||
       prevState.isFromUrl !== isFromUrl ||
       prevState.isApplied !== isApplied ||
       prevState.isApplying !== isApplying ||
       prevState.error !== error ||
       prevState.urlDiscount !== urlDiscount
-    
+
     // Update ref with current state
     prevStateRef.current = currentState
-    
+
     // Only proceed if there's a relevant change
     if (!hasRelevantChange) {
       return
@@ -149,18 +149,19 @@ const DiscountUrlHandler: React.FC = () => {
     return null
   }
 
-  return (
-    <DiscountBanner
-      discountCode={discountCode}
-      status={getBannerStatus()}
-      error={error}
-      alreadyApplied={alreadyApplied}
-      onDismiss={handleDismissWithUrlCleanup}
-      onRetry={error ? handleRetry : undefined}
-      autoHide={true}
-      autoHideDelay={10000}
-    />
-  )
+  // return (
+  //   <DiscountBanner
+  //     discountCode={discountCode}
+  //     status={getBannerStatus()}
+  //     error={error}
+  //     alreadyApplied={alreadyApplied}
+  //     onDismiss={handleDismissWithUrlCleanup}
+  //     onRetry={error ? handleRetry : undefined}
+  //     autoHide={true}
+  //     autoHideDelay={10000}
+  //   />
+  // )
+  return null
 }
 
 export default React.memo(DiscountUrlHandler)
