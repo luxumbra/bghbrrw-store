@@ -79,7 +79,7 @@ COOKIE_SECRET=your_cookie_secret
 REDIS_URL=redis://redis:6379
 
 # External Services
-STRIPE_API_KEY=sk_test_your_stripe_secret_key
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
 STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
 RESEND_API_KEY=your_resend_key
 EMAIL_FROM=hello@boughandburrow.uk
