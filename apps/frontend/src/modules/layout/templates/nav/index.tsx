@@ -6,6 +6,7 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import CartButton from "@modules/layout/components/cart-button"
 import SideMenu from "@modules/layout/components/side-menu"
 import { BrandHeading } from "@modules/common/components/brand-heading"
+import DiscountBadge from "@modules/layout/components/discount-badge"
 
 export default async function Nav() {
   const regions = await listRegions().then((regions: StoreRegion[]) => regions)
@@ -46,6 +47,8 @@ export default async function Nav() {
               }
             >
               <CartButton />
+
+        <DiscountBadge />
             </Suspense>
           </div>
         </nav>

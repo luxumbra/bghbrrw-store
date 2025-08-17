@@ -6,7 +6,7 @@ import HeroImage from "~public/images/tlh-010.jpg"
 
 const Hero = () => {
   return (
-    <div className="h-[75vh] w-full border-b border-ui-border-base relative bg-ui-bg-subtle">
+    <div className="h-[75vh] w-full border-b border-zinc-50/10 relative bg-primary-bg">
       <div className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-6 p-10 text-center small:p-32">
         <span>
           <Heading
@@ -23,13 +23,13 @@ const Hero = () => {
           </Heading>
         </span>
         <Link href="/store" prefetch>
-          <Button className="" size="xlarge" variant="transparent">
+          <Button className="text-copy-color" size="xlarge" variant="transparent">
             Shop
           </Button>
         </Link>
       </div>
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-ui-bg-subtle to-transparent" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-primary-bg to-transparent" />
         <Image
           src={HeroImage}
           alt="Hero Image"

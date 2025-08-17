@@ -10,7 +10,7 @@ import { HttpTypes } from "@medusajs/types"
 import Trash from "@modules/common/icons/trash"
 import ErrorMessage from "../error-message"
 import { SubmitButton } from "../submit-button"
-import { useDiscountContext } from "../../../../context/discount-context"
+import { useDiscountContext } from "@/context/discount-context"
 
 type DiscountCodeProps = {
   cart: HttpTypes.StoreCart & {
@@ -21,7 +21,7 @@ type DiscountCodeProps = {
 const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
   const [isMounted, setIsMounted] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
-  
+
   // Ensure this component only renders on the client side
   useEffect(() => {
     setIsMounted(true)
@@ -31,7 +31,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
   const { urlDiscount, isApplied } = useDiscountContext()
 
   const { items = [], promotions = [] } = cart
-  
+
   // Check if a promotion was applied from URL
   const isPromotionFromUrl = (promotionCode: string) => {
     return urlDiscount === promotionCode && isApplied
@@ -161,9 +161,9 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({ cart }) => {
                           )}
                         )
                         {isPromotionFromUrl(promotion.code!) && (
-                          <InformationCircleSolid 
-                            className="inline text-blue-400 ml-1" 
-                            size={12} 
+                          <InformationCircleSolid
+                            className="inline text-blue-400 ml-1"
+                            size={12}
                             title="This discount was applied automatically from a link"
                           />
                         )}

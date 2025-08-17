@@ -19,7 +19,7 @@ export default function DiscountBadge() {
     try {
       const cart = await retrieveCart()
       const currentCode = cart?.promotions?.[0]?.code || null
-      
+
       // Only update state if the discount code actually changed
       if (currentCode !== lastCheckRef.current) {
         lastCheckRef.current = currentCode
@@ -67,15 +67,20 @@ export default function DiscountBadge() {
 
   return (
     <div
-      className="absolute top-0 right-1/2 translate-x-1/2 -translate-y-1/2 hover:translate-y-0 transition-all z-10"
+      className="group fixed flex flex-col items-center justify-end top-16 right-32 -translate-y-1/2 hover:translate-y-0 transition-all -z-10 rounded-lg rounded-t-none bg-black/80 backdrop-blur-md py-2 px-6"
       data-testid="discount-badge"
     >
+      <div className="badges-wrapper">
       <Badge
         className="px-1.5 py-0.5 text-xs rounded-md font-medium bg-green-500/40 text-white border-none shadow-sm"
         title={`Discount applied: ${discountCode}`}
       >
         {discountCode} {}
       </Badge>
+      </div>
+      <div className="message">
+        <p>Discount(s) applied</p>
+      </div>
     </div>
   )
 }

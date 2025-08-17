@@ -33,11 +33,11 @@ export default function RootLayout(props: { children: React.ReactNode }) {
       lang="en"
       className={`${lato.variable} ${quattrocentoSans.variable} ${ebGaramond.variable}`}
     >
-      <body data-mode="light">
+      <body data-mode="dark">
         <RegionProvider>
-          {/* <ClientDiscountWrapper> */}
+          <ClientDiscountWrapper>
             <main className="relative">{props.children}</main>
-          {/* </ClientDiscountWrapper> */}
+          </ClientDiscountWrapper>
         </RegionProvider>
       </body>
     </html>

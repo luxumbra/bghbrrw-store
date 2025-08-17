@@ -149,19 +149,18 @@ const DiscountUrlHandler: React.FC = () => {
     return null
   }
 
-  // return (
-  //   <DiscountBanner
-  //     discountCode={discountCode}
-  //     status={getBannerStatus()}
-  //     error={error}
-  //     alreadyApplied={alreadyApplied}
-  //     onDismiss={handleDismissWithUrlCleanup}
-  //     onRetry={error ? handleRetry : undefined}
-  //     autoHide={true}
-  //     autoHideDelay={10000}
-  //   />
-  // )
-  return null
+  return (
+    <DiscountBanner
+      discountCode={discountCode}
+      status={getBannerStatus()}
+      error={error}
+      alreadyApplied={alreadyApplied}
+      onDismiss={handleDismissWithUrlCleanup}
+      onRetry={error ? handleRetry : undefined}
+      autoHide={true}
+      autoHideDelay={10000}
+    />
+  )
 }
 
 export default React.memo(DiscountUrlHandler)

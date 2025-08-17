@@ -126,6 +126,38 @@
   .txt-medium-plus {
     @apply text-base font-normal font-body;
   }
+
+  .border-ui-border-base {
+    @apply border-zinc-50/10;
+  }
+
+  .text-ui-fg-base {
+    @apply text-zinc-200;
+  }
+
+  .text-ui-fg-muted {
+    @apply text-zinc-500;
+  }
+
+  .text-ui-fg-subtle {
+    @apply text-zinc-400;
+  }
+
+
+  .bg-ui-bg-subtle {
+    @apply bg-zinc-50/10 hover:bg-zinc-50/20;
+  }
+
+  .bg-ui-bg-base {
+    @apply bg-primary-bg hover:bg-primary-bg/90;
+  }
+  .bg-ui-bg-base-hover {
+    @apply bg-zinc-600/90;
+  }
+
+  .bg-ui-bg-muted {
+    @apply bg-zinc-300/10 hover:bg-zinc-300/20;
+  }
 }
 
 
@@ -193,5 +225,23 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #333333;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555555;
   }
 }
