@@ -1,6 +1,8 @@
 "use client"
 
 import { Button, Heading } from "@medusajs/ui"
+import { useRouter } from "next/navigation"
+import { useCallback } from "react"
 
 import CartTotals from "@modules/common/components/cart-totals"
 import Divider from "@modules/common/components/divider"
@@ -26,13 +28,20 @@ function getCheckoutStep(cart: HttpTypes.StoreCart) {
 
 const Summary = ({ cart }: SummaryProps) => {
   const step = getCheckoutStep(cart)
+  const router = useRouter()
+
+  // Handle cart updates by refreshing the page data
+  const handleCartUpdate = useCallback(() => {
+    // Refresh the current page to get updated cart data
+    router.refresh()
+  }, [router])
 
   return (
     <div className="flex flex-col gap-y-4">
       <Heading level="h2" className="text-[2rem] leading-[2.75rem]">
         Summary
       </Heading>
-      <DiscountCode cart={cart} />
+      <DiscountCode cart={cart} onCartUpdate={handleCartUpdate} />
       <Divider />
       <CartTotals totals={cart} />
       <LocalizedClientLink

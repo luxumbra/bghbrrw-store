@@ -1,29 +1,30 @@
 "use client"
 
 import { Badge, Heading, Input, Label, Text, Button } from "@medusajs/ui"
-import React, { useCallback, useEffect, useState, useRef } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { InformationCircleSolid } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import Trash from "@modules/common/icons/trash"
 import { useDiscountContext } from "@/context/discount-context"
 import { 
-  validateDiscountCodeClient, 
+  validateDiscountCode, 
   getDiscountComparison, 
   calculateDiscountValue,
-  replaceDiscountAsyncClient,
-  applyPromotionsClient
-} from "@lib/data/discount-client"
+  replaceDiscountAsync,
+  applyPromotions
+} from "@lib/data/cart"
 import { convertToLocale } from "@lib/util/money"
-import { useSuccessToast, useErrorToast } from "@modules/common/components/toast"
+import DiscountComparisonModal from "../discount-comparison-modal"
+import { useSuccessToast, useErrorToast, useToast } from "@modules/common/components/toast"
 
-type DiscountCodeProps = {
+type EnhancedDiscountCodeProps = {
   cart: HttpTypes.StoreCart & {
     promotions: HttpTypes.StorePromotion[]
   }
   onCartUpdate?: () => void
 }
 
-const DiscountCode: React.FC<DiscountCodeProps> = ({ 
+const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({ 
   cart, 
   onCartUpdate 
 }) => {
@@ -38,7 +39,11 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
   // Enhanced discount context
   const { 
     urlDiscount, 
-    isApplied
+    isApplied,
+    showComparisonModal,
+    hideComparisonModal,
+    comparisonData,
+    showComparisonModal: isComparisonModalOpen
   } = useDiscountContext()
 
   const { items = [], promotions = [] } = cart
@@ -53,7 +58,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
     .filter(p => p.code && !p.is_automatic)
     .map(p => p.code!)
 
-  // Calculate cart subtotal for discount comparisons (ensure it's in pence)
+  // Calculate cart subtotal for discount comparisons
   const cartSubtotal = cart.subtotal || 0
 
   // Enhanced discount application with validation-first approach
@@ -77,7 +82,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
 
       // If no existing discounts, apply directly
       if (existingCodes.length === 0) {
-        const validation = await validateDiscountCodeClient(normalizedCode)
+        const validation = await validateDiscountCode(normalizedCode)
         
         if (!validation.isValid) {
           showErrorToast(validation.error || "Invalid discount code")
@@ -86,21 +91,17 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
         }
 
         // Apply the discount
-        const result = await applyPromotionsClient([normalizedCode])
+        await applyPromotions([normalizedCode])
         
-        if (result.success) {
-          showSuccessToast(`Discount ${normalizedCode} applied successfully!`)
-          setInputValue("")
-          onCartUpdate?.()
-        } else {
-          showErrorToast(result.error || "Failed to apply discount code")
-        }
+        showSuccessToast(`Discount ${normalizedCode} applied successfully!`)
+        setInputValue("")
+        onCartUpdate?.()
         setIsApplying(false)
         return
       }
 
       // If existing discounts, validate and compare
-      const validation = await validateDiscountCodeClient(normalizedCode)
+      const validation = await validateDiscountCode(normalizedCode)
       
       if (!validation.isValid) {
         // CRITICAL: Preserve existing discount when invalid code is entered
@@ -127,11 +128,10 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
 
         // Auto-apply if significantly better (£2+ improvement)
         if (comparison.isSignificantlyBetter) {
-          await replaceDiscountAsyncClient(normalizedCode, existingCodes)
+          await replaceDiscountAsync(normalizedCode, existingCodes)
           
-          const extraSavings = Math.abs(comparison.difference).toFixed(2)
           showSuccessToast(
-            `Automatically applied better discount! ${normalizedCode} replaced ${comparison.currentCode}. You saved an extra £${extraSavings}`
+            `Applied better discount! ${normalizedCode} replaced ${comparison.currentCode}. You saved an extra £${comparison.difference.toFixed(2)}`
           )
           setInputValue("")
           onCartUpdate?.()
@@ -139,36 +139,14 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
           return
         }
 
-        // For other cases, automatically apply the new discount with informative toast
-        if (comparison.isBetter) {
-          // New discount is better - apply it and show improvement
-          const replaceResult = await replaceDiscountAsyncClient(normalizedCode, existingCodes)
-          
-          if (replaceResult.success) {
-            const extraSavings = Math.abs(comparison.difference).toFixed(2)
-            showSuccessToast(
-              `Applied better discount! ${normalizedCode} replaced ${comparison.currentCode}. You saved an extra £${extraSavings}`
-            )
-          } else {
-            showErrorToast(replaceResult.error || `Failed to apply ${normalizedCode}. Your current discount ${comparison.currentCode} is still applied.`)
-          }
-        } else {
-          // New discount is worse - keep current and inform user
-          const currentValuePounds = comparison.currentValue.toFixed(2)
-          const newValuePounds = comparison.newValue.toFixed(2)
-          showErrorToast(
-            `Your current discount ${comparison.currentCode} (£${currentValuePounds}) is better than ${normalizedCode} (£${newValuePounds}). Keeping your current discount.`
-          )
-        }
-        
-        setInputValue("")
-        onCartUpdate?.()
+        // Show comparison modal for other cases
+        showComparisonModal(comparison, normalizedCode)
         setIsApplying(false)
         return
       }
 
       // Fallback: apply the new discount
-      await replaceDiscountAsyncClient(normalizedCode, existingCodes)
+      await replaceDiscountAsync(normalizedCode, existingCodes)
       showSuccessToast(`Discount ${normalizedCode} applied successfully!`)
       setInputValue("")
       onCartUpdate?.()
@@ -182,7 +160,7 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
     } finally {
       setIsApplying(false)
     }
-  }, [existingCodes, promotions, cartSubtotal, showErrorToast, showSuccessToast, onCartUpdate])
+  }, [existingCodes, promotions, cartSubtotal, showErrorToast, showSuccessToast, showComparisonModal, onCartUpdate])
 
   // Handle form submission
   const handleSubmit = useCallback((e: React.FormEvent<HTMLFormElement>) => {
@@ -197,14 +175,9 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
     try {
       setIsApplying(true)
       const validPromotions = existingCodes.filter(existingCode => existingCode !== code)
-      const result = await applyPromotionsClient(validPromotions)
-      
-      if (result.success) {
-        showSuccessToast(`Discount ${code} removed`)
-        onCartUpdate?.()
-      } else {
-        showErrorToast(result.error || "Failed to remove discount. Please try again.")
-      }
+      await applyPromotions(validPromotions)
+      showSuccessToast(`Discount ${code} removed`)
+      onCartUpdate?.()
     } catch (error) {
       showErrorToast("Failed to remove discount. Please try again.")
     } finally {
@@ -212,6 +185,33 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
     }
   }, [existingCodes, showSuccessToast, showErrorToast, onCartUpdate])
 
+  // Handle comparison modal decisions
+  const handleKeepCurrentDiscount = useCallback(() => {
+    // Just close the modal, keep existing discount
+    hideComparisonModal()
+  }, [hideComparisonModal])
+
+  const handleApplyNewDiscount = useCallback(async () => {
+    if (!comparisonData) return
+
+    setIsApplying(true)
+    try {
+      await replaceDiscountAsync(comparisonData.newCode, existingCodes)
+      
+      const improvement = comparisonData.isBetter 
+        ? ` You saved an extra £${comparisonData.difference.toFixed(2)}`
+        : ` You chose ${comparisonData.newCode} over ${comparisonData.currentCode}`
+      
+      showSuccessToast(`Discount ${comparisonData.newCode} applied!${improvement}`)
+      setInputValue("")
+      onCartUpdate?.()
+    } catch (error) {
+      showErrorToast("Failed to apply new discount. Please try again.")
+    } finally {
+      setIsApplying(false)
+      hideComparisonModal()
+    }
+  }, [comparisonData, existingCodes, showSuccessToast, showErrorToast, onCartUpdate, hideComparisonModal])
 
   return (
     <>
@@ -306,7 +306,8 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
                         
                         {isPromotionFromUrl(promotion.code!) && (
                           <InformationCircleSolid
-                            className="inline text-blue-400 ml-1 w-3 h-3"
+                            className="inline text-blue-400 ml-1"
+                            size={12}
                             title="This discount was applied automatically from a link"
                           />
                         )}
@@ -334,8 +335,20 @@ const DiscountCode: React.FC<DiscountCodeProps> = ({
         </div>
       </div>
 
+      {/* Comparison Modal */}
+      {isComparisonModalOpen && comparisonData && (
+        <DiscountComparisonModal
+          isOpen={isComparisonModalOpen}
+          onClose={hideComparisonModal}
+          comparison={comparisonData}
+          currencyCode={cart.currency_code || "GBP"}
+          onKeepCurrent={handleKeepCurrentDiscount}
+          onApplyNew={handleApplyNewDiscount}
+          isLoading={isApplying}
+        />
+      )}
     </>
   )
 }
 
-export default DiscountCode
+export default EnhancedDiscountCode

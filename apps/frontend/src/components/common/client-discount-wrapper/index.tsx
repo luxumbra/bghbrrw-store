@@ -2,6 +2,7 @@
 
 import React, { Suspense, useEffect, useState } from "react"
 import { DiscountProvider } from "@/context/discount-context"
+import { ToastProvider } from "@modules/common/components/toast"
 import DiscountUrlHandler from "@/components/common/discount-url-handler"
 
 /**
@@ -16,19 +17,17 @@ const ClientDiscountWrapper: React.FC<{ children: React.ReactNode }> = ({ childr
     setIsMounted(true)
   }, [])
 
-  // Only render the discount provider and handler on the client side
-  // This prevents any server-side rendering of discount-related components
-  if (!isMounted) {
-    return <>{children}</>
-  }
-
   return (
-    <DiscountProvider>
-      <Suspense fallback={null}>
-        <DiscountUrlHandler />
-      </Suspense>
-      {children}
-    </DiscountProvider>
+    <ToastProvider>
+      <DiscountProvider>
+        {isMounted && (
+          <Suspense fallback={null}>
+            <DiscountUrlHandler />
+          </Suspense>
+        )}
+        {children}
+      </DiscountProvider>
+    </ToastProvider>
   )
 }
 

@@ -642,6 +642,248 @@ export async function submitPromotionForm(
   }
 }
 
+/**
+ * Server action for client-side cart updates with selective cache revalidation
+ * @param codes - Array of promotion codes to apply
+ * @returns Promise with operation result
+ */
+export async function updateCartPromotionsClientAction(codes: string[]): Promise<{
+  success: boolean
+  error?: string
+}> {
+  try {
+    const cartId = await getCartId()
+    if (!cartId) {
+      return {
+        success: false,
+        error: "No cart found"
+      }
+    }
+
+    const headers = {
+      ...(await getAuthHeaders()),
+    }
+
+    // Direct API call to update cart with promotion codes
+    await sdk.store.cart.update(
+      cartId,
+      { promo_codes: codes },
+      {},
+      headers
+    )
+
+    // Revalidate cart cache so data is fresh for subsequent requests
+    const cartCacheTag = await getCacheTag("carts")
+    revalidateTag(cartCacheTag)
+
+    const fulfillmentCacheTag = await getCacheTag("fulfillment")
+    revalidateTag(fulfillmentCacheTag)
+
+    return {
+      success: true
+    }
+  } catch (error: any) {
+    console.error("Error applying promotions:", error)
+    return {
+      success: false,
+      error: error?.message || "Failed to apply promotions"
+    }
+  }
+}
+
+// Enhanced discount validation and management functions
+
+/**
+ * Validates a discount code without applying it to the cart
+ * @param discountCode - The discount code to validate
+ * @returns Promise with validation result and discount details
+ */
+export async function validateDiscountCode(discountCode: string): Promise<{
+  isValid: boolean
+  error?: string
+  discountValue?: number
+  discountType?: 'percentage' | 'fixed'
+  code?: string
+}> {
+  try {
+    const normalizedCode = discountCode.trim().toUpperCase()
+    
+    if (!normalizedCode) {
+      return {
+        isValid: false,
+        error: "Discount code is required"
+      }
+    }
+
+    const cartId = await getCartId()
+    if (!cartId) {
+      return {
+        isValid: false,
+        error: "No cart found"
+      }
+    }
+
+    const headers = {
+      ...(await getAuthHeaders()),
+    }
+
+    // Try to apply the promotion to validate it (temporarily)
+    try {
+      const testResult = await sdk.store.cart.update(
+        cartId,
+        { promo_codes: [normalizedCode] },
+        {},
+        headers
+      )
+
+      // If successful, the code is valid
+      const cart = testResult.cart
+      const appliedPromotion = cart.promotions?.find(p => p.code === normalizedCode)
+      
+      if (appliedPromotion && appliedPromotion.application_method) {
+        return {
+          isValid: true,
+          code: normalizedCode,
+          discountValue: appliedPromotion.application_method.value || 0,
+          discountType: appliedPromotion.application_method.type as 'percentage' | 'fixed'
+        }
+      }
+
+      return {
+        isValid: false,
+        error: "Discount code not found or not applicable"
+      }
+    } catch (validationError: any) {
+      // Parse Medusa error messages for better user feedback
+      const errorMessage = validationError?.message || "Invalid discount code"
+      
+      if (errorMessage.includes("promotion") && errorMessage.includes("not found")) {
+        return {
+          isValid: false,
+          error: "Discount code not found"
+        }
+      }
+      
+      if (errorMessage.includes("not applicable") || errorMessage.includes("criteria")) {
+        return {
+          isValid: false,
+          error: "Discount code is not applicable to your cart"
+        }
+      }
+
+      return {
+        isValid: false,
+        error: "Invalid discount code"
+      }
+    }
+  } catch (error) {
+    console.error("Error validating discount code:", error)
+    return {
+      isValid: false,
+      error: "Unable to validate discount code. Please try again."
+    }
+  }
+}
+
+
+/**
+ * Safely replaces a discount code with validation-first approach
+ * Preserves existing discount if new code is invalid
+ * @param newCode - New discount code to apply
+ * @param existingCodes - Currently applied promotion codes
+ * @returns Promise with operation result
+ */
+export async function replaceDiscountAsync(
+  newCode: string,
+  existingCodes: string[] = []
+): Promise<{
+  success: boolean
+  error?: string
+  cart?: HttpTypes.StoreCart
+  replaced?: boolean
+  comparison?: any
+}> {
+  try {
+    const normalizedCode = newCode.trim().toUpperCase()
+    
+    // First, validate the new code without affecting the cart
+    const validation = await validateDiscountCode(normalizedCode)
+    
+    if (!validation.isValid) {
+      return {
+        success: false,
+        error: validation.error || "Invalid discount code",
+        replaced: false
+      }
+    }
+
+    // Get current cart to check existing discounts
+    const currentCart = await retrieveCart()
+    if (!currentCart) {
+      return {
+        success: false,
+        error: "No cart found",
+        replaced: false
+      }
+    }
+
+    // Apply the new discount code along with existing ones
+    const cartId = await getCartId()
+    if (!cartId) {
+      return {
+        success: false,
+        error: "No cart found",
+        replaced: false
+      }
+    }
+
+    const headers = {
+      ...(await getAuthHeaders()),
+    }
+
+    // Apply new codes (this will replace the old ones)
+    const allCodes = [...existingCodes.filter(code => code !== normalizedCode), normalizedCode]
+    
+    const result = await sdk.store.cart.update(
+      cartId,
+      { promo_codes: allCodes },
+      {},
+      headers
+    )
+
+    // Revalidate cache
+    const cartCacheTag = await getCacheTag("carts")
+    revalidateTag(cartCacheTag)
+
+    const fulfillmentCacheTag = await getCacheTag("fulfillment")
+    revalidateTag(fulfillmentCacheTag)
+
+    return {
+      success: true,
+      cart: result.cart,
+      replaced: existingCodes.length > 0,
+      comparison: validation
+    }
+  } catch (error: any) {
+    console.error("Error replacing discount:", error)
+    
+    // Ensure existing discounts are preserved on any error
+    if (existingCodes.length > 0) {
+      try {
+        await applyPromotions(existingCodes)
+      } catch (restoreError) {
+        console.error("Failed to restore existing discounts:", restoreError)
+      }
+    }
+
+    return {
+      success: false,
+      error: error?.message || "Failed to apply discount code",
+      replaced: false
+    }
+  }
+}
+
 // TODO: Pass a POJO instead of a form entity here
 export async function setAddresses(currentState: unknown, formData: FormData) {
   try {
