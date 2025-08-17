@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect } from "react"
-import { HttpTypes } from "@medusajs/types"
+import type { HttpTypes } from "@medusajs/types"
 import { isStripe } from "@lib/constants"
 import { getStripe, preloadStripe, validateStripeConfig } from "@lib/stripe/stripe-loader"
 import DynamicStripeWrapper from "./dynamic-stripe-wrapper"
@@ -67,7 +67,7 @@ const PaymentWrapper: React.FC<PaymentWrapperProps> = ({ cart, children }) => {
           console.error('Stripe integration error:', error)
         }}
         onInitialized={(stripe) => {
-          console.log('Stripe initialized successfully:', stripe.version)
+          console.log('Stripe initialized successfully')
         }}
       >
         {children}

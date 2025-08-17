@@ -1,17 +1,18 @@
 "use client"
 
-import { Stripe, StripeElementsOptions } from "@stripe/stripe-js"
 import { Elements } from "@stripe/react-stripe-js"
-import { HttpTypes } from "@medusajs/types"
+import type { Stripe, StripeElementsOptions } from "@stripe/stripe-js"
+import type { HttpTypes } from "@medusajs/types"
 import { createContext, useState, useEffect } from "react"
-import { Alert, Spinner, Text } from "@medusajs/ui"
+import { Alert, Text } from "@medusajs/ui"
+import Spinner from "@modules/common/icons/spinner"
 import PaymentErrorBoundary from "@modules/checkout/components/payment-error-boundary"
-import { 
+import type { 
   StripeWrapperProps, 
   StripePaymentSession, 
-  StripeElementsAppearance,
-  isValidStripePaymentSession 
+  StripeElementsAppearance
 } from "@/types/stripe"
+import { isValidStripePaymentSession } from "@/types/stripe"
 
 export const StripeContext = createContext(false)
 
@@ -40,7 +41,7 @@ const StripeError: React.FC<StripeErrorProps> = ({ message, retry }) => (
 const StripeLoading: React.FC = () => (
   <div className="flex items-center justify-center p-8">
     <div className="flex flex-col items-center gap-3">
-      <Spinner />
+      <Spinner size="32" />
       <Text className="text-sm text-ui-fg-subtle">Loading payment system...</Text>
     </div>
   </div>

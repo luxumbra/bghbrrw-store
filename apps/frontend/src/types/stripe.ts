@@ -1,5 +1,5 @@
-import { Stripe, StripeElements, StripeError } from '@stripe/stripe-js'
-import { HttpTypes } from '@medusajs/types'
+import type { Stripe, StripeElements, StripeError } from '@stripe/stripe-js'
+import type { HttpTypes } from '@medusajs/types'
 
 /**
  * Stripe Integration Types
@@ -157,7 +157,10 @@ export const mapStripeErrorToPaymentError = (stripeError: StripeError): StripePa
         message: stripeError.message || 'Invalid payment information.',
         code: stripeError.code,
       }
-    case 'processing_error':
+    case 'api_error':
+    case 'rate_limit_error':
+    case 'authentication_error':
+    case 'invalid_request_error':
       return {
         type: 'processing_error',
         message: 'A processing error occurred. Please try again.',

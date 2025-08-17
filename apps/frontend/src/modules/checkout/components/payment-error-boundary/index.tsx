@@ -1,8 +1,9 @@
 "use client"
 
-import React, { Component, ErrorInfo, ReactNode } from 'react'
+import React, { Component } from 'react'
+import type { ErrorInfo, ReactNode } from 'react'
 import { Alert, Button, Text } from '@medusajs/ui'
-import { RefreshCw } from '@medusajs/icons'
+import { ArrowPath } from '@medusajs/icons'
 
 interface Props {
   children: ReactNode
@@ -90,7 +91,7 @@ class PaymentErrorBoundary extends Component<Props, State> {
                   onClick={this.handleRetry}
                   className="flex items-center gap-2"
                 >
-                  <RefreshCw size={14} />
+                  <ArrowPath />
                   Try Again
                 </Button>
                 

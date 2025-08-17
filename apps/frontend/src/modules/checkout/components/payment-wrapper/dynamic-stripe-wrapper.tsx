@@ -2,8 +2,9 @@
 
 import dynamic from 'next/dynamic'
 import { Suspense } from 'react'
-import { Spinner, Text } from '@medusajs/ui'
-import { StripeWrapperProps } from '@/types/stripe'
+import { Text } from '@medusajs/ui'
+import Spinner from '@modules/common/icons/spinner'
+import type { StripeWrapperProps } from '@/types/stripe'
 
 /**
  * Loading component for Stripe wrapper
@@ -11,7 +12,7 @@ import { StripeWrapperProps } from '@/types/stripe'
 const StripeLoadingFallback = () => (
   <div className="flex items-center justify-center p-12">
     <div className="flex flex-col items-center gap-4">
-      <Spinner size="large" />
+      <Spinner size="48" />
       <div className="text-center">
         <Text className="font-medium mb-1">Loading Payment System</Text>
         <Text className="text-sm text-ui-fg-subtle">

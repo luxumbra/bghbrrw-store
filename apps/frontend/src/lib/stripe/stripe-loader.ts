@@ -1,7 +1,8 @@
 "use client"
 
-import { loadStripe, Stripe } from '@stripe/stripe-js'
-import { StripeConfiguration } from '@/types/stripe'
+import { loadStripe } from '@stripe/stripe-js'
+import type { Stripe } from '@stripe/stripe-js'
+import type { StripeConfiguration } from '@/types/stripe'
 
 /**
  * Stripe Loader with caching and error handling
@@ -12,7 +13,7 @@ let stripePromise: Promise<Stripe | null> | null = null
 let stripeInstance: Stripe | null = null
 
 interface StripeLoaderOptions {
-  locale?: string
+  locale?: 'auto' | 'en' | 'ar' | 'bg' | 'cs' | 'da' | 'de' | 'el' | 'en-AU' | 'en-CA' | 'en-NZ' | 'en-GB' | 'es' | 'es-ES' | 'es-419' | 'et' | 'fi' | 'fil' | 'fr' | 'fr-CA' | 'fr-FR' | 'he' | 'hr' | 'hu' | 'id' | 'it' | 'ja' | 'ko' | 'lt' | 'lv' | 'ms' | 'mt' | 'nb' | 'nl' | 'pl' | 'pt' | 'pt-BR' | 'ro' | 'ru' | 'sk' | 'sl' | 'sv' | 'th' | 'tr' | 'vi' | 'zh' | 'zh-HK' | 'zh-TW'
   stripeAccount?: string
   timeout?: number
 }

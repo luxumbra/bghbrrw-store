@@ -2,10 +2,12 @@
 
 import { useState, useCallback } from 'react'
 import { useStripe, useElements } from '@stripe/react-stripe-js'
-import { 
+import type { 
   StripePaymentResult, 
   StripePaymentError, 
-  UseStripePaymentReturn,
+  UseStripePaymentReturn
+} from '@/types/stripe'
+import { 
   mapStripeErrorToPaymentError,
   isStripeError
 } from '@/types/stripe'
