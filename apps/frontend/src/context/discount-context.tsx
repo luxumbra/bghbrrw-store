@@ -1,7 +1,18 @@
 "use client"
 
-import React, { createContext, useContext, useReducer, useCallback } from "react"
+import React, { createContext, useContext, useReducer, useCallback, useEffect } from "react"
 import type {ReactNode} from "react"
+
+// Enhanced discount comparison interface
+interface DiscountComparison {
+  currentValue: number
+  newValue: number
+  difference: number
+  isBetter: boolean
+  isSignificantlyBetter: boolean
+  currentCode: string
+  newCode: string
+}
 
 // State interface for discount management
 interface DiscountState {
@@ -11,6 +22,10 @@ interface DiscountState {
   error: string | null
   bannerDismissed: boolean
   alreadyApplied: boolean
+  // Enhanced state for comparison modal
+  showComparisonModal: boolean
+  comparisonData: DiscountComparison | null
+  pendingDiscountCode: string | null
 }
 
 // Action types for the reducer
@@ -22,6 +37,11 @@ type DiscountAction =
   | { type: "DISMISS_BANNER" }
   | { type: "CLEAR_ERROR" }
   | { type: "RESET" }
+  // Enhanced actions for comparison modal
+  | { type: "SHOW_COMPARISON_MODAL"; payload: { comparison: DiscountComparison; pendingCode: string } }
+  | { type: "HIDE_COMPARISON_MODAL" }
+  | { type: "SET_PENDING_DISCOUNT"; payload: string }
+  | { type: "CLEAR_PENDING_DISCOUNT" }
 
 // Context value interface
 interface DiscountContextValue extends DiscountState {
@@ -30,6 +50,11 @@ interface DiscountContextValue extends DiscountState {
   dismissBanner: () => void
   clearError: () => void
   reset: () => void
+  // Enhanced methods for comparison modal
+  showComparisonModal: (comparison: DiscountComparison, pendingCode: string) => void
+  hideComparisonModal: () => void
+  setPendingDiscount: (code: string) => void
+  clearPendingDiscount: () => void
 }
 
 // Initial state
@@ -39,7 +64,11 @@ const initialState: DiscountState = {
   isApplied: false,
   error: null,
   bannerDismissed: false,
-  alreadyApplied: false
+  alreadyApplied: false,
+  // Enhanced state for comparison modal
+  showComparisonModal: false,
+  comparisonData: null,
+  pendingDiscountCode: null
 }
 
 // Reducer function with type safety
@@ -94,6 +123,35 @@ function discountReducer(state: DiscountState, action: DiscountAction): Discount
     case "RESET":
       return initialState
 
+    // Enhanced cases for comparison modal
+    case "SHOW_COMPARISON_MODAL":
+      return {
+        ...state,
+        showComparisonModal: true,
+        comparisonData: action.payload.comparison,
+        pendingDiscountCode: action.payload.pendingCode
+      }
+
+    case "HIDE_COMPARISON_MODAL":
+      return {
+        ...state,
+        showComparisonModal: false,
+        comparisonData: null,
+        pendingDiscountCode: null
+      }
+
+    case "SET_PENDING_DISCOUNT":
+      return {
+        ...state,
+        pendingDiscountCode: action.payload
+      }
+
+    case "CLEAR_PENDING_DISCOUNT":
+      return {
+        ...state,
+        pendingDiscountCode: null
+      }
+
     default:
       return state
   }
@@ -110,6 +168,14 @@ interface DiscountProviderProps {
 // Provider component
 export function DiscountProvider({ children }: DiscountProviderProps) {
   const [state, dispatch] = useReducer(discountReducer, initialState)
+
+  // Cleanup effect to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      // Clear any pending states on unmount
+      dispatch({ type: "RESET" })
+    }
+  }, [])
 
   // Stable function references to prevent unnecessary re-renders
   const setUrlDiscount = useCallback((code: string) => {
@@ -159,6 +225,23 @@ export function DiscountProvider({ children }: DiscountProviderProps) {
     dispatch({ type: "RESET" })
   }, [])
 
+  // Enhanced methods for comparison modal
+  const showComparisonModal = useCallback((comparison: DiscountComparison, pendingCode: string) => {
+    dispatch({ type: "SHOW_COMPARISON_MODAL", payload: { comparison, pendingCode } })
+  }, [])
+
+  const hideComparisonModal = useCallback(() => {
+    dispatch({ type: "HIDE_COMPARISON_MODAL" })
+  }, [])
+
+  const setPendingDiscount = useCallback((code: string) => {
+    dispatch({ type: "SET_PENDING_DISCOUNT", payload: code })
+  }, [])
+
+  const clearPendingDiscount = useCallback(() => {
+    dispatch({ type: "CLEAR_PENDING_DISCOUNT" })
+  }, [])
+
   // Memoized context value to prevent unnecessary re-renders
   // Only re-create when state actually changes, not when functions change
   const contextValue = React.useMemo((): DiscountContextValue => ({
@@ -167,7 +250,12 @@ export function DiscountProvider({ children }: DiscountProviderProps) {
     applyUrlDiscount,
     dismissBanner,
     clearError,
-    reset
+    reset,
+    // Enhanced methods for comparison modal
+    showComparisonModal,
+    hideComparisonModal,
+    setPendingDiscount,
+    clearPendingDiscount
   }), [
     // Use the entire state object instead of individual properties
     // This reduces the number of dependencies and potential re-renders
@@ -176,7 +264,11 @@ export function DiscountProvider({ children }: DiscountProviderProps) {
     applyUrlDiscount,
     dismissBanner,
     clearError,
-    reset
+    reset,
+    showComparisonModal,
+    hideComparisonModal,
+    setPendingDiscount,
+    clearPendingDiscount
   ])
 
   return (
@@ -199,7 +291,12 @@ export function useDiscountContext(): DiscountContextValue {
       applyUrlDiscount: async () => {},
       dismissBanner: () => {},
       clearError: () => {},
-      reset: () => {}
+      reset: () => {},
+      // Enhanced methods for comparison modal
+      showComparisonModal: () => {},
+      hideComparisonModal: () => {},
+      setPendingDiscount: () => {},
+      clearPendingDiscount: () => {}
     }
   }
 
