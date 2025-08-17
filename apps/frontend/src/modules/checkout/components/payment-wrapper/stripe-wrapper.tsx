@@ -148,6 +148,12 @@ const StripeWrapper: React.FC<StripeWrapperProps> = ({
         borderRadius: '4px',
       },
     },
+    locale: 'en-GB', // UK locale for proper formatting
+    fonts: [
+      {
+        cssSrc: 'https://fonts.googleapis.com/css?family=Inter:400,500,600',
+      },
+    ],
   }
 
   return (

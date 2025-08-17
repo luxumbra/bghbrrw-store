@@ -56,7 +56,7 @@ export const getStripe = (options: StripeLoaderOptions = {}): Promise<Stripe | n
     
     // Create new promise with timeout
     stripePromise = loadStripeWithTimeout(config.publishableKey, {
-      locale: options.locale || 'en',
+      locale: options.locale || 'en-GB', // Default to UK locale for Bough & Burrow
       stripeAccount: options.stripeAccount,
     }, options.timeout || 10000)
 

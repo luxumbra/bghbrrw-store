@@ -454,28 +454,83 @@ Backend Webhook Flow:
 ### Testing Guide
 For manual testing of the improved Stripe integration, use these test cards:
 
-#### Successful Payments
-- **Visa**: `4242424242424242` (Any CVC, any future date)
-- **Visa (debit)**: `4000056655665556`
-- **Mastercard**: `5555555555554444`
+#### UK-Specific Test Cards
+- **UK Visa**: `4000002500000003` (UK-issued Visa)
+- **UK Visa (debit)**: `4000058260000005` (UK debit card)
+- **UK Mastercard**: `5555558265554449` (UK-issued Mastercard)
+- **UK Mastercard (debit)**: `5200828282828210` (UK debit Mastercard)
+
+#### International Successful Payments
+- **US Visa**: `4242424242424242` (Any CVC, any future date)
+- **US Visa (debit)**: `4000056655665556`
+- **US Mastercard**: `5555555555554444`
 - **American Express**: `378282246310005`
+- **Diners Club**: `30569309025904`
+- **Discover**: `6011111111111117`
+- **JCB**: `3530111333300000`
+
+#### 3D Secure (SCA) Test Cards - Required for UK/EU
+- **UK 3D Secure 2 - Authentication required**: `4000002500003155`
+- **UK 3D Secure 2 - Authentication fails**: `4000008400001629`
+- **EU 3D Secure 2 - Required**: `4000002760003184`
+- **3D Secure 1 - Authentication required**: `4000000000003220`
 
 #### Error Scenarios
 - **Generic decline**: `4000000000000002`
+- **UK card declined**: `4000000000000069` (Expired card)
 - **Insufficient funds**: `4000000000009995`
 - **Lost card**: `4000000000009987`
 - **Stolen card**: `4000000000009979`
-- **Expired card**: `4000000000000069`
 - **Processing error**: `4000000000000119`
+- **Incorrect CVC**: `4000000000000127`
+- **UK fraud prevention**: `4100000000000019`
 
-#### Test Workflow
-1. **Environment Setup**: Ensure test Stripe keys are configured
-2. **Payment Flow**: Test complete checkout with various card types
-3. **Error Handling**: Verify graceful error messages for failed cards
-4. **Loading States**: Check loading indicators during payment processing
-5. **Retry Functionality**: Test retry mechanisms for failed payments
-6. **Mobile Testing**: Verify payment flow on mobile devices
-7. **Network Issues**: Test behavior with slow/interrupted connections
+#### Alternative Payment Methods (Future)
+- **BACS Direct Debit**: `4000008260000000` (For future implementation)
+- **Klarna**: Use real Klarna test environment
+- **Apple Pay/Google Pay**: Use browser developer tools
+
+#### Comprehensive Test Workflow
+1. **Environment Setup**
+   - Ensure test Stripe keys are configured
+   - Verify GBP currency is set correctly
+   - Check UK region/locale settings
+
+2. **UK Payment Flow Testing**
+   - Test with UK-specific cards
+   - Verify 3D Secure authentication flows
+   - Test both successful and failed authentications
+
+3. **International Payment Testing**
+   - Test US/EU cards for international customers
+   - Verify currency conversion if applicable
+   - Test different card brands (Visa, Mastercard, Amex)
+
+4. **Error Handling Verification**
+   - Use decline cards and verify graceful error messages
+   - Test network timeout scenarios
+   - Verify retry mechanisms work properly
+
+5. **User Experience Testing**
+   - Check loading states during payment processing
+   - Verify error messages are user-friendly
+   - Test mobile payment flow on various devices
+
+6. **SCA/3D Secure Testing** (Critical for UK compliance)
+   - Test authentication required flows
+   - Test authentication failure scenarios
+   - Verify proper fallback for unsupported browsers
+
+7. **Edge Cases**
+   - Test with slow network connections
+   - Test browser back/forward during payment
+   - Test payment abandonment and retry scenarios
+
+#### Test Environment Notes
+- Use any future expiry date (e.g., 12/34)
+- Use any 3-4 digit CVC code
+- Use any billing address for test cards
+- Amounts should be in pence for GBP (e.g., 2000 = £20.00)
 
 ## Contributing
 
