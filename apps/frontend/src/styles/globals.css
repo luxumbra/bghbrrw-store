@@ -173,6 +173,9 @@
     --primary-foreground: #A8B0A3;
     --secondary: #3B3B3B;
     --secondary-foreground: #A8B0A3;
+    --color-primary: #B87333;
+    --color-secondary: #556B2F;
+    --color-accent: #4B5320;
     --muted: #3B3B3B;
     --muted-foreground: #A8B0A3;
     --accent: #3B3B3B;
@@ -190,6 +193,8 @@
     --tag-neutral-text: var(--color-copy-color);
     --bg-field: var(--color-secondary-bg);
     --bg-field-hover: var(--secondary);
+    --fg-disabled: rgb(from var(--foreground) r g b / 0.6);
+    --bg-disabled: var(--color-secondary-bg);
     --border: var(--color-secondary-bg);
     --input: var(--color-secondary-bg);
     --ring: var(--color-secondary-bg);

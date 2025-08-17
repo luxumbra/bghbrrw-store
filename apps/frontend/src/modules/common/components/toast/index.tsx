@@ -53,7 +53,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
     const newToast: Toast = {
       id,
       autoClose: true,
-      duration: 5000,
+      duration: 8000,
       ...toast,
     }
 

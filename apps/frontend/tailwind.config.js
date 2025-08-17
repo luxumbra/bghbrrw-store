@@ -50,7 +50,20 @@ module.exports = {
         "secondary-bg": "#3B3B3B",
         "copy-color": "#A8B0A3",
         background: "#18181B",
-        foreground: "#A8B0A3",
+        foreground: {
+          50: "#f6f7f5",
+          100: "#eaecea",
+          200: "#d6d9d7",
+          300: "#b8beb8",
+          400: "#A8B0A3", // Base --foreground color
+          500: "#8a9385",
+          600: "#6f786c",
+          700: "#5a6058",
+          800: "#4a4f48",
+          900: "#3e413d",
+          950: "#21241f",
+          DEFAULT: "#A8B0A3", // Default matches your CSS variable
+        },
         card: {
           DEFAULT: "#18181B",
           foreground: "#A8B0A3",

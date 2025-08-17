@@ -6,9 +6,9 @@ import { InformationCircleSolid } from "@medusajs/icons"
 import { HttpTypes } from "@medusajs/types"
 import Trash from "@modules/common/icons/trash"
 import { useDiscountContext } from "@/context/discount-context"
-import { 
-  validateDiscountCode, 
-  getDiscountComparison, 
+import {
+  validateDiscountCode,
+  getDiscountComparison,
   calculateDiscountValue,
   replaceDiscountAsync,
   applyPromotions
@@ -24,21 +24,21 @@ type EnhancedDiscountCodeProps = {
   onCartUpdate?: () => void
 }
 
-const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({ 
-  cart, 
-  onCartUpdate 
+const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({
+  cart,
+  onCartUpdate
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isApplying, setIsApplying] = useState(false)
   const [inputValue, setInputValue] = useState("")
-  
+
   // Hooks for toast notifications
   const showSuccessToast = useSuccessToast()
   const showErrorToast = useErrorToast()
-  
+
   // Enhanced discount context
-  const { 
-    urlDiscount, 
+  const {
+    urlDiscount,
     isApplied,
     showComparisonModal,
     hideComparisonModal,
@@ -64,7 +64,7 @@ const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({
   // Enhanced discount application with validation-first approach
   const handleApplyDiscount = useCallback(async (code: string) => {
     const normalizedCode = code.trim().toUpperCase()
-    
+
     if (!normalizedCode) {
       showErrorToast("Please enter a discount code")
       return
@@ -83,7 +83,7 @@ const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({
       // If no existing discounts, apply directly
       if (existingCodes.length === 0) {
         const validation = await validateDiscountCode(normalizedCode)
-        
+
         if (!validation.isValid) {
           showErrorToast(validation.error || "Invalid discount code")
           setIsApplying(false)
@@ -92,7 +92,7 @@ const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({
 
         // Apply the discount
         await applyPromotions([normalizedCode])
-        
+
         showSuccessToast(`Discount ${normalizedCode} applied successfully!`)
         setInputValue("")
         onCartUpdate?.()
@@ -102,7 +102,7 @@ const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({
 
       // If existing discounts, validate and compare
       const validation = await validateDiscountCode(normalizedCode)
-      
+
       if (!validation.isValid) {
         // CRITICAL: Preserve existing discount when invalid code is entered
         showErrorToast(
@@ -114,7 +114,7 @@ const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({
 
       // Get current discount for comparison
       const currentDiscount = promotions.find(p => p.code && !p.is_automatic)
-      
+
       if (currentDiscount && validation.discountValue !== undefined) {
         const comparison = getDiscountComparison(
           currentDiscount,
@@ -129,7 +129,7 @@ const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({
         // Auto-apply if significantly better (£2+ improvement)
         if (comparison.isSignificantlyBetter) {
           await replaceDiscountAsync(normalizedCode, existingCodes)
-          
+
           showSuccessToast(
             `Applied better discount! ${normalizedCode} replaced ${comparison.currentCode}. You saved an extra £${comparison.difference.toFixed(2)}`
           )
@@ -153,7 +153,7 @@ const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({
     } catch (error: any) {
       console.error("Error applying discount:", error)
       showErrorToast(
-        existingCodes.length > 0 
+        existingCodes.length > 0
           ? `Could not apply discount code. Your current discount ${existingCodes[0]} is still applied.`
           : "Could not apply discount code. Please try again."
       )
@@ -197,11 +197,11 @@ const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({
     setIsApplying(true)
     try {
       await replaceDiscountAsync(comparisonData.newCode, existingCodes)
-      
-      const improvement = comparisonData.isBetter 
+
+      const improvement = comparisonData.isBetter
         ? ` You saved an extra £${comparisonData.difference.toFixed(2)}`
         : ` You chose ${comparisonData.newCode} over ${comparisonData.currentCode}`
-      
+
       showSuccessToast(`Discount ${comparisonData.newCode} applied!${improvement}`)
       setInputValue("")
       onCartUpdate?.()
@@ -226,7 +226,7 @@ const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({
                 className="txt-medium text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
                 data-testid="add-discount-button"
               >
-                {promotions.length > 0 ? "Add Another Discount Code" : "Add Discount Code"}
+                {promotions.length > 0 ? "Use a different discount code" : "Add a discount code"}
               </button>
             </Label>
 
@@ -273,23 +273,23 @@ const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({
                       <span className="truncate" data-testid="discount-code">
                         <Badge
                           color={
-                            promotion.is_automatic 
-                              ? "green" 
-                              : isPromotionFromUrl(promotion.code!) 
-                                ? "blue" 
+                            promotion.is_automatic
+                              ? "green"
+                              : isPromotionFromUrl(promotion.code!)
+                                ? "blue"
                                 : "grey"
                           }
                           size="small"
                         >
                           {promotion.code}
                         </Badge>{" "}
-                        
+
                         {isPromotionFromUrl(promotion.code!) && (
                           <Badge color="purple" size="small" className="ml-1">
                             From Link
                           </Badge>
                         )}{" "}
-                        
+
                         {promotion.application_method?.value !== undefined &&
                           promotion.application_method.currency_code !== undefined && (
                             <>
@@ -303,7 +303,7 @@ const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({
                               )
                             </>
                           )}
-                        
+
                         {isPromotionFromUrl(promotion.code!) && (
                           <InformationCircleSolid
                             className="inline text-blue-400 ml-1"
@@ -313,7 +313,7 @@ const EnhancedDiscountCode: React.FC<EnhancedDiscountCodeProps> = ({
                         )}
                       </span>
                     </Text>
-                    
+
                     {!promotion.is_automatic && promotion.code && (
                       <button
                         className="flex items-center"

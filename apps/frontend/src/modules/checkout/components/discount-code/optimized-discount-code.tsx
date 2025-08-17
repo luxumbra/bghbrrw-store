@@ -29,9 +29,9 @@ interface OptimizedDiscountCodeProps {
   onPromotionChange?: () => void
 }
 
-const OptimizedDiscountCode = React.memo(({ 
+const OptimizedDiscountCode = React.memo(({
   promotions = [],
-  onPromotionChange 
+  onPromotionChange
 }: OptimizedDiscountCodeProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isApplying, setIsApplying] = useState(false)
@@ -51,7 +51,7 @@ const OptimizedDiscountCode = React.memo(({
   }, [urlDiscount, isApplied])
 
   // Debounced function to remove promotion with proper typing
-  const debouncedRemovePromotion = useMemo(() => 
+  const debouncedRemovePromotion = useMemo(() =>
     debounce(async (code: string) => {
       try {
         setIsApplying(true)
@@ -81,17 +81,17 @@ const OptimizedDiscountCode = React.memo(({
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
     const code = formData.get("code")?.toString().trim()
-    
+
     if (!code) return
 
     try {
       setIsApplying(true)
       setError(null)
-      
+
       const codes = [...promotionCodes, code]
       await applyPromotions(codes)
       onPromotionChange?.()
-      
+
       // Reset form
       const input = e.currentTarget.querySelector('input[name="code"]') as HTMLInputElement
       if (input) input.value = ""
@@ -121,7 +121,7 @@ const OptimizedDiscountCode = React.memo(({
               className="txt-medium text-ui-fg-interactive hover:text-ui-fg-interactive-hover"
               data-testid="add-discount-button"
             >
-              {promotions.length > 0 ? "Add Another Promotion Code" : "Add Promotion Code"}
+              {promotions.length > 0 ? "Use a different promotion code" : "Add a promotion code"}
             </button>
           </Label>
 
@@ -160,34 +160,34 @@ const OptimizedDiscountCode = React.memo(({
             <Heading level="h3" className="text-sm font-medium">
               Applied Promotions:
             </Heading>
-            
+
             <div className="space-y-2">
               {promotions.map((promotion) => (
-                <div 
+                <div
                   key={promotion.id}
                   className="flex items-center justify-between p-2 bg-gray-50 rounded"
                   data-testid="discount-row"
                 >
                   <div className="flex items-center gap-2">
-                    <Badge 
+                    <Badge
                       color={
-                        promotion.is_automatic 
-                          ? "green" 
-                          : isPromotionFromUrl(promotion.code!) 
-                            ? "blue" 
+                        promotion.is_automatic
+                          ? "green"
+                          : isPromotionFromUrl(promotion.code!)
+                            ? "blue"
                             : "grey"
                       }
                       size="small"
                     >
                       {promotion.code}
                     </Badge>
-                    
+
                     {isPromotionFromUrl(promotion.code!) && (
                       <Badge color="purple" size="small">
                         From Link
                       </Badge>
                     )}
-                    
+
                     {promotion.application_method?.value !== undefined && (
                       <div className="flex items-center gap-x-2">
                         <Text className="text-sm">
@@ -202,7 +202,7 @@ const OptimizedDiscountCode = React.memo(({
                       </div>
                     )}
                   </div>
-                  
+
                   {!promotion.is_automatic && promotion.code && (
                     <button
                       key={`remove-${promotion.id}`}
@@ -226,9 +226,9 @@ const OptimizedDiscountCode = React.memo(({
 }, (prevProps, nextProps) => {
   // Custom comparison function for React.memo
   if (prevProps.promotions.length !== nextProps.promotions.length) return false
-  
+
   // Check if any promotion has changed
-  return prevProps.promotions.every((promo, index) => 
+  return prevProps.promotions.every((promo, index) =>
     promo.id === nextProps.promotions[index]?.id &&
     promo.code === nextProps.promotions[index]?.code
   )

@@ -73,14 +73,14 @@ export default function DiscountBadge() {
     >
       <div className="badges-wrapper">
       <Badge
-        className="px-1.5 py-0.5 text-xs rounded-md font-medium bg-green-500/40 text-white border-none shadow-sm"
+        className="px-1.5 py-0.5 text-xs rounded-md font-medium bg-ui-tag-neutral-bg text-ui-tag-neutral-fg border border-secondary shadow-sm"
         title={`Discount applied: ${discountCode}`}
       >
         {discountCode} {}
       </Badge>
       </div>
       <div className="message">
-        <p>Discount(s) applied</p>
+        <p>Discount applied</p>
       </div>
     </div>
     </div>

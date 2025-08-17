@@ -139,9 +139,9 @@ export async function replaceDiscountAsyncClient(
       }
     }
 
-    // Apply the new discount codes using server action
-    const allCodes = [...existingCodes.filter(code => code !== normalizedCode), normalizedCode]
-    console.log('📝 Applying codes:', allCodes)
+    // Apply only the new discount code (replace existing ones)
+    const allCodes = [normalizedCode]
+    console.log('📝 Applying codes (replacing existing):', allCodes)
     
     const result = await applyPromotionsClient(allCodes)
     
