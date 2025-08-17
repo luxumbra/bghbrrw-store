@@ -149,7 +149,7 @@
   }
 
   .bg-ui-bg-base {
-    @apply bg-primary-bg hover:bg-primary-bg/90;
+    @apply bg-foreground-400/30;
   }
   .bg-ui-bg-base-hover {
     @apply bg-zinc-600/90;
@@ -158,6 +158,11 @@
   .bg-ui-bg-muted {
     @apply bg-zinc-300/10 hover:bg-zinc-300/20;
   }
+
+  .ElementsApp .InputContainer .InputElement {
+      @apply font-body text-foreground-400  ;
+    }
+
 }
 
 
@@ -191,6 +196,7 @@
     --button-neutral-active: var(--color-secondary-bg );
     --button-neutral-pressed: var(--color-secondary-bg);
     --tag-neutral-text: var(--color-copy-color);
+    --bg-base: var(--secondary-foreground);
     --bg-field: var(--color-secondary-bg);
     --bg-field-hover: var(--secondary);
     --fg-disabled: rgb(from var(--foreground) r g b / 0.6);

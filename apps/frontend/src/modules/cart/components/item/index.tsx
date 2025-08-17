@@ -120,16 +120,6 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
             "flex flex-col items-end h-full justify-center": type === "preview",
           })}
         >
-          {type === "preview" && (
-            <span className="flex gap-x-1 ">
-              <Text className="text-ui-fg-muted">{item.quantity}x </Text>
-              <LineItemUnitPrice
-                item={item}
-                style="tight"
-                currencyCode={currencyCode}
-              />
-            </span>
-          )}
           <LineItemPrice
             item={item}
             style="tight"
