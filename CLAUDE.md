@@ -394,6 +394,89 @@ The official provider supports:
 - **Current Implementation**: Uses official `@medusajs/medusa/payment-stripe` provider
 - **Benefits**: Better stability, automatic updates, official support
 
+### Recent Improvements (2025-08-17)
+The Stripe integration has been significantly enhanced with the following improvements:
+
+#### ✅ Environment Variable Standardization
+- Unified `STRIPE_SECRET_KEY` naming across all configuration files
+- Updated documentation to match actual implementation
+- Removed inconsistencies between backend and frontend configs
+
+#### ✅ Enhanced Error Handling & Resilience
+- **Graceful Degradation**: Payment failures no longer crash the entire checkout flow
+- **User-Friendly Messages**: Clear, actionable error messages for users
+- **Retry Mechanisms**: Automatic retry capabilities for transient failures
+- **Loading States**: Proper loading indicators during payment initialization
+
+#### ✅ React Best Practices & TypeScript
+- **Error Boundaries**: `PaymentErrorBoundary` component prevents payment crashes
+- **Type Safety**: Comprehensive TypeScript types in `/types/stripe.ts`
+- **Custom Hooks**: `useStripePayment` hook for clean payment handling
+- **Validation**: Proper validation for payment sessions and configurations
+
+#### ✅ Next.js Performance Optimizations
+- **Code Splitting**: Dynamic imports reduce initial bundle size
+- **Lazy Loading**: Stripe components load only when needed
+- **Caching**: Optimized Stripe instance caching with `stripe-loader.ts`
+- **Preloading**: Smart preloading on checkout pages for better UX
+
+#### ✅ Improved Webhook Handling
+- **Removed @ts-ignore**: Proper TypeScript interfaces for webhook processing
+- **Enhanced Logging**: Detailed webhook processing logs for debugging
+- **Better Validation**: Comprehensive request validation and error responses
+- **Error Codes**: Structured error responses with appropriate HTTP status codes
+
+### Architecture Overview
+```
+Frontend Payment Flow:
+├── PaymentWrapper (validation & routing)
+├── DynamicStripeWrapper (lazy loading)
+├── StripeWrapper (initialization & error handling)
+├── PaymentErrorBoundary (crash prevention)
+└── Elements (Stripe payment form)
+
+Backend Webhook Flow:
+├── /api/webhooks/stripe (validation)
+├── PaymentModuleService (processing)
+└── Order Creation (completion)
+```
+
+### Files Modified
+- `apps/backend/medusa-config.ts` - Stripe provider configuration
+- `apps/backend/.env.example` - Environment variable standardization
+- `apps/frontend/.env.example` - Frontend environment consistency
+- `apps/backend/src/api/webhooks/stripe/route.ts` - Enhanced webhook handling
+- `apps/frontend/src/modules/checkout/components/payment-wrapper/` - Payment components
+- `apps/frontend/src/types/stripe.ts` - TypeScript definitions
+- `apps/frontend/src/hooks/useStripePayment.ts` - Payment processing hook
+- `apps/frontend/src/lib/stripe/stripe-loader.ts` - Optimized Stripe loading
+
+### Testing Guide
+For manual testing of the improved Stripe integration, use these test cards:
+
+#### Successful Payments
+- **Visa**: `4242424242424242` (Any CVC, any future date)
+- **Visa (debit)**: `4000056655665556`
+- **Mastercard**: `5555555555554444`
+- **American Express**: `378282246310005`
+
+#### Error Scenarios
+- **Generic decline**: `4000000000000002`
+- **Insufficient funds**: `4000000000009995`
+- **Lost card**: `4000000000009987`
+- **Stolen card**: `4000000000009979`
+- **Expired card**: `4000000000000069`
+- **Processing error**: `4000000000000119`
+
+#### Test Workflow
+1. **Environment Setup**: Ensure test Stripe keys are configured
+2. **Payment Flow**: Test complete checkout with various card types
+3. **Error Handling**: Verify graceful error messages for failed cards
+4. **Loading States**: Check loading indicators during payment processing
+5. **Retry Functionality**: Test retry mechanisms for failed payments
+6. **Mobile Testing**: Verify payment flow on mobile devices
+7. **Network Issues**: Test behavior with slow/interrupted connections
+
 ## Contributing
 
 1. Use the provided scripts for common operations
