@@ -3,15 +3,15 @@
 import { Stripe, StripeElementsOptions } from "@stripe/stripe-js"
 import { Elements } from "@stripe/react-stripe-js"
 import { HttpTypes } from "@medusajs/types"
-import { createContext, useState, useEffect, ReactNode } from "react"
+import { createContext, useState, useEffect } from "react"
 import { Alert, Spinner, Text } from "@medusajs/ui"
-
-type StripeWrapperProps = {
-  paymentSession: HttpTypes.StorePaymentSession
-  stripeKey?: string
-  stripePromise: Promise<Stripe | null> | null
-  children: React.ReactNode
-}
+import PaymentErrorBoundary from "@modules/checkout/components/payment-error-boundary"
+import { 
+  StripeWrapperProps, 
+  StripePaymentSession, 
+  StripeElementsAppearance,
+  isValidStripePaymentSession 
+} from "@/types/stripe"
 
 export const StripeContext = createContext(false)
 
@@ -51,6 +51,8 @@ const StripeWrapper: React.FC<StripeWrapperProps> = ({
   stripeKey,
   stripePromise,
   children,
+  onError,
+  onInitialized,
 }) => {
   const [stripe, setStripe] = useState<Stripe | null>(null)
   const [loading, setLoading] = useState(true)
@@ -75,7 +77,7 @@ const StripeWrapper: React.FC<StripeWrapperProps> = ({
         )
       }
 
-      if (!paymentSession?.data?.client_secret) {
+      if (!isValidStripePaymentSession(paymentSession)) {
         throw new Error(
           "Payment session expired. Please refresh the page to create a new payment session."
         )
@@ -90,9 +92,17 @@ const StripeWrapper: React.FC<StripeWrapperProps> = ({
       }
 
       setStripe(stripeInstance)
+      onInitialized?.(stripeInstance)
     } catch (err) {
       console.error("Stripe initialization error:", err)
-      setError(err instanceof Error ? err.message : "Unknown payment system error occurred.")
+      const errorMessage = err instanceof Error ? err.message : "Unknown payment system error occurred."
+      setError(errorMessage)
+      
+      // Call error callback if provided
+      onError?.({
+        type: 'unknown_error',
+        message: errorMessage
+      })
     } finally {
       setLoading(false)
     }
@@ -140,11 +150,13 @@ const StripeWrapper: React.FC<StripeWrapperProps> = ({
   }
 
   return (
-    <StripeContext.Provider value={true}>
-      <Elements options={options} stripe={stripe}>
-        {children}
-      </Elements>
-    </StripeContext.Provider>
+    <PaymentErrorBoundary>
+      <StripeContext.Provider value={true}>
+        <Elements options={options} stripe={stripe}>
+          {children}
+        </Elements>
+      </StripeContext.Provider>
+    </PaymentErrorBoundary>
   )
 }
 
