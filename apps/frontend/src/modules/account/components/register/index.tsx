@@ -1,32 +1,41 @@
 "use client"
 
-import { useFormState } from "react-dom"
+import { useActionState } from "react"
 import Input from "@modules/common/components/input"
 import { LOGIN_VIEW } from "@modules/account/templates/login-template"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import { SubmitButton } from "@modules/checkout/components/submit-button"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import { signup } from "@lib/data/customer"
+import { useCompanyInfo } from "@/hooks/useCompanyInfo"
 
 type Props = {
   setCurrentView: (view: LOGIN_VIEW) => void
 }
 
 const Register = ({ setCurrentView }: Props) => {
-  const [state, formAction] = useFormState(signup, null)
+  const [state, formAction] = useActionState(signup, null)
+  const { companyInfo } = useCompanyInfo()
 
   return (
     <div
-      className="max-w-sm flex flex-col items-center"
+      className="w-full max-w-4xl flex items-start gap-6 cols-2 justify-between rounded-2xl"
       data-testid="register-page"
     >
-      <h1 className="text-large-semi uppercase mb-6">
-        Become a Medusa Store Member
-      </h1>
-      <p className="text-center text-base-regular text-ui-fg-base mb-4">
-        Create your Medusa Store Member profile, and get access to an enhanced
+      <div className="flex flex-col items-center justify-start p-6 w-full text-center max-w-md">
+        <h1 className="text-xlarge-regular uppercase mb-6">
+          Register
+        </h1>
+        <p className="text-xlarge-regular mb-6">
+          Become a {companyInfo?.name || ""} Store Member
+        </p>
+      <p className="text-center text-large-regular text-ui-fg-base mb-4">
+        Create your {companyInfo?.name || ""} account, and get access to an enhanced
         shopping experience--opt-in newsletter, discounts, and more.
       </p>
+
+      </div>
+      <div className="flex flex-col items-center w-full justify-start p-6 max-w-md">
       <form className="w-full flex flex-col" action={formAction}>
         <div className="flex flex-col w-full gap-y-2">
           <Input
@@ -69,19 +78,19 @@ const Register = ({ setCurrentView }: Props) => {
         </div>
         <ErrorMessage error={state} data-testid="register-error" />
         <span className="text-center text-ui-fg-base text-small-regular mt-6">
-          By creating an account, you agree to Medusa Store&apos;s{" "}
+          By creating an account, you agree to {companyInfo?.name || "our"}&apos;s{" "}
           <LocalizedClientLink
-            href="/content/privacy-policy"
+            href="/privacy"
             className="underline"
           >
             Privacy Policy
           </LocalizedClientLink>{" "}
           and{" "}
           <LocalizedClientLink
-            href="/content/terms-of-use"
+            href="/terms"
             className="underline"
           >
-            Terms of Use
+            Terms & Conditions
           </LocalizedClientLink>
           .
         </span>
@@ -89,7 +98,7 @@ const Register = ({ setCurrentView }: Props) => {
           Join
         </SubmitButton>
       </form>
-      <span className="text-center text-ui-fg-base text-small-regular mt-6">
+      <span className="text-center text-ui-fg-base text-base-regular mt-6">
         Already a member?{" "}
         <button
           onClick={() => setCurrentView(LOGIN_VIEW.SIGN_IN)}
@@ -98,7 +107,8 @@ const Register = ({ setCurrentView }: Props) => {
           Sign in
         </button>
         .
-      </span>
+        </span>
+      </div>
     </div>
   )
 }

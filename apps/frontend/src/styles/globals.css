@@ -88,7 +88,7 @@
   }
 
   .text-large-regular {
-    @apply text-base leading-6 font-normal;
+    @apply text-base leading-6 font-normal font-body
   }
 
   .text-large-semi {
