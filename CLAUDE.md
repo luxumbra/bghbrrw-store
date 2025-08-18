@@ -79,7 +79,7 @@ COOKIE_SECRET=your_cookie_secret
 REDIS_URL=redis://redis:6379
 
 # External Services
-STRIPE_API_KEY=sk_test_your_stripe_secret_key
+STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
 STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
 RESEND_API_KEY=your_resend_key
 EMAIL_FROM=hello@boughandburrow.uk
@@ -393,6 +393,144 @@ The official provider supports:
 - **Previous Implementation**: Custom Stripe provider was removed due to API compatibility issues
 - **Current Implementation**: Uses official `@medusajs/medusa/payment-stripe` provider
 - **Benefits**: Better stability, automatic updates, official support
+
+### Recent Improvements (2025-08-17)
+The Stripe integration has been significantly enhanced with the following improvements:
+
+#### ✅ Environment Variable Standardization
+- Unified `STRIPE_SECRET_KEY` naming across all configuration files
+- Updated documentation to match actual implementation
+- Removed inconsistencies between backend and frontend configs
+
+#### ✅ Enhanced Error Handling & Resilience
+- **Graceful Degradation**: Payment failures no longer crash the entire checkout flow
+- **User-Friendly Messages**: Clear, actionable error messages for users
+- **Retry Mechanisms**: Automatic retry capabilities for transient failures
+- **Loading States**: Proper loading indicators during payment initialization
+
+#### ✅ React Best Practices & TypeScript
+- **Error Boundaries**: `PaymentErrorBoundary` component prevents payment crashes
+- **Type Safety**: Comprehensive TypeScript types in `/types/stripe.ts`
+- **Custom Hooks**: `useStripePayment` hook for clean payment handling
+- **Validation**: Proper validation for payment sessions and configurations
+
+#### ✅ Next.js Performance Optimizations
+- **Code Splitting**: Dynamic imports reduce initial bundle size
+- **Lazy Loading**: Stripe components load only when needed
+- **Caching**: Optimized Stripe instance caching with `stripe-loader.ts`
+- **Preloading**: Smart preloading on checkout pages for better UX
+
+#### ✅ Improved Webhook Handling
+- **Removed @ts-ignore**: Proper TypeScript interfaces for webhook processing
+- **Enhanced Logging**: Detailed webhook processing logs for debugging
+- **Better Validation**: Comprehensive request validation and error responses
+- **Error Codes**: Structured error responses with appropriate HTTP status codes
+
+### Architecture Overview
+```
+Frontend Payment Flow:
+├── PaymentWrapper (validation & routing)
+├── DynamicStripeWrapper (lazy loading)
+├── StripeWrapper (initialization & error handling)
+├── PaymentErrorBoundary (crash prevention)
+└── Elements (Stripe payment form)
+
+Backend Webhook Flow:
+├── /api/webhooks/stripe (validation)
+├── PaymentModuleService (processing)
+└── Order Creation (completion)
+```
+
+### Files Modified
+- `apps/backend/medusa-config.ts` - Stripe provider configuration
+- `apps/backend/.env.example` - Environment variable standardization
+- `apps/frontend/.env.example` - Frontend environment consistency
+- `apps/backend/src/api/webhooks/stripe/route.ts` - Enhanced webhook handling
+- `apps/frontend/src/modules/checkout/components/payment-wrapper/` - Payment components
+- `apps/frontend/src/types/stripe.ts` - TypeScript definitions
+- `apps/frontend/src/hooks/useStripePayment.ts` - Payment processing hook
+- `apps/frontend/src/lib/stripe/stripe-loader.ts` - Optimized Stripe loading
+
+### Testing Guide
+For manual testing of the improved Stripe integration, use these test cards:
+
+#### UK-Specific Test Cards
+- **UK Visa**: `4000002500000003` (UK-issued Visa)
+- **UK Visa (debit)**: `4000058260000005` (UK debit card)
+- **UK Mastercard**: `5555558265554449` (UK-issued Mastercard)
+- **UK Mastercard (debit)**: `5200828282828210` (UK debit Mastercard)
+
+#### International Successful Payments
+- **US Visa**: `4242424242424242` (Any CVC, any future date)
+- **US Visa (debit)**: `4000056655665556`
+- **US Mastercard**: `5555555555554444`
+- **American Express**: `378282246310005`
+- **Diners Club**: `30569309025904`
+- **Discover**: `6011111111111117`
+- **JCB**: `3530111333300000`
+
+#### 3D Secure (SCA) Test Cards - Required for UK/EU
+- **UK 3D Secure 2 - Authentication required**: `4000002500003155`
+- **UK 3D Secure 2 - Authentication fails**: `4000008400001629`
+- **EU 3D Secure 2 - Required**: `4000002760003184`
+- **3D Secure 1 - Authentication required**: `4000000000003220`
+
+#### Error Scenarios
+- **Generic decline**: `4000000000000002`
+- **UK card declined**: `4000000000000069` (Expired card)
+- **Insufficient funds**: `4000000000009995`
+- **Lost card**: `4000000000009987`
+- **Stolen card**: `4000000000009979`
+- **Processing error**: `4000000000000119`
+- **Incorrect CVC**: `4000000000000127`
+- **UK fraud prevention**: `4100000000000019`
+
+#### Alternative Payment Methods (Future)
+- **BACS Direct Debit**: `4000008260000000` (For future implementation)
+- **Klarna**: Use real Klarna test environment
+- **Apple Pay/Google Pay**: Use browser developer tools
+
+#### Comprehensive Test Workflow
+1. **Environment Setup**
+   - Ensure test Stripe keys are configured
+   - Verify GBP currency is set correctly
+   - Check UK region/locale settings
+
+2. **UK Payment Flow Testing**
+   - Test with UK-specific cards
+   - Verify 3D Secure authentication flows
+   - Test both successful and failed authentications
+
+3. **International Payment Testing**
+   - Test US/EU cards for international customers
+   - Verify currency conversion if applicable
+   - Test different card brands (Visa, Mastercard, Amex)
+
+4. **Error Handling Verification**
+   - Use decline cards and verify graceful error messages
+   - Test network timeout scenarios
+   - Verify retry mechanisms work properly
+
+5. **User Experience Testing**
+   - Check loading states during payment processing
+   - Verify error messages are user-friendly
+   - Test mobile payment flow on various devices
+
+6. **SCA/3D Secure Testing** (Critical for UK compliance)
+   - Test authentication required flows
+   - Test authentication failure scenarios
+   - Verify proper fallback for unsupported browsers
+
+7. **Edge Cases**
+   - Test with slow network connections
+   - Test browser back/forward during payment
+   - Test payment abandonment and retry scenarios
+
+#### Test Environment Notes
+- Use any future expiry date (e.g., 12/34)
+- Use any 3-4 digit CVC code
+- Use any billing address for test cards
+- Amounts should be in pence for GBP (e.g., 2000 = £20.00)
 
 ## Contributing
 

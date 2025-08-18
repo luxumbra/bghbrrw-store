@@ -23,7 +23,7 @@ const Hero = () => {
           </Heading>
         </span>
         <Link href="/store" prefetch>
-          <Button className="text-copy-color" size="xlarge" variant="transparent">
+          <Button className="text-ui-fg-base hover:text-ui-fg-base hover:bg-ui-bg-subtle" size="large" variant="transparent">
             Shop
           </Button>
         </Link>

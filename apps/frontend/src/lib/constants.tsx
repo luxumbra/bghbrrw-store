@@ -35,6 +35,10 @@ export const paymentInfoMap: Record<
 
 export const CMS_URL = process.env.NEXT_PUBLIC_SANITY_STUDIO_URL || "http://localhost:3333"
 
+// Store information constants
+export const STORE_NAME = process.env.NEXT_PUBLIC_STORE_NAME || "Bough & Burrow"
+export const STORE_EMAIL = process.env.NEXT_PUBLIC_STORE_EMAIL || "hello@boughandburrow.uk"
+
 // This only checks if it is native stripe for card payments, it ignores the other stripe-based providers
 export const isStripe = (providerId?: string) => {
   return providerId?.startsWith("pp_stripe_")
