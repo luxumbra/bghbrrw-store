@@ -1,0 +1,132 @@
+# Production Docker Compose for GitHub Packages deployment
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-medusa}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-boughandburrow}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-medusa} -d ${POSTGRES_DB:-boughandburrow}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  backend-server:
+    image: ${REGISTRY:-ghcr.io/luxumbra}/boughandburrow-backend:latest
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-medusa}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-boughandburrow}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET}
+      - COOKIE_SECRET=${COOKIE_SECRET}
+      - MEDUSA_BACKEND_URL=${MEDUSA_BACKEND_URL}
+      - STORE_CORS=${STORE_CORS}
+      - ADMIN_CORS=${ADMIN_CORS}
+      - AUTH_CORS=${AUTH_CORS}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - MEDUSA_WORKER_MODE=server
+      - MEDUSA_DISABLE_ADMIN=false
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+    ports:
+      - "9000:9000"  # Expose backend API
+    command: npm run start
+
+  backend-worker:
+    image: ${REGISTRY:-ghcr.io/luxumbra}/boughandburrow-backend:latest
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-medusa}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-boughandburrow}
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET}
+      - COOKIE_SECRET=${COOKIE_SECRET}
+      - MEDUSA_BACKEND_URL=${MEDUSA_BACKEND_URL}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - EMAIL_FROM=${EMAIL_FROM}
+      - MEDUSA_WORKER_MODE=worker
+      - MEDUSA_DISABLE_ADMIN=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      backend-server:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - app-network
+    command: npm run start:worker
+
+  frontend:
+    image: ${REGISTRY:-ghcr.io/luxumbra}/boughandburrow-frontend:latest
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
+      - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+      - NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      - NEXT_PUBLIC_SANITY_PROJECT_ID=${NEXT_PUBLIC_SANITY_PROJECT_ID}
+      - NEXT_PUBLIC_SANITY_DATASET=${NEXT_PUBLIC_SANITY_DATASET}
+      - SANITY_API_TOKEN=${SANITY_API_TOKEN}
+      - NEXT_PUBLIC_FATHOM_SITE_ID=${NEXT_PUBLIC_FATHOM_SITE_ID}
+    depends_on:
+      - backend-server
+    restart: unless-stopped
+    networks:
+      - app-network
+    ports:
+      - "8000:8000"  # Expose frontend
+
+  cms:
+    image: ${REGISTRY:-ghcr.io/luxumbra}/boughandburrow-cms:latest
+    environment:
+      - SANITY_STUDIO_PROJECT_ID=${NEXT_PUBLIC_SANITY_PROJECT_ID}
+      - SANITY_STUDIO_DATASET=${NEXT_PUBLIC_SANITY_DATASET}
+    restart: unless-stopped
+    networks:
+      - app-network
+    ports:
+      - "3333:3333"  # Expose CMS
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
