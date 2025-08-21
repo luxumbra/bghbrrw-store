@@ -37,7 +37,7 @@ services:
   backend-server:
     build:
       context: .
-      dockerfile: apps/backend/Dockerfile
+      dockerfile: /workspace/apps/backend/Dockerfile
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-medusa}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-boughandburrow}
       - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
@@ -67,7 +67,7 @@ services:
   backend-worker:
     build:
       context: .
-      dockerfile: apps/backend/Dockerfile
+      dockerfile: /workspace/apps/backend/Dockerfile
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-medusa}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-boughandburrow}
       - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
@@ -96,7 +96,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: apps/frontend/Dockerfile
+      dockerfile: /workspace/apps/frontend/Dockerfile
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_MEDUSA_BACKEND_URL=${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
