@@ -92,10 +92,14 @@ const columns = (expandedRows: Set<string>, toggleExpand: (id: string) => void) 
       )
     }
   }),
-  columnHelper.accessor("first_name", {
-    header: "Reviewer",
+  columnHelper.accessor("customer_id", {
+    header: "Reviewer", 
     cell: ({ row }) => {
-      return `${row.original.first_name} ${row.original.last_name}`
+      const customer = row.original.customer;
+      if (customer && customer.first_name && customer.last_name) {
+        return `${customer.first_name} ${customer.last_name}`;
+      }
+      return row.original.customer_id || "Anonymous";
     }
   }),
   columnHelper.accessor("status", {
@@ -228,13 +232,14 @@ const ReviewsPage = () => {
     offset: number
   }>({
     queryKey: ["reviews", offset, limit],
-    queryFn: () => sdk.client.fetch("/admin/reviews", {
-      query: {
-        offset: pagination.pageIndex * pagination.pageSize,
-        limit: pagination.pageSize,
+    queryFn: () => {
+      const params = new URLSearchParams({
+        offset: (pagination.pageIndex * pagination.pageSize).toString(),
+        limit: pagination.pageSize.toString(),
         order: "-created_at"
-      }
-    })
+      });
+      return sdk.client.fetch(`/admin/reviews?${params.toString()}`);
+    }
   })
 
   const commands = useCommands(refetch)
