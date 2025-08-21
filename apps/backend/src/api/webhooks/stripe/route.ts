@@ -21,20 +21,13 @@ export const POST = async (
   const logger = container.resolve("logger")
   const paymentModuleService = container.resolve(Modules.PAYMENT) as PaymentModuleService
 
-  logger.info("Received Stripe webhook", {
-    hasSignature: !!req.headers["stripe-signature"],
-    bodyType: typeof req.body,
-    timestamp: new Date().toISOString()
-  })
+  logger.info(`Received Stripe webhook - hasSignature: ${!!req.headers["stripe-signature"]}, bodyType: ${typeof req.body}, timestamp: ${new Date().toISOString()}`)
 
   const signature = req.headers["stripe-signature"]
 
   // Validate webhook signature
   if (!signature || typeof signature !== "string") {
-    logger.error("Invalid or missing Stripe signature", { 
-      hasSignature: !!signature,
-      signatureType: typeof signature
-    })
+    logger.error(`Invalid or missing Stripe signature - hasSignature: ${!!signature}, signatureType: ${typeof signature}`)
     return res.status(400).json({ 
       message: "Invalid webhook signature",
       error: "MISSING_SIGNATURE"
@@ -66,10 +59,7 @@ export const POST = async (
       body: req.body,
     })
 
-    logger.info("Stripe webhook processed successfully", {
-      signature: signature.substring(0, 20) + "...", // Log partial signature for debugging
-      timestamp: new Date().toISOString()
-    })
+    logger.info(`Stripe webhook processed successfully - signature: ${signature.substring(0, 20)}..., timestamp: ${new Date().toISOString()}`)
 
     return res.status(200).json({ 
       message: "Webhook processed successfully",
@@ -79,12 +69,7 @@ export const POST = async (
     const errorMessage = error instanceof Error ? error.message : "Unknown error occurred"
     const errorCode = error instanceof Error && 'code' in error ? error.code : "UNKNOWN_ERROR"
     
-    logger.error("Error processing Stripe webhook", {
-      error: errorMessage,
-      code: errorCode,
-      signature: signature.substring(0, 20) + "...",
-      timestamp: new Date().toISOString()
-    })
+    logger.error(`Error processing Stripe webhook - error: ${errorMessage}, code: ${errorCode}, signature: ${signature.substring(0, 20)}..., timestamp: ${new Date().toISOString()}`)
     
     // Return appropriate HTTP status based on error type
     const statusCode = errorMessage.includes("signature") || errorMessage.includes("invalid") ? 400 : 500

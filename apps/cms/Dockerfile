@@ -10,7 +10,7 @@ WORKDIR /app
 RUN npm install -g pnpm@10.11.0
 
 # Copy workspace root files for proper dependency resolution
-COPY package.json pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY apps/backend/package.json ./apps/backend/
 COPY apps/frontend/package.json ./apps/frontend/
 COPY apps/cms/package.json ./apps/cms/
