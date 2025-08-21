@@ -21,9 +21,8 @@ RUN pnpm install --frozen-lockfile
 # Copy frontend source code
 COPY apps/frontend/ ./apps/frontend/
 
-# Build the frontend
-WORKDIR /app/apps/frontend
-RUN pnpm run build
+# Build the frontend (from workspace root)
+RUN pnpm --filter @badgerstore/frontend build
 
 # Production stage
 FROM node:20-alpine AS production

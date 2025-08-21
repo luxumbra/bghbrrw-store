@@ -21,9 +21,8 @@ RUN pnpm install --frozen-lockfile
 # Copy CMS source code
 COPY apps/cms/ ./apps/cms/
 
-# Build the CMS
-WORKDIR /app/apps/cms
-RUN pnpm run build
+# Build the CMS (from workspace root)
+RUN pnpm --filter @badgerstore/cms build
 
 # Production stage with Nginx
 FROM nginx:alpine AS production

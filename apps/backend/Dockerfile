@@ -21,9 +21,8 @@ RUN pnpm install --frozen-lockfile
 # Copy backend source code
 COPY apps/backend/ ./apps/backend/
 
-# Build the backend
-WORKDIR /app/apps/backend
-RUN pnpm run build
+# Build the backend (from workspace root)
+RUN pnpm --filter @badgerstore/backend build
 
 # Production stage
 FROM node:20-alpine AS production
