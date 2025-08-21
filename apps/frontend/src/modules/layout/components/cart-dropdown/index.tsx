@@ -8,7 +8,7 @@ import {
 } from "@headlessui/react"
 import { convertToLocale } from "@lib/util/money"
 import { HttpTypes } from "@medusajs/types"
-import { Button } from "@medusajs/ui"
+import { Button, clx } from "@medusajs/ui"
 import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
@@ -35,7 +35,10 @@ const CartDropdown = ({
     cartState?.items?.reduce((acc, item) => {
       return acc + item.quantity
     }, 0) || 0
-
+  // calculate the cart sub total with discounts
+  const subTotalWithDiscounts = cartState?.items?.reduce((acc, item) => {
+    return acc + item.total
+  }, 0) || 0
   const subtotal = cartState?.subtotal ?? 0
   const itemRef = useRef<number>(totalItems || 0)
 
@@ -182,7 +185,10 @@ const CartDropdown = ({
                       Subtotal <span className="font-normal">(inc. taxes)</span>
                     </span>
                     <span
-                      className="text-large-semi"
+                      className={clx("text-large-semi", {
+                        "line-through":
+                          subTotalWithDiscounts !== subtotal,
+                      })}
                       data-testid="cart-subtotal"
                       data-value={subtotal}
                     >
@@ -191,6 +197,18 @@ const CartDropdown = ({
                         currency_code: cartState.currency_code,
                       })}
                     </span>
+                    {subTotalWithDiscounts !== subtotal && (
+                      <span
+                        className="text-large-semi text-ui-fg-interactive"
+                        data-testid="cart-subtotal-with-discounts"
+                        data-value={subTotalWithDiscounts}
+                      >
+                      {convertToLocale({
+                        amount: subTotalWithDiscounts,
+                        currency_code: cartState.currency_code,
+                      })}
+                    </span>
+                  )}
                   </div>
                   <LocalizedClientLink href="/cart" passHref>
                     <Button

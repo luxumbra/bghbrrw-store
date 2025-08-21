@@ -143,10 +143,10 @@ db_reset() {
         print_status "Resetting Neon database..."
         print_warning "Note: This will drop all tables and recreate the schema."
         print_warning "Make sure you have a backup if you need to restore data later."
-        
+
         # Stop backend to avoid conflicts
         docker-compose stop backend
-        
+
         # Run setup which will handle migrations and seeding
         db_setup
     else
@@ -282,7 +282,7 @@ db_backup() {
     local sql_backup="backups/${backup_name}.sql"
     local dump_backup="backups/${backup_name}.dump"
 
-    print_status "Creating database backups from Neon..."
+    print_status "Creating database backups from Railway..."
 
     # Create backups directory if it doesn't exist
     mkdir -p backups
@@ -295,9 +295,9 @@ db_backup() {
         exit 1
     fi
 
-    # Create SQL backup (human-readable)
+    # Use Docker with PostgreSQL 16 to avoid version mismatch
     print_status "Creating SQL backup..."
-    pg_dump "$db_url" > "$sql_backup"
+    docker run --rm postgres:16 pg_dump "$db_url" > "$sql_backup"
 
     if [ $? -eq 0 ]; then
         print_status "SQL backup created: $sql_backup"
@@ -316,7 +316,7 @@ db_backup() {
 
     # Create custom format backup (binary, faster restore)
     print_status "Creating custom format backup..."
-    pg_dump "$db_url" -Fc > "$dump_backup"
+    docker run --rm postgres:16 pg_dump "$db_url" -Fc > "$dump_backup"
 
     if [ $? -eq 0 ]; then
         print_status "Custom format backup created: $dump_backup"
@@ -385,15 +385,15 @@ db_restore() {
     if [[ "$backup_file" == *.dump ]]; then
         # Custom format restore (faster, supports parallel restore)
         print_status "Restoring from custom format backup..."
-        pg_restore "$db_url" --clean --if-exists < "$backup_file"
+        docker run --rm -i postgres:16 pg_restore "$db_url" --clean --if-exists < "$backup_file"
     elif [[ "$backup_file" == *.sql.gz ]]; then
         # Compressed SQL restore
         print_status "Restoring from compressed SQL backup..."
-        gunzip -c "$backup_file" | psql "$db_url"
+        gunzip -c "$backup_file" | docker run --rm -i postgres:16 psql "$db_url"
     elif [[ "$backup_file" == *.sql ]]; then
         # Plain SQL restore
         print_status "Restoring from SQL backup..."
-        psql "$db_url" < "$backup_file"
+        docker run --rm -i postgres:16 psql "$db_url" < "$backup_file"
     else
         print_error "Unsupported backup file format. Supported: .sql, .sql.gz, .dump"
         exit 1
