@@ -34,7 +34,7 @@ services:
     networks:
       - app-network
 
-  medusa:
+  backend:
     build:
       context: .
       dockerfile: apps/backend/Dockerfile
@@ -61,7 +61,7 @@ services:
     networks:
       - app-network
 
-  storefront:
+  frontend:
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
@@ -74,14 +74,14 @@ services:
       - NEXT_PUBLIC_SANITY_PROJECT_ID=${NEXT_PUBLIC_SANITY_PROJECT_ID}
       - NEXT_PUBLIC_SANITY_DATASET=${NEXT_PUBLIC_SANITY_DATASET}
       - SANITY_API_TOKEN=${SANITY_API_TOKEN}
-      # - NEXT_PUBLIC_FATHOM_SITE_ID=${NEXT_PUBLIC_FATHOM_SITE_ID}
+      - NEXT_PUBLIC_FATHOM_SITE_ID=${NEXT_PUBLIC_FATHOM_SITE_ID}
     depends_on:
-      - medusa
+      - backend
     restart: unless-stopped
     networks:
       - app-network
 
-  sanity:
+  cms:
     build:
       context: .
       dockerfile: apps/cms/Dockerfile
