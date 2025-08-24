@@ -36,8 +36,8 @@ services:
 
   backend-server:
     build:
-      context: ./apps/backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/backend/Dockerfile
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-medusa}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-boughandburrow}
       - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
@@ -53,7 +53,6 @@ services:
       - RESEND_API_KEY=${RESEND_API_KEY}
       - EMAIL_FROM=${EMAIL_FROM}
       - MEDUSA_WORKER_MODE=server
-      - MEDUSA_DISABLE_ADMIN=false
     depends_on:
       postgres:
         condition: service_healthy
@@ -66,8 +65,8 @@ services:
 
   backend-worker:
     build:
-      context: ./apps/backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/backend/Dockerfile
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-medusa}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-boughandburrow}
       - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
@@ -95,8 +94,8 @@ services:
 
   frontend:
     build:
-      context: ./apps/frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/frontend/Dockerfile
     environment:
       - NODE_ENV=production
       - NEXT_PUBLIC_MEDUSA_BACKEND_URL=${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
@@ -115,8 +114,8 @@ services:
 
   cms:
     build:
-      context: ./apps/cms
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/cms/Dockerfile
     environment:
       - SANITY_STUDIO_PROJECT_ID=${NEXT_PUBLIC_SANITY_PROJECT_ID}
       - SANITY_STUDIO_DATASET=${NEXT_PUBLIC_SANITY_DATASET}

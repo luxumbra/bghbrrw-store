@@ -11,9 +11,9 @@ module.exports = defineConfig({
       : {},
     redisUrl: process.env.REDIS_URL,
     http: {
-      storeCors: process.env.STORE_CORS!,
-      adminCors: process.env.ADMIN_CORS!,
-      authCors: process.env.AUTH_CORS!,
+      storeCors: process.env.STORE_CORS || "http://localhost:8000",
+      adminCors: process.env.ADMIN_CORS || "http://localhost:9000",
+      authCors: process.env.AUTH_CORS || "http://localhost:9000",
       jwtSecret: process.env.JWT_SECRET || "supersecret",
       cookieSecret: process.env.COOKIE_SECRET || "supersecret",
     },
@@ -21,7 +21,7 @@ module.exports = defineConfig({
   admin: {
     // Admin is always enabled in development
     // For production, use environment variables in your deployment config
-    disable: process.env.NODE_ENV === 'production' 
+    disable: process.env.NODE_ENV === 'production'
       ? process.env.DISABLE_MEDUSA_ADMIN === 'true'
       : false,
     backendUrl: process.env.MEDUSA_BACKEND_URL,
