@@ -19,14 +19,14 @@ export default function MaintenancePage() {
         </div>
 
         {/* Maintenance Message */}
-        <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl font-heading text-primarymb-4">
+        <div className="flex flex-col gap-y-8 mb-8">
+          <h2 className="text-2xl md:text-3xl font-heading text-primary">
             We're launching soon
           </h2>
-          <p className="text-body text-zinc-500 text-lg mb-6 leading-relaxed">
+          <p className="text-body text-zinc-500 text-lg leading-relaxed">
             The Bough & Burrow shop will be open for business very soon! We're working hard to bring you a fantastic shopping experience with a new website and a blog where I'll be posting about the products, the process, and the inspiration behind them among other subjects close to the heart of The Burrow.
           </p>
-          <p className="text-zinc-500 mb-8">
+          <p className="text-zinc-500">
             We expect to be launching any day now. In the meantime, you can check out our Etsy shop at <a href="https://boughandburrowstudio.etsy.com" className="text-zinc-600 hover:text-zinc-400 transition-colors">boughandburrowstudio.etsy.com</a>.
           </p>
         </div>
@@ -39,9 +39,9 @@ export default function MaintenancePage() {
           <p className="text-zinc-400 mb-2">
             You can reach us via our Facebook page or our email:
           </p>
-          <p className="flex items-center justify-center gap-2">
-          <Icon icon="mdi:facebook" width={24} height={24} /> <a href="https://www.facebook.com/boughandburrow.uk">boughandburrow.uk</a>
-            <Icon icon="mdi:email" width={24} height={24} /> hello at boughandburrow.uk
+          <p className="flex-col lg:flex items-center justify-center gap-2">
+          <span className="flex items-center gap-2"> <Icon icon="mdi:facebook" width={24} height={24} /> <a href="https://www.facebook.com/boughandburrow.uk">boughandburrow.uk</a></span>
+            <span><Icon icon="mdi:email" width={24} height={24} /> hello at boughandburrow.uk</span>
             </p>
         </div>
 
