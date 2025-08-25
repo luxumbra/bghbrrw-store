@@ -86,7 +86,7 @@ jobs:
           cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/boughandburrow-cms:buildcache,mode=max
 
       # Build and push frontend image
-      - name: Build and push frontend
+      - name: Build and push frontend (Next.js)
         uses: docker/build-push-action@v5
         with:
           context: .
