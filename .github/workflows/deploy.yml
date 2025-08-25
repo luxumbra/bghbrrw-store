@@ -61,6 +61,7 @@ jobs:
           echo "Checking environment variables..."
           echo "NEXT_PUBLIC_SANITY_PROJECT_ID is set: ${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID != '' }}"
           echo "NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY is set: ${{ vars.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY != '' }}"
+          echo "NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY secret is set: ${{ secrets.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY != '' }}"
 
       # Build and push frontend image
       - name: Build and push frontend
@@ -80,7 +81,7 @@ jobs:
             PORT=8000
             NEXT_PUBLIC_MEDUSA_BACKEND_URL=${{vars.NEXT_PUBLIC_MEDUSA_BACKEND_URL}}
             NEXT_PUBLIC_BASE_URL=${{vars.NEXT_PUBLIC_BASE_URL}}
-            NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}}
+            NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${{vars.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}}
             NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}}
             NEXT_PUBLIC_SANITY_PROJECT_ID=${{secrets.NEXT_PUBLIC_SANITY_PROJECT_ID}}
             NEXT_PUBLIC_SANITY_DATASET=${{secrets.NEXT_PUBLIC_SANITY_DATASET}}
