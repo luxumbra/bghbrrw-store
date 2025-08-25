@@ -15,32 +15,11 @@ type Props = {
   }>
 }
 
-export async function generateStaticParams() {
-  const product_categories = await listCategories()
+// Enable ISR - pages will be generated on-demand and cached
+export const revalidate = 3600 // Revalidate every hour
 
-  if (!product_categories) {
-    return []
-  }
-
-  const countryCodes = await listRegions().then((regions: StoreRegion[]) =>
-    regions?.map((r) => r.countries?.map((c) => c.iso_2)).flat()
-  )
-
-  const categoryHandles = product_categories.map(
-    (category: any) => category.handle
-  )
-
-  const staticParams = countryCodes
-    ?.map((countryCode: string | undefined) =>
-      categoryHandles.map((handle: any) => ({
-        countryCode,
-        category: [handle],
-      }))
-    )
-    .flat()
-
-  return staticParams
-}
+// Remove generateStaticParams to let ISR handle page generation on-demand
+// Pages will be created when first requested, then cached
 
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const params = await props.params
