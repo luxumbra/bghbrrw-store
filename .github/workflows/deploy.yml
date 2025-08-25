@@ -55,6 +55,13 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-worker:buildcache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-worker:buildcache,mode=max
 
+      # Debug environment variables
+      - name: Debug environment variables
+        run: |
+          echo "Checking environment variables..."
+          echo "NEXT_PUBLIC_SANITY_PROJECT_ID is set: ${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID != '' }}"
+          echo "NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY is set: ${{ vars.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY != '' }}"
+
       # Build and push frontend image
       - name: Build and push frontend
         uses: docker/build-push-action@v5
@@ -68,6 +75,9 @@ jobs:
           cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/boughandburrow-frontend:buildcache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/boughandburrow-frontend:buildcache,mode=max
           build-args: |
+            NODE_ENV=production
+            HOSTNAME="0.0.0.0"
+            PORT=8000
             NEXT_PUBLIC_MEDUSA_BACKEND_URL=${{vars.NEXT_PUBLIC_MEDUSA_BACKEND_URL}}
             NEXT_PUBLIC_BASE_URL=${{vars.NEXT_PUBLIC_BASE_URL}}
             NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${{secrets.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}}
