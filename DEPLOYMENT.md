@@ -1,4 +1,71 @@
-# Production Deployment Guide - Dokploy Migration
+# Smart Deployment Guide
+
+## Overview
+
+This project now uses **smart path-based deployments** to only build and deploy services when their code actually changes, dramatically reducing build times and resource usage.
+
+## Performance Benefits
+
+### Before (Monolithic)
+- **Change 1 line in frontend** → Rebuild backend + frontend + CMS (15-20min)
+- **Change backend logic** → Rebuild everything (15-20min)
+- **Wasted resources** building unchanged services
+
+### After (Smart Deployment)  
+- **Change frontend** → Only rebuild frontend (2-5min) ⚡
+- **Change backend** → Only rebuild backend (3-7min) ⚡  
+- **Change CMS** → Only rebuild CMS (1-3min) ⚡
+- **Parallel builds** when multiple services change simultaneously
+
+## Deployment Files
+
+- `docker-compose.backend.yml` - Backend API + Database + Redis
+- `docker-compose.frontend.yml` - Next.js frontend only  
+- `docker-compose.cms.yml` - Sanity Studio only
+- `docker-compose.shared-network.yml` - For inter-service communication
+- `docker-compose.production.yml` - Full stack (legacy backup)
+
+## Usage Examples
+
+### Individual Services
+```bash
+# Deploy only backend
+docker-compose -f docker-compose.backend.yml up -d
+
+# Deploy only frontend  
+docker-compose -f docker-compose.frontend.yml up -d
+
+# Deploy with service communication
+docker-compose -f docker-compose.backend.yml -f docker-compose.frontend.yml -f docker-compose.shared-network.yml up -d
+```
+
+### GitHub Actions Behavior
+- **Frontend changes** → Only `build-frontend` job runs (2-5min)
+- **Backend changes** → Only `build-backend` job runs (3-7min)  
+- **CMS changes** → Only `build-cms` job runs (1-3min)
+- **Shared file changes** → All jobs run in parallel
+
+## Platform Setup
+
+### Dokploy (Recommended)
+Create separate applications:
+1. **Backend App** → `docker-compose.backend.yml`
+2. **Frontend App** → `docker-compose.frontend.yml`
+3. **CMS App** → `docker-compose.cms.yml`
+
+### Other Platforms
+Works with Coolify, Railway, raw Docker - just point to the specific compose file for each service.
+
+## Migration Strategy
+
+1. Create individual service deployments alongside existing full-stack
+2. Test each service independently
+3. Switch traffic to individual services
+4. Remove monolithic deployment once confident
+
+---
+
+# Legacy: Production Deployment Guide - Dokploy Migration
 
 This guide covers migrating Bough & Burrow from Railway/Vercel to self-hosted infrastructure using Dokploy.
 

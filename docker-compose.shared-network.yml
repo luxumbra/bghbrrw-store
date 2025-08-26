@@ -1,0 +1,28 @@
+# Shared network for inter-service communication
+# Use this with other compose files for service communication:
+# docker-compose -f backend.compose.yml -f frontend.compose.yml -f shared-network.compose.yml up
+
+version: '3.8'
+
+services:
+  # Override network settings for each service
+  backend-server:
+    networks:
+      - shared-network
+    ports:
+      - "9000:9000"  # Expose backend to frontend
+
+  frontend:
+    networks:
+      - shared-network
+    environment:
+      # Frontend connects to backend via shared network
+      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=http://backend-server:9000
+
+  cms:
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    driver: bridge

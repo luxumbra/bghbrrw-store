@@ -1,8 +1,4 @@
-# Full stack deployment (all services together)
-# For individual service deployment, use:
-#   backend.compose.yml - Backend + DB + Redis
-#   frontend.compose.yml - Frontend only  
-#   cms.compose.yml - CMS only
+# Backend services (API + Database + Cache)
 version: '3.8'
 
 services:
@@ -22,7 +18,7 @@ services:
       retries: 5
     restart: unless-stopped
     networks:
-      - app-network
+      - backend-network
 
   redis:
     image: redis:7-alpine
@@ -36,7 +32,7 @@ services:
       retries: 5
     restart: unless-stopped
     networks:
-      - app-network
+      - backend-network
 
   backend-server:
     build:
@@ -64,7 +60,9 @@ services:
         condition: service_healthy
     restart: unless-stopped
     networks:
-      - app-network
+      - backend-network
+    ports:
+      - "9000:9000"
     command: npm run start
 
   backend-worker:
@@ -93,39 +91,8 @@ services:
         condition: service_started
     restart: unless-stopped
     networks:
-      - app-network
-    command: npm run start:worker
-
-  frontend:
-    build:
-      context: .
-      dockerfile: apps/frontend/Dockerfile
-    environment:
-      - NODE_ENV=production
-      - NEXT_PUBLIC_MEDUSA_BACKEND_URL=${NEXT_PUBLIC_MEDUSA_BACKEND_URL}
-      - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
-      - NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY=${NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY}
-      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
-      - NEXT_PUBLIC_SANITY_PROJECT_ID=${NEXT_PUBLIC_SANITY_PROJECT_ID}
-      - NEXT_PUBLIC_SANITY_DATASET=${NEXT_PUBLIC_SANITY_DATASET}
-      - SANITY_API_TOKEN=${SANITY_API_TOKEN}
-      - NEXT_PUBLIC_FATHOM_SITE_ID=${NEXT_PUBLIC_FATHOM_SITE_ID}
-    depends_on:
-      - backend-server
-    restart: unless-stopped
-    networks:
-      - app-network
-
-  cms:
-    build:
-      context: .
-      dockerfile: apps/cms/Dockerfile
-    environment:
-      - SANITY_STUDIO_PROJECT_ID=${NEXT_PUBLIC_SANITY_PROJECT_ID}
-      - SANITY_STUDIO_DATASET=${NEXT_PUBLIC_SANITY_DATASET}
-    restart: unless-stopped
-    networks:
-      - app-network
+      - backend-network
+    command: npm run start
 
 volumes:
   postgres_data:
@@ -134,5 +101,5 @@ volumes:
     driver: local
 
 networks:
-  app-network:
+  backend-network:
     driver: bridge
