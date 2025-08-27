@@ -42,10 +42,10 @@ COPY --from=builder --chown=medusa:nodejs /app/apps/backend/package.json ./
 COPY --from=builder --chown=medusa:nodejs /app/apps/backend/medusa-config.ts ./
 COPY --from=builder --chown=medusa:nodejs /app/pnpm-lock.yaml ./
 
-# Copy workspace root for production dependencies
-COPY --from=builder /app/package.json /app/pnpm-workspace.yaml ./
-COPY --from=builder /app/apps/frontend/package.json ./apps/frontend/
-COPY --from=builder /app/apps/cms/package.json ./apps/cms/
+# Copy workspace files for proper pnpm workspace setup
+COPY --from=builder --chown=medusa:nodejs /app/pnpm-workspace.yaml ./
+COPY --from=builder --chown=medusa:nodejs /app/apps/frontend/package.json ./apps/frontend/
+COPY --from=builder --chown=medusa:nodejs /app/apps/cms/package.json ./apps/cms/
 
 # Install production dependencies only
 RUN pnpm install --prod --frozen-lockfile && \
