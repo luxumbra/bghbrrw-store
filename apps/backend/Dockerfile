@@ -36,13 +36,14 @@ RUN npm install -g pnpm@10.11.0
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S medusa -u 1001
 
-# Copy built application and necessary files
-COPY --from=builder --chown=medusa:nodejs /app/apps/backend/.medusa ./.medusa
-COPY --from=builder --chown=medusa:nodejs /app/apps/backend/package.json ./
-COPY --from=builder --chown=medusa:nodejs /app/apps/backend/medusa-config.ts ./
+# Copy backend application files
+COPY --from=builder --chown=medusa:nodejs /app/apps/backend/.medusa ./apps/backend/.medusa
+COPY --from=builder --chown=medusa:nodejs /app/apps/backend/package.json ./apps/backend/
+COPY --from=builder --chown=medusa:nodejs /app/apps/backend/medusa-config.ts ./apps/backend/
 COPY --from=builder --chown=medusa:nodejs /app/pnpm-lock.yaml ./
+COPY --from=builder --chown=medusa:nodejs /app/package.json ./
 
-# Copy workspace files for proper pnpm workspace setup
+# Copy workspace files for proper pnpm workspace setup  
 COPY --from=builder --chown=medusa:nodejs /app/pnpm-workspace.yaml ./
 COPY --from=builder --chown=medusa:nodejs /app/apps/frontend/package.json ./apps/frontend/
 COPY --from=builder --chown=medusa:nodejs /app/apps/cms/package.json ./apps/cms/
@@ -51,6 +52,9 @@ COPY --from=builder --chown=medusa:nodejs /app/apps/cms/package.json ./apps/cms/
 RUN pnpm install --prod --frozen-lockfile && \
     pnpm store prune && \
     rm -rf /root/.pnpm-store
+
+# Set working directory to backend app
+WORKDIR /app/apps/backend
 
 # Switch to non-root user
 USER medusa
@@ -63,4 +67,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 EXPOSE 9000
 
 # Start the application
-CMD ["pnpm", "run", "start"]
+CMD ["pnpm", "start"]

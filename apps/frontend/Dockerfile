@@ -53,8 +53,8 @@ RUN addgroup -g 1001 -S nodejs && \
 
 # Copy built application (standalone includes everything needed)
 COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/static ./.next/static
-COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/static ./apps/frontend/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/public ./apps/frontend/public
 
 # Switch to non-root user
 USER nextjs
@@ -71,5 +71,5 @@ ENV NODE_ENV=production
 ENV HOSTNAME="0.0.0.0"
 ENV PORT=8000
 
-# Start the application
-CMD ["node", "server.js"]
+# Start the application  
+CMD ["node", "apps/frontend/server.js"]
