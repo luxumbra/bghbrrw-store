@@ -66,31 +66,22 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build and push backend server image
-      - name: Build and push backend server
+      # Build and push backend image with multiple tags (server and worker use same image)
+      - name: Build and push backend
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./apps/backend/Dockerfile
           push: true
           tags: |
+            ghcr.io/${{ github.repository_owner }}/boughandburrow-backend:latest
+            ghcr.io/${{ github.repository_owner }}/boughandburrow-backend:${{ github.sha }}
             ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-server:latest
             ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-server:${{ github.sha }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-server:buildcache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-server:buildcache,mode=max
-
-      # Build and push backend worker image (same image, different tag)
-      - name: Build and push backend worker
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./apps/backend/Dockerfile
-          push: true
-          tags: |
             ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-worker:latest
             ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-worker:${{ github.sha }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-worker:buildcache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-worker:buildcache,mode=max
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/boughandburrow-backend:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/boughandburrow-backend:buildcache,mode=max
 
   # Build frontend only if frontend files changed
   build-frontend:

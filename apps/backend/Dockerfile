@@ -67,4 +67,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 EXPOSE 9000
 
 # Start the application
-CMD ["pnpm", "start"]
+CMD ["pnpm", "run", "start"]
