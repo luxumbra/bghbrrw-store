@@ -28,7 +28,6 @@ services:
       - frontend-network
     ports:
       - "8000:8000"
-    command: pnpm start
 
 networks:
   frontend-network:

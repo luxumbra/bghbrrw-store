@@ -64,7 +64,6 @@ services:
       - backend-network
     ports:
       - "9000:9000"
-    command: pnpm start
 
 volumes:
   postgres_data:
