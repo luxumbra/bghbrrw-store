@@ -36,6 +36,10 @@ RUN npm install -g pnpm@latest
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S medusa -u 1001
 
+# Copy package files
+COPY package.json medusa-config.ts tsconfig.json ./
+COPY src ./src
+
 # Copy built application from builder stage (like Railway)
 COPY --from=builder --chown=medusa:nodejs /app/apps/backend/.medusa ./.medusa
 COPY --from=builder --chown=medusa:nodejs /app/apps/backend/package.json ./
