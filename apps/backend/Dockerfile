@@ -22,7 +22,7 @@ FROM node:20-alpine AS production
 
 WORKDIR /app
 
-# Copy built application from builder stage (exactly like Railway)
+# Copy built application from builder stage
 COPY --from=builder /app/.medusa ./.medusa
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/medusa-config.ts ./
