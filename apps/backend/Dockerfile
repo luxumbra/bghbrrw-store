@@ -36,25 +36,17 @@ RUN npm install -g pnpm@10.11.0
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S medusa -u 1001
 
-# Copy workspace files first (we're still in /app)
-COPY --from=builder --chown=medusa:nodejs /app/package.json ./
-COPY --from=builder --chown=medusa:nodejs /app/pnpm-lock.yaml ./
-COPY --from=builder --chown=medusa:nodejs /app/pnpm-workspace.yaml ./
-COPY --from=builder --chown=medusa:nodejs /app/apps/frontend/package.json ./apps/frontend/package.json
-COPY --from=builder --chown=medusa:nodejs /app/apps/cms/package.json ./apps/cms/package.json
-COPY --from=builder --chown=medusa:nodejs /app/apps/backend/package.json ./apps/backend/package.json
+# Copy built application from builder stage (like Railway)
+COPY --from=builder --chown=medusa:nodejs /app/apps/backend/.medusa ./.medusa
+COPY --from=builder --chown=medusa:nodejs /app/apps/backend/package.json ./
+COPY --from=builder --chown=medusa:nodejs /app/apps/backend/medusa-config.ts ./
 
-# Copy backend-specific files
-COPY --from=builder --chown=medusa:nodejs /app/apps/backend/.medusa ./apps/backend/.medusa
-COPY --from=builder --chown=medusa:nodejs /app/apps/backend/medusa-config.ts ./apps/backend/medusa-config.ts
-
-# Install production dependencies only (from workspace root)
+# Install production dependencies only
 RUN pnpm install --prod --frozen-lockfile && \
     pnpm store prune && \
     rm -rf /root/.pnpm-store
 
-# Set working directory to backend app AFTER installing dependencies
-WORKDIR /app/apps/backend
+# Stay at /app working directory (like Railway)
 
 # Switch to non-root user
 USER medusa
