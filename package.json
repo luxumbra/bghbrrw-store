@@ -22,5 +22,11 @@
     "start:backend": "pnpm --filter @badgerstore/backend start",
     "build:cms": "pnpm --filter @badgerstore/cms build"
   },
-  "packageManager": "pnpm@10.11.0"
+  "packageManager": "pnpm@10.11.0",
+  "pnpm": {
+    "overrides": {
+      "@types/react": "^18.2.0",
+      "@types/react-dom": "^18.2.0"
+    }
+  }
 }
