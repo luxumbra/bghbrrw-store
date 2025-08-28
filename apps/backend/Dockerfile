@@ -40,6 +40,7 @@ RUN addgroup -g 1001 -S nodejs && \
 COPY --from=builder --chown=medusa:nodejs /app/apps/backend/.medusa ./.medusa
 COPY --from=builder --chown=medusa:nodejs /app/apps/backend/package.json ./
 COPY --from=builder --chown=medusa:nodejs /app/apps/backend/medusa-config.ts ./
+COPY --from=builder --chown=medusa:nodejs /app/pnpm-lock.yaml ./
 
 # Install production dependencies only
 RUN pnpm install --prod --frozen-lockfile && \
