@@ -73,6 +73,7 @@ jobs:
           context: ./apps/backend
           file: ./apps/backend/Dockerfile
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-server:latest
             ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-server:${{ github.sha }}
@@ -110,6 +111,7 @@ jobs:
           context: ./apps/backend
           file: ./apps/backend/Dockerfile
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-worker:latest
             ghcr.io/${{ github.repository_owner }}/boughandburrow-backend-worker:${{ github.sha }}
@@ -147,6 +149,7 @@ jobs:
           context: .
           file: ./apps/frontend/Dockerfile
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ github.repository_owner }}/boughandburrow-frontend:latest
             ghcr.io/${{ github.repository_owner }}/boughandburrow-frontend:${{ github.sha }}
