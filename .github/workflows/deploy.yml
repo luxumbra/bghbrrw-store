@@ -204,7 +204,7 @@ jobs:
   # Trigger deployments only after successful builds
   trigger-deployments:
     needs: [detect-changes, build-backend-server, build-backend-worker, build-frontend, build-cms]
-    if: always() && github.ref == 'refs/heads/main' && (needs.build-backend-server.result == 'success' || needs.build-backend-worker.result == 'success' || needs.build-frontend.result == 'success' || needs.build-cms.result == 'success')
+    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/feat/BOU-35-migrate-infra-to-dokploy') && (needs.build-backend-server.result == 'success' || needs.build-backend-worker.result == 'success' || needs.build-frontend.result == 'success' || needs.build-cms.result == 'success')
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Backend Server Deployment
