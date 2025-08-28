@@ -7,7 +7,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Install pnpm globally
-RUN npm install -g pnpm@10.11.0
+RUN npm install -g pnpm@latest
 
 # Copy workspace root files for proper dependency resolution
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -30,7 +30,7 @@ FROM node:20-alpine AS production
 WORKDIR /app
 
 # Install pnpm
-RUN npm install -g pnpm@10.11.0
+RUN npm install -g pnpm@latest
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
@@ -43,9 +43,7 @@ COPY --from=builder --chown=medusa:nodejs /app/apps/backend/medusa-config.ts ./
 COPY --from=builder --chown=medusa:nodejs /app/pnpm-lock.yaml ./
 
 # Install production dependencies only
-RUN pnpm install --prod --frozen-lockfile && \
-    pnpm store prune && \
-    rm -rf /root/.pnpm-store
+RUN pnpm install --prod --frozen-lockfile=false
 
 # Stay at /app working directory (like Railway)
 
