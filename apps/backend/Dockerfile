@@ -36,17 +36,17 @@ RUN npm install -g pnpm@10.11.0
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S medusa -u 1001
 
-# Copy backend application files
-COPY --from=builder --chown=medusa:nodejs /app/apps/backend/.medusa ./apps/backend/.medusa
-COPY --from=builder --chown=medusa:nodejs /app/apps/backend/package.json ./apps/backend/
-COPY --from=builder --chown=medusa:nodejs /app/apps/backend/medusa-config.ts ./apps/backend/
-COPY --from=builder --chown=medusa:nodejs /app/pnpm-lock.yaml ./
-COPY --from=builder --chown=medusa:nodejs /app/package.json ./
+# Copy backend application files to correct locations
+COPY --from=builder --chown=medusa:nodejs /app/apps/backend/.medusa ./.medusa
+COPY --from=builder --chown=medusa:nodejs /app/apps/backend/package.json ./
+COPY --from=builder --chown=medusa:nodejs /app/apps/backend/medusa-config.ts ./
+COPY --from=builder --chown=medusa:nodejs /app/pnpm-lock.yaml ../../
+COPY --from=builder --chown=medusa:nodejs /app/package.json ../../
 
-# Copy workspace files for proper pnpm workspace setup  
-COPY --from=builder --chown=medusa:nodejs /app/pnpm-workspace.yaml ./
-COPY --from=builder --chown=medusa:nodejs /app/apps/frontend/package.json ./apps/frontend/
-COPY --from=builder --chown=medusa:nodejs /app/apps/cms/package.json ./apps/cms/
+# Copy workspace files for proper pnpm workspace setup (relative to /app/apps/backend)
+COPY --from=builder --chown=medusa:nodejs /app/pnpm-workspace.yaml ../../
+COPY --from=builder --chown=medusa:nodejs /app/apps/frontend/package.json ../frontend/package.json
+COPY --from=builder --chown=medusa:nodejs /app/apps/cms/package.json ../cms/package.json
 
 # Install production dependencies only
 RUN pnpm install --prod --frozen-lockfile && \
