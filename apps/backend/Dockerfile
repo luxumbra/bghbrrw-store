@@ -36,24 +36,24 @@ RUN npm install -g pnpm@10.11.0
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S medusa -u 1001
 
-# Copy backend application files to correct locations
-COPY --from=builder --chown=medusa:nodejs /app/apps/backend/.medusa ./.medusa
-COPY --from=builder --chown=medusa:nodejs /app/apps/backend/package.json ./
-COPY --from=builder --chown=medusa:nodejs /app/apps/backend/medusa-config.ts ./
-COPY --from=builder --chown=medusa:nodejs /app/pnpm-lock.yaml ../../
-COPY --from=builder --chown=medusa:nodejs /app/package.json ../../
+# Copy workspace files first (we're still in /app)
+COPY --from=builder --chown=medusa:nodejs /app/package.json ./
+COPY --from=builder --chown=medusa:nodejs /app/pnpm-lock.yaml ./
+COPY --from=builder --chown=medusa:nodejs /app/pnpm-workspace.yaml ./
+COPY --from=builder --chown=medusa:nodejs /app/apps/frontend/package.json ./apps/frontend/package.json
+COPY --from=builder --chown=medusa:nodejs /app/apps/cms/package.json ./apps/cms/package.json
+COPY --from=builder --chown=medusa:nodejs /app/apps/backend/package.json ./apps/backend/package.json
 
-# Copy workspace files for proper pnpm workspace setup (relative to /app/apps/backend)
-COPY --from=builder --chown=medusa:nodejs /app/pnpm-workspace.yaml ../../
-COPY --from=builder --chown=medusa:nodejs /app/apps/frontend/package.json ../frontend/package.json
-COPY --from=builder --chown=medusa:nodejs /app/apps/cms/package.json ../cms/package.json
+# Copy backend-specific files
+COPY --from=builder --chown=medusa:nodejs /app/apps/backend/.medusa ./apps/backend/.medusa
+COPY --from=builder --chown=medusa:nodejs /app/apps/backend/medusa-config.ts ./apps/backend/medusa-config.ts
 
-# Install production dependencies only
+# Install production dependencies only (from workspace root)
 RUN pnpm install --prod --frozen-lockfile && \
     pnpm store prune && \
     rm -rf /root/.pnpm-store
 
-# Set working directory to backend app
+# Set working directory to backend app AFTER installing dependencies
 WORKDIR /app/apps/backend
 
 # Switch to non-root user
