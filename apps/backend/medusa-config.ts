@@ -8,10 +8,10 @@ const getRedisUrl = () => {
     return process.env.REDIS_URL;
   }
 
-  const host = process.env.REDIS_HOST || 'redis';
-  const port = process.env.REDIS_PORT || '6379';
+  const host = process.env.REDIS_HOST || "redis";
+  const port = process.env.REDIS_PORT || "6379";
   const password = process.env.REDIS_PASSWORD;
-  const user = process.env.REDIS_USER || 'default';
+  const user = process.env.REDIS_USER || "default";
 
   if (password) {
     return `redis://${user}:${encodeURIComponent(password)}@${host}:${port}`;
@@ -22,26 +22,32 @@ const getRedisUrl = () => {
 
 module.exports = defineConfig({
   projectConfig: {
-    workerMode: process.env.MEDUSA_WORKER_MODE as "shared" | "worker" | "server",
+    workerMode: process.env.MEDUSA_WORKER_MODE as
+      | "shared"
+      | "worker"
+      | "server",
     databaseUrl: (() => {
       if (process.env.DATABASE_URL) {
-        console.log('Using provided DATABASE_URL');
+        console.log("Using provided DATABASE_URL");
         return process.env.DATABASE_URL;
       }
 
-      const user = process.env.POSTGRES_USER || 'medusa';
-      const password = process.env.POSTGRES_PASSWORD || 'defaultpassword';
-      const host = process.env.POSTGRES_HOST || 'postgres';
-      const db = process.env.POSTGRES_DB || 'boughandburrow';
+      const user = process.env.POSTGRES_USER || "medusa";
+      const password = process.env.POSTGRES_PASSWORD || "defaultpassword";
+      const host = process.env.POSTGRES_HOST || "postgres";
+      const db = process.env.POSTGRES_DB || "boughandburrow";
 
       const url = `postgresql://${user}:${encodeURIComponent(password)}@${host}:5432/${db}?sslmode=disable`;
-      console.log('Constructed URL:', `postgresql://${user}:***@${host}:5432/${db}?sslmode=disable`);
+      console.log(
+        "Constructed URL:",
+        `postgresql://${user}:***@${host}:5432/${db}?sslmode=disable`,
+      );
       return url;
     })(),
     databaseDriverOptions: {
       connection: {
-        ssl: false
-      }
+        ssl: false,
+      },
     },
     redisUrl: getRedisUrl(),
     http: {
@@ -55,9 +61,10 @@ module.exports = defineConfig({
   admin: {
     // Admin is always enabled in development
     // For production, use environment variables in your deployment config
-    disable: process.env.NODE_ENV === 'production'
-      ? process.env.DISABLE_MEDUSA_ADMIN === 'true'
-      : false,
+    disable:
+      process.env.NODE_ENV === "production"
+        ? process.env.DISABLE_MEDUSA_ADMIN === "true"
+        : false,
     backendUrl: process.env.MEDUSA_BACKEND_URL,
   },
   modules: [
@@ -88,9 +95,13 @@ module.exports = defineConfig({
       options: {
         providers: [
           {
-            resolve: process.env.NODE_ENV === 'production'
-              ? require('path').resolve(__dirname, '.medusa/server/src/modules/resend')
-              : "./src/modules/resend",
+            resolve:
+              process.env.NODE_ENV === "production"
+                ? require("path").resolve(
+                    __dirname,
+                    "src/modules/resend",
+                  )
+                : "./src/modules/resend",
 
             id: "resend",
 
@@ -122,9 +133,10 @@ module.exports = defineConfig({
       },
     },
     {
-resolve: process.env.NODE_ENV === 'production'
-        ? require('path').resolve(__dirname, 'src/modules/product-review')
-        : "./src/modules/product-review"
+      resolve:
+        process.env.NODE_ENV === "production"
+          ? require("path").resolve(__dirname, "src/modules/product-review")
+          : "./src/modules/product-review",
     },
     // {
     //   resolve: "./src/modules/wishlist",
