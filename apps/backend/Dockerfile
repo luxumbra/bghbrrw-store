@@ -46,4 +46,8 @@ USER medusa
 
 EXPOSE 9000
 
+RUN pwd
+RUN ls -lhR .medusa/admin
+RUN ls -lhR /app/.medusa/admin
+
 CMD ["sh", "-c", "pnpm run predeploy && pnpm run start"]
