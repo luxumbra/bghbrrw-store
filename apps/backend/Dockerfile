@@ -27,11 +27,12 @@ WORKDIR /app
 # Copy built application from builder stage
 COPY --from=builder /app/.medusa ./.medusa
 COPY --from=builder /app/package.json ./
-COPY --from=builder /app/node_modules ./node_modules
 # Use the compiled JavaScript config instead of TypeScript
 COPY --from=builder /app/.medusa/server/medusa-config.js ./medusa-config.js
 # Copy the modules directory with source files
 COPY --from=builder /app/src/modules ./src/modules
+
+WORKDIR /app/.medusa/server
 
 # Ensure all runtime files (including .medusa/admin) belong to medusa user
 RUN addgroup -g 1001 -S medusa \
@@ -50,4 +51,4 @@ RUN pwd
 RUN ls -lhR .medusa/admin
 RUN ls -lhR /app/.medusa/admin
 
-CMD ["sh", "-c", "pnpm run predeploy && pnpm run start"]
+CMD ["sh", "-c", "pwd && ls -lhR ../admin && pnpm run predeploy && pnpm run start"]
