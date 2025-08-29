@@ -6,7 +6,21 @@ loadEnv(process.env.NODE_ENV || "development", process.cwd());
 module.exports = defineConfig({
   projectConfig: {
     workerMode: process.env.MEDUSA_WORKER_MODE as "shared" | "worker" | "server",
-    databaseUrl: process.env.DATABASE_URL || `postgresql://${process.env.POSTGRES_USER || 'medusa'}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST || 'postgres'}:5432/${process.env.POSTGRES_DB || 'boughandburrow'}?sslmode=disable`,
+    databaseUrl: (() => {
+      if (process.env.DATABASE_URL) {
+        console.log('Using provided DATABASE_URL');
+        return process.env.DATABASE_URL;
+      }
+      
+      const user = process.env.POSTGRES_USER || 'medusa';
+      const password = process.env.POSTGRES_PASSWORD || 'defaultpassword';
+      const host = process.env.POSTGRES_HOST || 'postgres';
+      const db = process.env.POSTGRES_DB || 'boughandburrow';
+      
+      const url = `postgresql://${user}:${encodeURIComponent(password)}@${host}:5432/${db}?sslmode=disable`;
+      console.log('Constructed URL:', `postgresql://${user}:***@${host}:5432/${db}?sslmode=disable`);
+      return url;
+    })(),
     databaseDriverOptions: {
       connection: {
         ssl: false

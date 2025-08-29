@@ -15,7 +15,7 @@ RUN pnpm install --frozen-lockfile=false
 RUN pnpm run build
 
 # Production stage
-FROM node:20-alpine
+FROM node:20-alpine AS production
 
 WORKDIR /app
 
@@ -39,11 +39,4 @@ USER medusa
 
 EXPOSE 9000
 
-# DEBUG environment variables and paths
-RUN echo "=== ENVIRONMENT VARIABLES ===" && \
-    echo "NODE_ENV: $NODE_ENV" && \
-    echo "DATABASE_URL: ${DATABASE_URL:0:30}..." && \
-    echo "REDIS_URL: ${REDIS_URL:0:30}..." && \
-    env | grep -E "(NODE_ENV|DATABASE|REDIS|JWT|COOKIE)" || echo "No matching env vars found"
-
-CMD ["sh", "-c", "echo '=== RUNTIME ENV DEBUG ===' && echo 'NODE_ENV:' $NODE_ENV && echo 'DATABASE_URL:' ${DATABASE_URL:0:50}... && echo 'REDIS_URL:' ${REDIS_URL:0:50}... && pnpm run start"]
+CMD ["pnpm", "run", "start"]
