@@ -123,15 +123,15 @@ TypeError: cmd is not a function
 at /workspace/node_modules/.pnpm/@medusajs+cli@2.8.4_.../src/create-cli.ts:384:11
 ```
 **Root Cause:** Internal bug in Medusa CLI versions 2.8.4 and 2.8.5
-**Solution:** Use Medusa v2.8.0 (confirmed stable version)
+**Solution:** Use Medusa v2.8.8 (latest stable version with CLI fixes)
 ```bash
-# In apps/backend/package.json, set all @medusajs packages to "2.8.0"
-"@medusajs/admin-sdk": "2.8.0",
-"@medusajs/cli": "2.8.0", 
-"@medusajs/dashboard": "2.8.0",
-"@medusajs/framework": "2.8.0",
-"@medusajs/medusa": "2.8.0",
-"@medusajs/test-utils": "2.8.0"
+# In apps/backend/package.json, set all @medusajs packages to "2.8.8"
+"@medusajs/admin-sdk": "2.8.8",
+"@medusajs/cli": "2.8.8", 
+"@medusajs/dashboard": "2.8.8",
+"@medusajs/framework": "2.8.8",
+"@medusajs/medusa": "2.8.8",
+"@medusajs/test-utils": "2.8.8"
 ```
 
 #### 6. Stripe Integration Compatibility Issues
@@ -187,10 +187,11 @@ pnpm install
 #### Version Compatibility Matrix
 | Medusa Version | CLI Status | Stripe Provider | Recommendation |
 |----------------|------------|-----------------|----------------|
-| 2.8.0 | ✅ Working | ✅ Official provider | **Use this** |
+| 2.8.0 | ✅ Working | ✅ Official provider | Legacy stable |
 | 2.8.1-2.8.3 | ❓ Untested | ✅ Official provider | Untested |
 | 2.8.4 | ❌ CLI broken | ✅ Official provider | Avoid |
 | 2.8.5 | ❌ CLI broken | ✅ Official provider | Avoid |
+| 2.8.8 | ✅ Working | ✅ Official provider | **Use this** |
 
 #### Docker Build Timeout Issues
 **Problem:** Docker builds timing out during dependency installation
