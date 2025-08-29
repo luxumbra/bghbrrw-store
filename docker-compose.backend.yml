@@ -22,7 +22,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
     volumes:
       - redis_data:/data
     healthcheck:
@@ -39,11 +39,17 @@ services:
       context: .
       dockerfile: apps/backend/Dockerfile
     environment:
+      # Database connection details
       - POSTGRES_USER=${POSTGRES_USER:-medusa}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB:-boughandburrow}
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-medusa}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-boughandburrow}?sslmode=disable
-      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+      - POSTGRES_HOST=${POSTGRES_HOST:-postgres}
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_SSL=${PGSSLMODE:-disable}
+      # Construct DATABASE_URL from individual components
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-medusa}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/${POSTGRES_DB}?sslmode=${POSTGRES_SSL}
+      # Redis configuration
+      - REDIS_URL=${REDIS_URL:-redis://:${REDIS_PASSWORD}@redis:6379}
       - NODE_ENV=${NODE_ENV:-development}
       - JWT_SECRET=${JWT_SECRET}
       - COOKIE_SECRET=${COOKIE_SECRET}

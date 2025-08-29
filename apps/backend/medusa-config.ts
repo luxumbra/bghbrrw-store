@@ -6,9 +6,7 @@ loadEnv(process.env.NODE_ENV || "development", process.cwd());
 module.exports = defineConfig({
   projectConfig: {
     workerMode: process.env.MEDUSA_WORKER_MODE as "shared" | "worker" | "server",
-    databaseUrl: process.env.DATABASE_URL ? 
-      `${process.env.DATABASE_URL}${process.env.DATABASE_URL.includes('?') ? '&' : '?'}sslmode=disable` : 
-      '',
+    databaseUrl: process.env.DATABASE_URL || `postgresql://${process.env.POSTGRES_USER || 'medusa'}:${process.env.POSTGRES_PASSWORD}@${process.env.POSTGRES_HOST || 'postgres'}:5432/${process.env.POSTGRES_DB || 'boughandburrow'}?sslmode=disable`,
     databaseDriverOptions: {
       connection: {
         ssl: false
@@ -59,7 +57,7 @@ module.exports = defineConfig({
       options: {
         providers: [
           {
-            resolve: process.env.NODE_ENV === 'production' 
+            resolve: process.env.NODE_ENV === 'production'
               ? require('path').resolve(__dirname, '.medusa/server/src/modules/resend')
               : "./src/modules/resend",
 

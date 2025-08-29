@@ -60,15 +60,15 @@ pnpm --filter @boughandburrow/frontend dev
 | Backend   | http://localhost:9000      | 9000 | Medusa API           |
 | Admin UI  | http://localhost:9000/app  | 9000 | Medusa Admin         |
 | CMS       | http://localhost:3333      | 3333 | Sanity Studio        |
-| Database  | Neon Cloud                 | N/A  | PostgreSQL (Cloud)   |
+| Database  | localhost:5432             | 5432 | PostgreSQL (Self-hosted) |
 | Redis     | localhost:6379             | 6379 | Cache/Sessions       |
 
 ## Environment Variables
 
 ### Backend (apps/backend/.env)
 ```bash
-# Database (Neon Cloud)
-DATABASE_URL=postgresql://neondb_owner:npg_OCZvp2N6Uark@ep-noisy-silence-abpv5ua5-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+# Database (Self-hosted PostgreSQL)
+DATABASE_URL=postgresql://username:password@postgres:5432/database_name
 
 # Medusa Core
 NODE_ENV=development
@@ -341,11 +341,11 @@ website/
 ## Notes
 
 - The frontend runs on port 8000 (not the default 3000)
-- **Database Migration**: Project has been migrated from local Docker PostgreSQL to Neon Cloud database
-  - Development uses Neon 'develop' branch
-  - Production uses Neon 'main' branch
-  - Connection requires `sslmode=require&channel_binding=require`
-- All services are containerized for consistency (except database which is now cloud-hosted)
+- **Database Setup**: Project uses PostgreSQL database
+  - Development uses local Docker PostgreSQL container
+  - Production uses self-hosted PostgreSQL on the same VPS as the application
+  - Local connections do not require SSL
+- All services are containerized for consistency
 - Use `./scripts/docker-dev.sh` for common operations
 - Check logs frequently when troubleshooting
 

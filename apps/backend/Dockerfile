@@ -39,11 +39,11 @@ USER medusa
 
 EXPOSE 9000
 
-# DEBUG paths
-RUN ls -la /app
-RUN ls -la /app/src || echo "src directory doesn't exist"
-RUN ls -la /app/src/modules || echo "modules directory doesn't exist"
-RUN ls -la /app/src/modules/product-review || echo "product-review directory doesn't exist"
-RUN ls -la /app/.medusa/server/src/modules/product-review || echo "compiled product-review doesn't exist"
+# DEBUG environment variables and paths
+RUN echo "=== ENVIRONMENT VARIABLES ===" && \
+    echo "NODE_ENV: $NODE_ENV" && \
+    echo "DATABASE_URL: ${DATABASE_URL:0:30}..." && \
+    echo "REDIS_URL: ${REDIS_URL:0:30}..." && \
+    env | grep -E "(NODE_ENV|DATABASE|REDIS|JWT|COOKIE)" || echo "No matching env vars found"
 
-CMD ["pnpm", "run", "start"]
+CMD ["sh", "-c", "echo '=== RUNTIME ENV DEBUG ===' && echo 'NODE_ENV:' $NODE_ENV && echo 'DATABASE_URL:' ${DATABASE_URL:0:50}... && echo 'REDIS_URL:' ${REDIS_URL:0:50}... && pnpm run start"]
