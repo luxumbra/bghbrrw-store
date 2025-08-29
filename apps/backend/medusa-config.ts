@@ -7,16 +7,16 @@ const getRedisUrl = () => {
   if (process.env.REDIS_URL) {
     return process.env.REDIS_URL;
   }
-  
+
   const host = process.env.REDIS_HOST || 'redis';
   const port = process.env.REDIS_PORT || '6379';
   const password = process.env.REDIS_PASSWORD;
   const user = process.env.REDIS_USER || 'default';
-  
+
   if (password) {
     return `redis://${user}:${encodeURIComponent(password)}@${host}:${port}`;
   }
-  
+
   return `redis://${host}:${port}`;
 };
 

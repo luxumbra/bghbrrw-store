@@ -11,8 +11,10 @@ COPY src ./src
 RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile=false
 
-# Build the backend
+# Build the backend (includes admin UI to .medusa/admin)
 RUN pnpm run build
+# (if pnpm run build does NOT build admin, add an explicit build here)
+# RUN pnpm --filter @medusajs/admin build
 
 # Production stage
 FROM node:20-alpine AS production
@@ -28,13 +30,15 @@ COPY --from=builder /app/.medusa/server/medusa-config.js ./medusa-config.js
 # Copy the modules directory with source files
 COPY --from=builder /app/src/modules ./src/modules
 
+# Ensure all runtime files (including .medusa/admin) belong to medusa user
+RUN addgroup -g 1001 -S nodejs \
+    && adduser -S medusa -u 1001 \
+    && chown -R medusa:medusa /app
+
 # Install production dependencies only
 RUN npm install -g pnpm
 RUN pnpm install --prod --frozen-lockfile=false
 
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S medusa -u 1001
 USER medusa
 
 EXPOSE 9000
