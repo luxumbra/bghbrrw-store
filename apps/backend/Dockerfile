@@ -31,8 +31,8 @@ COPY --from=builder /app/.medusa/server/medusa-config.js ./medusa-config.js
 COPY --from=builder /app/src/modules ./src/modules
 
 # Ensure all runtime files (including .medusa/admin) belong to medusa user
-RUN addgroup -g 1001 -S nodejs \
-    && adduser -S medusa -u 1001 \
+RUN addgroup -g 1001 -S medusa \
+    && adduser -S -u 1001 -G medusa medusa \
     && chown -R medusa:medusa /app
 
 # Install production dependencies only
