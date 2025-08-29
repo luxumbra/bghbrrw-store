@@ -24,6 +24,8 @@ COPY --from=builder /app/.medusa ./.medusa
 COPY --from=builder /app/package.json ./
 # Use the compiled JavaScript config instead of TypeScript
 COPY --from=builder /app/.medusa/server/medusa-config.js ./medusa-config.js
+# Copy the modules directory with source files
+COPY --from=builder /app/src/modules ./src/modules
 
 # Install production dependencies only
 RUN npm install -g pnpm
