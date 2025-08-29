@@ -55,7 +55,9 @@ module.exports = defineConfig({
       options: {
         providers: [
           {
-            resolve: "./src/modules/resend",
+            resolve: process.env.NODE_ENV === 'production' 
+              ? require('path').resolve(__dirname, '.medusa/server/src/modules/resend')
+              : "./src/modules/resend",
 
             id: "resend",
 
@@ -87,7 +89,9 @@ module.exports = defineConfig({
       },
     },
     {
-      resolve: require('path').resolve(__dirname, 'src/modules/product-review')
+      resolve: process.env.NODE_ENV === 'production'
+        ? require('path').resolve(__dirname, '.medusa/server/src/modules/product-review')
+        : "./src/modules/product-review"
     },
     // {
     //   resolve: "./src/modules/wishlist",

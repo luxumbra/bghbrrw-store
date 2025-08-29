@@ -43,5 +43,7 @@ EXPOSE 9000
 RUN ls -la /app
 RUN ls -la /app/src || echo "src directory doesn't exist"
 RUN ls -la /app/src/modules || echo "modules directory doesn't exist"
+RUN ls -la /app/src/modules/product-review || echo "product-review directory doesn't exist"
+RUN ls -la /app/.medusa/server/src/modules/product-review || echo "compiled product-review doesn't exist"
 
 CMD ["pnpm", "run", "start"]
