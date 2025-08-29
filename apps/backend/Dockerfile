@@ -37,4 +37,10 @@ RUN adduser -S medusa -u 1001
 USER medusa
 
 EXPOSE 9000
+
+# DEBUG paths
+RUN ls -la /app
+RUN ls -la /app/src || echo "src directory doesn't exist"
+RUN ls -la /app/src/modules || echo "modules directory doesn't exist"
+
 CMD ["pnpm", "run", "start"]
