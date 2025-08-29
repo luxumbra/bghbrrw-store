@@ -34,6 +34,8 @@ COPY --from=builder /app/.medusa ./.medusa
 COPY --from=builder /app/package.json ./
 # Copy the compiled config from the build output
 COPY --from=builder /app/.medusa/server/medusa-config.js ./medusa-config.js
+# Copy source modules that are referenced in the config
+COPY --from=builder /app/src ./src
 
 # Install production dependencies only
 RUN pnpm install --prod --frozen-lockfile=false
