@@ -3,6 +3,23 @@ import { loadEnv, defineConfig } from "@medusajs/framework/utils";
 // Force rebuild for testing deployment pipeline - remove this comment later
 loadEnv(process.env.NODE_ENV || "development", process.cwd());
 
+const getRedisUrl = () => {
+  if (process.env.REDIS_URL) {
+    return process.env.REDIS_URL;
+  }
+  
+  const host = process.env.REDIS_HOST || 'redis';
+  const port = process.env.REDIS_PORT || '6379';
+  const password = process.env.REDIS_PASSWORD;
+  const user = process.env.REDIS_USER || 'default';
+  
+  if (password) {
+    return `redis://${user}:${encodeURIComponent(password)}@${host}:${port}`;
+  }
+  
+  return `redis://${host}:${port}`;
+};
+
 module.exports = defineConfig({
   projectConfig: {
     workerMode: process.env.MEDUSA_WORKER_MODE as "shared" | "worker" | "server",
@@ -11,12 +28,12 @@ module.exports = defineConfig({
         console.log('Using provided DATABASE_URL');
         return process.env.DATABASE_URL;
       }
-      
+
       const user = process.env.POSTGRES_USER || 'medusa';
       const password = process.env.POSTGRES_PASSWORD || 'defaultpassword';
       const host = process.env.POSTGRES_HOST || 'postgres';
       const db = process.env.POSTGRES_DB || 'boughandburrow';
-      
+
       const url = `postgresql://${user}:${encodeURIComponent(password)}@${host}:5432/${db}?sslmode=disable`;
       console.log('Constructed URL:', `postgresql://${user}:***@${host}:5432/${db}?sslmode=disable`);
       return url;
@@ -26,7 +43,7 @@ module.exports = defineConfig({
         ssl: false
       }
     },
-    redisUrl: process.env.REDIS_URL,
+    redisUrl: getRedisUrl(),
     http: {
       storeCors: process.env.STORE_CORS || "http://localhost:8000",
       adminCors: process.env.ADMIN_CORS || "http://localhost:9000",
@@ -47,13 +64,13 @@ module.exports = defineConfig({
     {
       resolve: "@medusajs/medusa/cache-redis",
       options: {
-        redisUrl: process.env.REDIS_URL,
+        redisUrl: getRedisUrl(),
       },
     },
     {
       resolve: "@medusajs/medusa/event-bus-redis",
       options: {
-        redisUrl: process.env.REDIS_URL,
+        redisUrl: getRedisUrl(),
       },
     },
     {

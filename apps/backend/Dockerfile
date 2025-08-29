@@ -39,4 +39,4 @@ USER medusa
 
 EXPOSE 9000
 
-CMD ["pnpm", "run", "start"]
+CMD ["sh", "-c", "pnpm run predeploy && pnpm run start"]
