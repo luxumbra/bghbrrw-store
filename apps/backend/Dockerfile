@@ -21,9 +21,6 @@ RUN pnpm install --frozen-lockfile=false
 # Build the backend
 RUN pnpm run build
 
-# Compile medusa-config.ts to JS (important fix)
-RUN npx tsc medusa-config.ts --esModuleInterop
-
 # Production stage
 FROM node:20-alpine AS production
 
@@ -35,7 +32,8 @@ RUN npm install -g pnpm
 # Copy built application from builder stage
 COPY --from=builder /app/.medusa ./.medusa
 COPY --from=builder /app/package.json ./
-COPY --from=builder /app/medusa-config.js ./
+# Copy the compiled config from the build output
+COPY --from=builder /app/.medusa/server/medusa-config.js ./medusa-config.js
 
 # Install production dependencies only
 RUN pnpm install --prod --frozen-lockfile=false
@@ -57,5 +55,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 # Expose port
 EXPOSE 9000
 
-# Start the application
-CMD ["pnpm", "run", "start"]
+# Run predeploy (migrations) then start
+CMD ["sh", "-c", "pnpm run predeploy && pnpm run start"]
