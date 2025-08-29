@@ -22,7 +22,7 @@ WORKDIR /app
 # Copy built application from builder stage
 COPY --from=builder /app/.medusa ./.medusa
 COPY --from=builder /app/package.json ./
-COPY --from=build /app/node_modules ./node_modules
+COPY --from=builder /app/node_modules ./node_modules
 # Use the compiled JavaScript config instead of TypeScript
 COPY --from=builder /app/.medusa/server/medusa-config.js ./medusa-config.js
 # Copy the modules directory with source files
