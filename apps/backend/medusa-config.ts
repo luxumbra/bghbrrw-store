@@ -122,8 +122,8 @@ module.exports = defineConfig({
       },
     },
     {
-      resolve: process.env.NODE_ENV === 'production'
-        ? require('path').resolve(__dirname, '.medusa/server/src/modules/product-review')
+resolve: process.env.NODE_ENV === 'production'
+        ? require('path').resolve(__dirname, 'src/modules/product-review')
         : "./src/modules/product-review"
     },
     // {
