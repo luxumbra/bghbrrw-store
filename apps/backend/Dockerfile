@@ -10,8 +10,6 @@ WORKDIR /app
 RUN npm install -g pnpm
 
 # Copy package files - handle both build contexts
-# If context is project root, we need apps/backend/
-# If context is apps/backend/, files are at root
 COPY package*.json ./
 COPY medusa-config.ts ./
 COPY tsconfig.json ./
@@ -22,6 +20,9 @@ RUN pnpm install --frozen-lockfile=false
 
 # Build the backend
 RUN pnpm run build
+
+# Compile medusa-config.ts to JS (important fix)
+RUN npx tsc medusa-config.ts --esModuleInterop
 
 # Production stage
 FROM node:20-alpine AS production
@@ -34,18 +35,17 @@ RUN npm install -g pnpm
 # Copy built application from builder stage
 COPY --from=builder /app/.medusa ./.medusa
 COPY --from=builder /app/package.json ./
-COPY --from=builder /app/medusa-config.ts ./
+COPY --from=builder /app/medusa-config.js ./  # Copy the compiled JS file
 
 # Install production dependencies only
 RUN pnpm install --prod --frozen-lockfile=false
 
-# Create non-root user first
+# Create non-root user
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S medusa -u 1001
 
-# Install production dependencies only
-RUN npm install -g pnpm
-RUN pnpm install --prod --frozen-lockfile=false
+# Set permissions
+RUN chown -R medusa:nodejs /app
 
 # Switch to non-root user
 USER medusa
