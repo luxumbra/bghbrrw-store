@@ -13,8 +13,11 @@ RUN pnpm install --frozen-lockfile=false
 
 # Build the backend (includes admin UI to .medusa/admin)
 RUN pnpm run build
-# (if pnpm run build does NOT build admin, add an explicit build here)
-# RUN pnpm --filter @medusajs/admin build
+
+RUN if [ -d .medusa/server/public/admin ]; then \
+      mkdir -p .medusa/admin && \
+      cp -r .medusa/server/public/admin/* .medusa/admin/; \
+    fi
 
 # Production stage
 FROM node:20-alpine AS production
