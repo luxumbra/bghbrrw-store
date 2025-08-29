@@ -48,7 +48,7 @@ USER medusa
 EXPOSE 9000
 
 RUN pwd
-RUN ls -lhR .medusa/admin
-RUN ls -lhR /app/.medusa/admin
+RUN ls -lhR ../admin || echo \"../admin missing\"
+RUN ls -lhR /app/.medusa/admin || echo \"/app/.medusa/admin missing\"
 
 CMD ["sh", "-c", "pwd && ls -lhR ../admin && pnpm run predeploy && pnpm run start"]
