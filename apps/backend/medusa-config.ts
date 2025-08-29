@@ -87,7 +87,7 @@ module.exports = defineConfig({
       },
     },
     {
-      resolve: require.resolve("./src/modules/product-review")
+      resolve: require('path').resolve(__dirname, 'src/modules/product-review')
     },
     // {
     //   resolve: "./src/modules/wishlist",
