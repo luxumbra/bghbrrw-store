@@ -35,7 +35,7 @@ RUN npm install -g pnpm
 # Copy built application from builder stage
 COPY --from=builder /app/.medusa ./.medusa
 COPY --from=builder /app/package.json ./
-COPY --from=builder /app/medusa-config.js ./  # Copy the compiled JS file
+COPY --from=builder /app/medusa-config.js ./
 
 # Install production dependencies only
 RUN pnpm install --prod --frozen-lockfile=false
