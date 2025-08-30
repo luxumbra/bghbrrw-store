@@ -71,5 +71,6 @@ ENV NODE_ENV=production
 ENV HOSTNAME="0.0.0.0"
 ENV PORT=8000
 
+WORKDIR /app/apps/frontend
 # Start the application
-CMD ["node", "apps/frontend/server.js"]
+CMD ["node", "server.js"]
