@@ -60,7 +60,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/public ./apps/front
 USER nextjs
 
 # Install curl for health checks
-RUN apt-get update && apt-get install -y curl
+RUN apk add --no-cache curl
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
