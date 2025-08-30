@@ -56,11 +56,11 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/.next/static ./apps/frontend/.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/apps/frontend/public ./apps/frontend/public
 
-# Switch to non-root user
-USER nextjs
-
 # Install curl for health checks
 RUN apk add --no-cache curl
+
+# Switch to non-root user
+USER nextjs
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
